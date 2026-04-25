@@ -147,20 +147,17 @@ export default function ParticleField({ count = 3000 }: { count?: number }) {
         <bufferAttribute
           attach="attributes-position"
           count={count}
-          array={positions}
-          itemSize={3}
+          args={[positions, 3]}
         />
         <bufferAttribute
           attach="attributes-customColor"
           count={count}
-          array={colors}
-          itemSize={3}
+          args={[colors, 3]}
         />
         <bufferAttribute
           attach="attributes-size"
           count={count}
-          array={sizes}
-          itemSize={1}
+          args={[sizes, 1]}
         />
       </bufferGeometry>
       <shaderMaterial
