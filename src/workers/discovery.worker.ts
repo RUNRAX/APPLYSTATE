@@ -1,8 +1,8 @@
 import { Worker, Job } from 'bullmq';
 import { chromium } from 'playwright';
-import prisma from '../../lib/prisma';
-import { embedText, matchJob } from '../../features/matching/embeddings';
-import { LinkedinStrategy } from '../../features/automation/strategies/linkedin.strategy';
+import prisma from '@/lib/prisma';
+import { embedText, matchJob } from '@/features/matching/embeddings';
+import { LinkedinStrategy } from '@/features/automation/strategies/linkedin.strategy';
 
 import IORedis from 'ioredis';
 
