@@ -1,9 +1,8 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, type HTMLMotionProps } from "framer-motion";
 import { springPhysics } from "./GlassCard";
-import { InputHTMLAttributes } from "react";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends HTMLMotionProps<"input"> {
   label?: string;
 }
 
