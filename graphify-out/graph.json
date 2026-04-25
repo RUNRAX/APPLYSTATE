@@ -1,0 +1,694 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "next-env.d.ts",
+      "file_type": "code",
+      "source_file": "next-env.d.ts",
+      "source_location": "L1",
+      "id": "next_env_d_ts",
+      "community": 13,
+      "norm_label": "next-env.d.ts"
+    },
+    {
+      "label": "next.config.ts",
+      "file_type": "code",
+      "source_file": "next.config.ts",
+      "source_location": "L1",
+      "id": "next_config_ts",
+      "community": 14,
+      "norm_label": "next.config.ts"
+    },
+    {
+      "label": "prisma.config.ts",
+      "file_type": "code",
+      "source_file": "prisma.config.ts",
+      "source_location": "L1",
+      "id": "prisma_config_ts",
+      "community": 15,
+      "norm_label": "prisma.config.ts"
+    },
+    {
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L1",
+      "id": "src_app_layout_tsx",
+      "community": 16,
+      "norm_label": "layout.tsx"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\page.tsx",
+      "source_location": "L1",
+      "id": "src_app_page_tsx",
+      "community": 17,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\login\\page.tsx",
+      "source_location": "L1",
+      "id": "src_app_auth_login_page_tsx",
+      "community": 18,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\register\\page.tsx",
+      "source_location": "L1",
+      "id": "src_app_auth_register_page_tsx",
+      "community": 19,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\layout.tsx",
+      "source_location": "L1",
+      "id": "src_app_dashboard_layout_tsx",
+      "community": 20,
+      "norm_label": "layout.tsx"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\page.tsx",
+      "source_location": "L1",
+      "id": "src_app_dashboard_page_tsx",
+      "community": 21,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\onboarding\\page.tsx",
+      "source_location": "L1",
+      "id": "src_app_dashboard_onboarding_page_tsx",
+      "community": 2,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "nextStep()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\onboarding\\page.tsx",
+      "source_location": "L11",
+      "id": "page_nextstep",
+      "community": 2,
+      "norm_label": "nextstep()"
+    },
+    {
+      "label": "prevStep()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\onboarding\\page.tsx",
+      "source_location": "L12",
+      "id": "page_prevstep",
+      "community": 2,
+      "norm_label": "prevstep()"
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\auth\\[...nextauth]\\route.ts",
+      "source_location": "L1",
+      "id": "src_app_api_auth_nextauth_route_ts",
+      "community": 22,
+      "norm_label": "route.ts"
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\sse\\stream\\route.ts",
+      "source_location": "L1",
+      "id": "src_app_api_sse_stream_route_ts",
+      "community": 4,
+      "norm_label": "route.ts"
+    },
+    {
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\sse\\stream\\route.ts",
+      "source_location": "L6",
+      "id": "route_get",
+      "community": 4,
+      "norm_label": "get()"
+    },
+    {
+      "label": "BackgroundScene.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\three\\BackgroundScene.tsx",
+      "source_location": "L1",
+      "id": "src_components_three_backgroundscene_tsx",
+      "community": 5,
+      "norm_label": "backgroundscene.tsx"
+    },
+    {
+      "label": "MovingShapes()",
+      "file_type": "code",
+      "source_file": "src\\components\\three\\BackgroundScene.tsx",
+      "source_location": "L10",
+      "id": "backgroundscene_movingshapes",
+      "community": 5,
+      "norm_label": "movingshapes()"
+    },
+    {
+      "label": "ParticleField.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\three\\ParticleField.tsx",
+      "source_location": "L1",
+      "id": "src_components_three_particlefield_tsx",
+      "community": 23,
+      "norm_label": "particlefield.tsx"
+    },
+    {
+      "label": "Button.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\ui\\Button.tsx",
+      "source_location": "L1",
+      "id": "src_components_ui_button_tsx",
+      "community": 6,
+      "norm_label": "button.tsx"
+    },
+    {
+      "label": "Button()",
+      "file_type": "code",
+      "source_file": "src\\components\\ui\\Button.tsx",
+      "source_location": "L9",
+      "id": "button_button",
+      "community": 6,
+      "norm_label": "button()"
+    },
+    {
+      "label": "GlassCard.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\ui\\GlassCard.tsx",
+      "source_location": "L1",
+      "id": "src_components_ui_glasscard_tsx",
+      "community": 7,
+      "norm_label": "glasscard.tsx"
+    },
+    {
+      "label": "GlassCard()",
+      "file_type": "code",
+      "source_file": "src\\components\\ui\\GlassCard.tsx",
+      "source_location": "L10",
+      "id": "glasscard_glasscard",
+      "community": 7,
+      "norm_label": "glasscard()"
+    },
+    {
+      "label": "Input.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\ui\\Input.tsx",
+      "source_location": "L1",
+      "id": "src_components_ui_input_tsx",
+      "community": 24,
+      "norm_label": "input.tsx"
+    },
+    {
+      "label": "Modal.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\ui\\Modal.tsx",
+      "source_location": "L1",
+      "id": "src_components_ui_modal_tsx",
+      "community": 8,
+      "norm_label": "modal.tsx"
+    },
+    {
+      "label": "Modal()",
+      "file_type": "code",
+      "source_file": "src\\components\\ui\\Modal.tsx",
+      "source_location": "L12",
+      "id": "modal_modal",
+      "community": 8,
+      "norm_label": "modal()"
+    },
+    {
+      "label": "auth.ts",
+      "file_type": "code",
+      "source_file": "src\\features\\auth\\auth.ts",
+      "source_location": "L1",
+      "id": "src_features_auth_auth_ts",
+      "community": 25,
+      "norm_label": "auth.ts"
+    },
+    {
+      "label": "linkedin.strategy.ts",
+      "file_type": "code",
+      "source_file": "src\\features\\automation\\strategies\\linkedin.strategy.ts",
+      "source_location": "L1",
+      "id": "src_features_automation_strategies_linkedin_strategy_ts",
+      "community": 0,
+      "norm_label": "linkedin.strategy.ts"
+    },
+    {
+      "label": "LinkedinStrategy",
+      "file_type": "code",
+      "source_file": "src\\features\\automation\\strategies\\linkedin.strategy.ts",
+      "source_location": "L20",
+      "id": "linkedin_strategy_linkedinstrategy",
+      "community": 0,
+      "norm_label": "linkedinstrategy"
+    },
+    {
+      "label": ".login()",
+      "file_type": "code",
+      "source_file": "src\\features\\automation\\strategies\\linkedin.strategy.ts",
+      "source_location": "L21",
+      "id": "linkedin_strategy_linkedinstrategy_login",
+      "community": 0,
+      "norm_label": ".login()"
+    },
+    {
+      "label": ".search()",
+      "file_type": "code",
+      "source_file": "src\\features\\automation\\strategies\\linkedin.strategy.ts",
+      "source_location": "L31",
+      "id": "linkedin_strategy_linkedinstrategy_search",
+      "community": 0,
+      "norm_label": ".search()"
+    },
+    {
+      "label": "useSSE.ts",
+      "file_type": "code",
+      "source_file": "src\\features\\dashboard\\useSSE.ts",
+      "source_location": "L1",
+      "id": "src_features_dashboard_usesse_ts",
+      "community": 9,
+      "norm_label": "usesse.ts"
+    },
+    {
+      "label": "useSSE()",
+      "file_type": "code",
+      "source_file": "src\\features\\dashboard\\useSSE.ts",
+      "source_location": "L4",
+      "id": "usesse_usesse",
+      "community": 9,
+      "norm_label": "usesse()"
+    },
+    {
+      "label": "embeddings.ts",
+      "file_type": "code",
+      "source_file": "src\\features\\matching\\embeddings.ts",
+      "source_location": "L1",
+      "id": "src_features_matching_embeddings_ts",
+      "community": 1,
+      "norm_label": "embeddings.ts"
+    },
+    {
+      "label": "embedText()",
+      "file_type": "code",
+      "source_file": "src\\features\\matching\\embeddings.ts",
+      "source_location": "L7",
+      "id": "embeddings_embedtext",
+      "community": 1,
+      "norm_label": "embedtext()"
+    },
+    {
+      "label": "cosineSimilarity()",
+      "file_type": "code",
+      "source_file": "src\\features\\matching\\embeddings.ts",
+      "source_location": "L21",
+      "id": "embeddings_cosinesimilarity",
+      "community": 1,
+      "norm_label": "cosinesimilarity()"
+    },
+    {
+      "label": "matchJob()",
+      "file_type": "code",
+      "source_file": "src\\features\\matching\\embeddings.ts",
+      "source_location": "L35",
+      "id": "embeddings_matchjob",
+      "community": 1,
+      "norm_label": "matchjob()"
+    },
+    {
+      "label": "coverLetter.ts",
+      "file_type": "code",
+      "source_file": "src\\features\\resume\\coverLetter.ts",
+      "source_location": "L1",
+      "id": "src_features_resume_coverletter_ts",
+      "community": 10,
+      "norm_label": "coverletter.ts"
+    },
+    {
+      "label": "generateCoverLetter()",
+      "file_type": "code",
+      "source_file": "src\\features\\resume\\coverLetter.ts",
+      "source_location": "L8",
+      "id": "coverletter_generatecoverletter",
+      "community": 10,
+      "norm_label": "generatecoverletter()"
+    },
+    {
+      "label": "tailor.ts",
+      "file_type": "code",
+      "source_file": "src\\features\\resume\\tailor.ts",
+      "source_location": "L1",
+      "id": "src_features_resume_tailor_ts",
+      "community": 11,
+      "norm_label": "tailor.ts"
+    },
+    {
+      "label": "tailorResume()",
+      "file_type": "code",
+      "source_file": "src\\features\\resume\\tailor.ts",
+      "source_location": "L8",
+      "id": "tailor_tailorresume",
+      "community": 11,
+      "norm_label": "tailorresume()"
+    },
+    {
+      "label": "prisma.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\prisma.ts",
+      "source_location": "L1",
+      "id": "src_lib_prisma_ts",
+      "community": 12,
+      "norm_label": "prisma.ts"
+    },
+    {
+      "label": "prismaClientSingleton()",
+      "file_type": "code",
+      "source_file": "src\\lib\\prisma.ts",
+      "source_location": "L3",
+      "id": "prisma_prismaclientsingleton",
+      "community": 12,
+      "norm_label": "prismaclientsingleton()"
+    },
+    {
+      "label": "vault.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\vault.ts",
+      "source_location": "L1",
+      "id": "src_lib_vault_ts",
+      "community": 3,
+      "norm_label": "vault.ts"
+    },
+    {
+      "label": "authenticateVault()",
+      "file_type": "code",
+      "source_file": "src\\lib\\vault.ts",
+      "source_location": "L10",
+      "id": "vault_authenticatevault",
+      "community": 3,
+      "norm_label": "authenticatevault()"
+    },
+    {
+      "label": "getCredential()",
+      "file_type": "code",
+      "source_file": "src\\lib\\vault.ts",
+      "source_location": "L23",
+      "id": "vault_getcredential",
+      "community": 3,
+      "norm_label": "getcredential()"
+    },
+    {
+      "label": "application.worker.ts",
+      "file_type": "code",
+      "source_file": "src\\workers\\application.worker.ts",
+      "source_location": "L1",
+      "id": "src_workers_application_worker_ts",
+      "community": 26,
+      "norm_label": "application.worker.ts"
+    },
+    {
+      "label": "discovery.worker.ts",
+      "file_type": "code",
+      "source_file": "src\\workers\\discovery.worker.ts",
+      "source_location": "L1",
+      "id": "src_workers_discovery_worker_ts",
+      "community": 27,
+      "norm_label": "discovery.worker.ts"
+    },
+    {
+      "label": "tailoring.worker.ts",
+      "file_type": "code",
+      "source_file": "src\\workers\\tailoring.worker.ts",
+      "source_location": "L1",
+      "id": "src_workers_tailoring_worker_ts",
+      "community": 28,
+      "norm_label": "tailoring.worker.ts"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\onboarding\\page.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_src": "src_app_dashboard_onboarding_page_tsx",
+      "_tgt": "page_nextstep",
+      "source": "src_app_dashboard_onboarding_page_tsx",
+      "target": "page_nextstep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\onboarding\\page.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "src_app_dashboard_onboarding_page_tsx",
+      "_tgt": "page_prevstep",
+      "source": "src_app_dashboard_onboarding_page_tsx",
+      "target": "page_prevstep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\sse\\stream\\route.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_app_api_sse_stream_route_ts",
+      "_tgt": "route_get",
+      "source": "src_app_api_sse_stream_route_ts",
+      "target": "route_get",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\three\\BackgroundScene.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "src_components_three_backgroundscene_tsx",
+      "_tgt": "backgroundscene_movingshapes",
+      "source": "src_components_three_backgroundscene_tsx",
+      "target": "backgroundscene_movingshapes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ui\\Button.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "src_components_ui_button_tsx",
+      "_tgt": "button_button",
+      "source": "src_components_ui_button_tsx",
+      "target": "button_button",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ui\\GlassCard.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "src_components_ui_glasscard_tsx",
+      "_tgt": "glasscard_glasscard",
+      "source": "src_components_ui_glasscard_tsx",
+      "target": "glasscard_glasscard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ui\\Modal.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "src_components_ui_modal_tsx",
+      "_tgt": "modal_modal",
+      "source": "src_components_ui_modal_tsx",
+      "target": "modal_modal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\automation\\strategies\\linkedin.strategy.ts",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "src_features_automation_strategies_linkedin_strategy_ts",
+      "_tgt": "linkedin_strategy_linkedinstrategy",
+      "source": "src_features_automation_strategies_linkedin_strategy_ts",
+      "target": "linkedin_strategy_linkedinstrategy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\automation\\strategies\\linkedin.strategy.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "linkedin_strategy_linkedinstrategy",
+      "_tgt": "linkedin_strategy_linkedinstrategy_login",
+      "source": "linkedin_strategy_linkedinstrategy",
+      "target": "linkedin_strategy_linkedinstrategy_login",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\automation\\strategies\\linkedin.strategy.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_src": "linkedin_strategy_linkedinstrategy",
+      "_tgt": "linkedin_strategy_linkedinstrategy_search",
+      "source": "linkedin_strategy_linkedinstrategy",
+      "target": "linkedin_strategy_linkedinstrategy_search",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\dashboard\\useSSE.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_features_dashboard_usesse_ts",
+      "_tgt": "usesse_usesse",
+      "source": "src_features_dashboard_usesse_ts",
+      "target": "usesse_usesse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\matching\\embeddings.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "src_features_matching_embeddings_ts",
+      "_tgt": "embeddings_embedtext",
+      "source": "src_features_matching_embeddings_ts",
+      "target": "embeddings_embedtext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\matching\\embeddings.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "src_features_matching_embeddings_ts",
+      "_tgt": "embeddings_cosinesimilarity",
+      "source": "src_features_matching_embeddings_ts",
+      "target": "embeddings_cosinesimilarity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\matching\\embeddings.ts",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_src": "src_features_matching_embeddings_ts",
+      "_tgt": "embeddings_matchjob",
+      "source": "src_features_matching_embeddings_ts",
+      "target": "embeddings_matchjob",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\matching\\embeddings.ts",
+      "source_location": "L36",
+      "weight": 1.0,
+      "_src": "embeddings_matchjob",
+      "_tgt": "embeddings_cosinesimilarity",
+      "source": "embeddings_cosinesimilarity",
+      "target": "embeddings_matchjob",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\resume\\coverLetter.ts",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_features_resume_coverletter_ts",
+      "_tgt": "coverletter_generatecoverletter",
+      "source": "src_features_resume_coverletter_ts",
+      "target": "coverletter_generatecoverletter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\features\\resume\\tailor.ts",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_features_resume_tailor_ts",
+      "_tgt": "tailor_tailorresume",
+      "source": "src_features_resume_tailor_ts",
+      "target": "tailor_tailorresume",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\prisma.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_lib_prisma_ts",
+      "_tgt": "prisma_prismaclientsingleton",
+      "source": "src_lib_prisma_ts",
+      "target": "prisma_prismaclientsingleton",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\vault.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "src_lib_vault_ts",
+      "_tgt": "vault_authenticatevault",
+      "source": "src_lib_vault_ts",
+      "target": "vault_authenticatevault",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\vault.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_src": "src_lib_vault_ts",
+      "_tgt": "vault_getcredential",
+      "source": "src_lib_vault_ts",
+      "target": "vault_getcredential",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\vault.ts",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_src": "vault_getcredential",
+      "_tgt": "vault_authenticatevault",
+      "source": "vault_authenticatevault",
+      "target": "vault_getcredential",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}
