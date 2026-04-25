@@ -2,7 +2,8 @@ import OpenAI from "openai";
 import prisma from "../../lib/prisma";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.GROK_API_KEY,
+  baseURL: "https://api.x.ai/v1",
 });
 
 export async function tailorResume(userId: string, jobListingId: string) {
@@ -30,7 +31,7 @@ export async function tailorResume(userId: string, jobListingId: string) {
   `;
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "grok-2-latest",
     messages: [{ role: "user", content: prompt }],
   });
 

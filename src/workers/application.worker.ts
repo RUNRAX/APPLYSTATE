@@ -2,10 +2,15 @@ import { Worker, Job } from 'bullmq';
 import { chromium } from 'playwright';
 import prisma from '../lib/prisma';
 
-const connection = {
-  host: process.env.REDIS_HOST || '127.0.0.1',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-};
+import IORedis from 'ioredis';
+
+const connection = process.env.REDIS_URL 
+  ? new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: null })
+  : new IORedis({
+      host: process.env.REDIS_HOST || '127.0.0.1',
+      port: parseInt(process.env.REDIS_PORT || '6379'),
+      maxRetriesPerRequest: null
+    });
 
 export const applicationWorker = new Worker('application-queue', async (job: Job) => {
   const { userId, jobListingId, resumeId, clId } = job.data;
