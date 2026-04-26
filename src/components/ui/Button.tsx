@@ -32,7 +32,7 @@ export function Button({ children, variant = "primary", size = "md", className =
 
   let customClass = "";
   let variantStyle: React.CSSProperties = {};
-  let hoverStyle: { scale?: number; filter?: string; boxShadow?: string; background?: string; color?: string } = { scale: 1.02, filter: "brightness(1.08)" };
+  let hoverStyle: { scale?: number; filter?: string; boxShadow?: string; background?: string; color?: string; border?: string } = { scale: 1.02, filter: "brightness(1.08)" };
 
   if (variant === "primary") {
     customClass = "liquid-shine";
