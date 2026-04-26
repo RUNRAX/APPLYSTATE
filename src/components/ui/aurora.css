@@ -5,7 +5,7 @@
   height: 100vh;
   z-index: -10;
   overflow: hidden;
-  background-color: hsl(var(--background, 240 18% 4%));
+  background-color: hsl(240 18% 4%);
   pointer-events: none;
 }
 
@@ -33,7 +33,7 @@
   border-radius: 50%;
 }
 
-/* Sphere 1 — coral / magenta marble (top-left) */
+/* Sphere 1 — coral / magenta marble (top-left) — vivid, no blur */
 .aurora-blob-1 {
   top: -8rem;
   left: -10rem;

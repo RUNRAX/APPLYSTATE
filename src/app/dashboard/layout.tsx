@@ -4,41 +4,58 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./dashboard.module.css";
 import { useSession, signOut } from "next-auth/react";
+import {
+  LayoutDashboard,
+  FileText,
+  Eye,
+  BarChart3,
+  SlidersHorizontal,
+  Lock,
+  LogOut,
+  Bell,
+  Search,
+} from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
 
   const navItems = [
-    { label: 'Overview', href: '/dashboard', icon: '📊' },
-    { label: 'Applications', href: '/dashboard/applications', icon: '📝' },
-    { label: 'Review Queue', href: '/dashboard/review', icon: '👀' },
-    { label: 'Insights', href: '/dashboard/insights', icon: '📈' },
-    { label: 'Preferences', href: '/dashboard/preferences', icon: '⚙️' },
-    { label: 'Settings', href: '/dashboard/settings', icon: '🔒' },
+    { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, end: true },
+    { label: 'Applications', href: '/dashboard/applications', icon: FileText },
+    { label: 'Review Queue', href: '/dashboard/review', icon: Eye },
+    { label: 'Insights', href: '/dashboard/insights', icon: BarChart3 },
+    { label: 'Preferences', href: '/dashboard/preferences', icon: SlidersHorizontal },
+    { label: 'Settings', href: '/dashboard/settings', icon: Lock },
   ];
 
+  const currentPage = navItems.find(item =>
+    item.end ? pathname === item.href : pathname.startsWith(item.href)
+  );
+
   return (
-    <div className={styles.dashboardContainer}>
-      {/* Sidebar */}
-      <aside className={styles.sidebar}>
+    <div className={styles.dashboardOuter}>
+      {/* Sidebar — floating glass-strong card */}
+      <aside className={`glass-strong ${styles.sidebar}`}>
         <div className={styles.sidebarHeader}>
-          <Link href="/" className={styles.logo}>ApplyMate</Link>
+          <Logo />
         </div>
-        
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 0.5rem' }}>
+
+        <nav className={styles.sidebarNav}>
           {navItems.map(item => {
-            const isActive = item.href === '/dashboard' 
-              ? pathname === '/dashboard' 
+            const isActive = item.end
+              ? pathname === item.href
               : pathname.startsWith(item.href);
+            const Icon = item.icon;
 
             return (
-              <Link 
-                key={item.label} 
+              <Link
+                key={item.label}
                 href={item.href}
                 className={`${styles.navLink} ${isActive ? styles.active : ''}`}
               >
-                <span>{item.icon}</span>
+                <Icon className={styles.navIcon} />
                 {item.label}
               </Link>
             );
@@ -46,44 +63,65 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </nav>
 
         <div className={styles.sidebarFooter}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--gradient-vivid)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '0.9rem', color: 'white' }}>
+          <div className={styles.userInfo}>
+            <div className={styles.userAvatar}>
               {session?.user?.name?.charAt(0) || session?.user?.email?.charAt(0) || 'U'}
             </div>
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div className={styles.userName}>
                 {session?.user?.name || 'User'}
               </div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--muted-foreground)', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+              <div className={styles.userEmail}>
                 {session?.user?.email}
               </div>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => signOut({ callbackUrl: '/' })}
-            className="glass-pill"
-            style={{ padding: '0.5rem', fontSize: '0.8rem', width: '100%' }}
+            className={styles.signOutBtn}
           >
-            Sign Out
+            <LogOut style={{ width: '0.875rem', height: '0.875rem' }} />
+            Sign out
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
       <main className={styles.mainContent}>
-        <div className={styles.header}>
-          <div className={styles.headerTitle}>
-            {navItems.find(item => 
-              item.href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(item.href)
-            )?.label || 'Dashboard'}
+        {/* Header — glass card */}
+        <header className={`glass ${styles.header}`}>
+          <div className={styles.headerLeft}>
+            <div className={styles.headerLabel}>Dashboard</div>
+            <div className={styles.headerTitle}>
+              {currentPage?.label || 'Overview'}
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button className="glass-pill" style={{ color: 'var(--success)', padding: '0.4rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)', boxShadow: '0 0 8px var(--success)' }}></span>
-              Agent Active
+          <div className={styles.headerActions}>
+            {/* Search bar */}
+            <div className={`glass-pill ${styles.searchBar}`}>
+              <Search style={{ width: '0.875rem', height: '0.875rem', color: 'rgba(255,255,255,0.5)' }} />
+              <input
+                placeholder="Search jobs, companies…"
+                className={styles.searchInput}
+              />
+            </div>
+
+            {/* Agent Active badge */}
+            <div className={`glass-pill ${styles.agentBadge}`}>
+              <span className={styles.agentDot}>
+                <span className={styles.agentDotPing} />
+                <span className={styles.agentDotCore} />
+              </span>
+              <span style={{ fontWeight: 600, color: 'var(--success)' }}>Agent Active</span>
+            </div>
+
+            {/* Notification bell */}
+            <button className={styles.notifBtn} aria-label="Notifications">
+              <Bell style={{ width: '1rem', height: '1rem' }} />
             </button>
           </div>
-        </div>
+        </header>
+
         <div className={styles.scrollArea}>
           {children}
         </div>

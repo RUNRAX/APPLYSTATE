@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "_liquid_lumina_ref"]
+  "exclude": ["node_modules", "_liquid_lumina_ref", "scratch"]
 }

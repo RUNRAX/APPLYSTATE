@@ -1,7 +1,7 @@
 "use client";
 import { motion, HTMLMotionProps } from "framer-motion";
 
-export const springPhysics = { type: "spring" as const, damping: 25, stiffness: 300, mass: 0.8 };
+export const springPhysics = { type: "spring" as const, damping: 30, stiffness: 200, mass: 0.8 };
 
 interface GlassCardProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;

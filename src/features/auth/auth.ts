@@ -40,6 +40,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.sub;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Always use relative paths — prevents cross-deployment redirects
+      // If the URL starts with the baseUrl, strip it to make it relative
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      // If it's a relative URL, resolve it against baseUrl
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      }
+      // For any external URL, redirect to home
+      return baseUrl;
     }
   }
 });

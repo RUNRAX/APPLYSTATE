@@ -55,6 +55,10 @@
   --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
   --font-display: 'Fraunces', 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Smooth transition defaults */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.35s var(--ease-out-expo);
 }
 
 html, body {
@@ -66,8 +70,15 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: var(--font-sans);
+  font-feature-settings: "ss01", "ss02", "cv11";
+  letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: hsla(350, 96%, 60%, 0.4);
+  color: white;
 }
 
 * {
@@ -133,7 +144,7 @@ a {
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 0.85rem;
   color: var(--foreground);
-  transition: all 0.25s ease;
+  transition: all var(--transition-smooth);
 }
 .glass-input:focus-within,
 .glass-input:focus {
@@ -145,6 +156,8 @@ a {
 /* Typography Utilities */
 .font-display {
   font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.035em;
 }
 .font-mono {
   font-family: var(--font-mono);
@@ -187,14 +200,14 @@ a {
 }
 
 .animate-fade-up {
-  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fade-up 0.8s var(--ease-out-expo) forwards;
 }
 .animate-scale-in {
-  animation: scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scale-in 0.6s var(--ease-out-expo) forwards;
 }
 
 @keyframes fade-up {
-  0% { opacity: 0; transform: translateY(20px); }
+  0% { opacity: 0; transform: translateY(16px); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
@@ -206,6 +219,11 @@ a {
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @media (prefers-reduced-motion: reduce) {

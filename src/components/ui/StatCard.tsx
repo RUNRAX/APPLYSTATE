@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { springPhysics } from "./GlassCard";
+
+const smoothSpring = { type: "spring" as const, damping: 30, stiffness: 200, mass: 0.8 };
 
 interface StatCardProps {
   label: string;
@@ -21,15 +22,12 @@ export function StatCard({ label, value, trend, trendValue, icon }: StatCardProp
     if (!isNumber && isNaN(numValue)) return;
     
     let startTimestamp: number | null = null;
-    const duration = 1500; // ms
+    const duration = 1500;
     
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      
-      // Easing out cubic
       const easeOut = 1 - Math.pow(1 - progress, 3);
-      
       setDisplayValue(Math.floor(easeOut * numValue));
       
       if (progress < 1) {
@@ -44,22 +42,17 @@ export function StatCard({ label, value, trend, trendValue, icon }: StatCardProp
 
   return (
     <motion.div
-      transition={springPhysics}
-      whileHover={{ y: -4, scale: 1.01 }}
+      transition={smoothSpring}
+      whileHover={{ y: -3, scale: 1.01 }}
+      className="glass"
       style={{
-        background: "rgba(255, 255, 255, 0.04)",
-        backdropFilter: "blur(24px) saturate(180%)",
-        WebkitBackdropFilter: "blur(24px) saturate(180%)",
-        border: "1px solid rgba(255, 255, 255, 0.12)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
-        borderRadius: "20px",
         padding: "1.5rem",
         position: "relative",
-        overflow: "hidden"
+        overflow: "hidden",
       }}
     >
       {/* Accent glow on top edge */}
-      <div style={{ position: "absolute", top: 0, left: "10%", right: "10%", height: "1px", background: "linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent)" }} />
+      <div style={{ position: "absolute", top: 0, left: "10%", right: "10%", height: "1px", background: "linear-gradient(90deg, transparent, hsla(350, 96%, 60%, 0.5), transparent)" }} />
       
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
         <div style={{ fontSize: "0.9rem", color: "rgba(255, 255, 255, 0.6)", fontWeight: 500 }}>

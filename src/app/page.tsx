@@ -22,7 +22,7 @@ export default function Home() {
             <Button variant="ghost" size="sm">Log in</Button>
           </Link>
           <Link href="/register">
-            <Button variant="primary" size="sm">Sign up</Button>
+            <Button variant="primary" size="sm">Get started</Button>
           </Link>
         </div>
       </nav>
@@ -45,11 +45,11 @@ export default function Home() {
         <div className={`animate-fade-up ${styles.ctaGroup}`} style={{ animationDelay: '250ms' }}>
           <Link href="/register">
             <Button variant="primary" size="lg">
-              Launch Agent <ArrowRight size={18} />
+              Start applying free <ArrowRight size={18} />
             </Button>
           </Link>
           <Link href="#how-it-works">
-            <Button variant="glass" size="lg">See how it works</Button>
+            <Button variant="glass" size="lg">View live demo</Button>
           </Link>
         </div>
       </section>
