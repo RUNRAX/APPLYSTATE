@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className={styles.page}>
       {/* Navigation Bar */}
-      <nav className={`${styles.nav} glass-pill animate-fade-up`} style={{ animationDelay: '50ms' }}>
+      <nav className={`${styles.nav} ${styles.navLiquidGlass} animate-fade-up`} style={{ animationDelay: '50ms' }}>
         <Logo />
         <div className={styles.navLinks}>
           <a href="#features">Features</a>

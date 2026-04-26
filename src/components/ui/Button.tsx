@@ -49,14 +49,14 @@ export function Button({ children, variant = "primary", size = "md", className =
   } else if (variant === "glass" || variant === "secondary") {
     customClass = "glass-pill";
     variantStyle = { color: "var(--foreground)" };
-    hoverStyle = { scale: 1.02, background: "rgba(255, 255, 255, 0.06)" };
+    hoverStyle = { scale: 1.02, background: "rgba(100, 160, 255, 0.12)", boxShadow: "0 8px 24px -8px rgba(80, 140, 255, 0.4)" };
   } else if (variant === "ghost") {
     variantStyle = {
       background: "transparent",
       border: "1px solid transparent",
       color: "rgba(255,255,255,0.8)",
     };
-    hoverStyle = { scale: 1.02, background: "rgba(255, 255, 255, 0.05)", color: "var(--foreground)" };
+    hoverStyle = { scale: 1.02, background: "rgba(100, 160, 255, 0.08)", border: "1px solid rgba(120, 180, 255, 0.15)", color: "var(--foreground)" };
   } else if (variant === "outline") {
     variantStyle = {
       background: "transparent",

@@ -52,7 +52,7 @@ export function StatCard({ label, value, trend, trendValue, icon }: StatCardProp
       }}
     >
       {/* Accent glow on top edge */}
-      <div style={{ position: "absolute", top: 0, left: "10%", right: "10%", height: "1px", background: "linear-gradient(90deg, transparent, hsla(350, 96%, 60%, 0.5), transparent)" }} />
+      <div style={{ position: "absolute", top: 0, left: "10%", right: "10%", height: "1px", background: "linear-gradient(90deg, transparent, hsla(210, 100%, 75%, 0.8), hsla(350, 96%, 60%, 0.5), transparent)" }} />
       
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
         <div style={{ fontSize: "0.9rem", color: "rgba(255, 255, 255, 0.6)", fontWeight: 500 }}>

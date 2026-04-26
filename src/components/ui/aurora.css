@@ -25,7 +25,7 @@
 .aurora-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 30%, hsl(240 30% 2% / 0.5) 100%);
+  background: radial-gradient(ellipse at center, transparent 30%, hsl(240 30% 2% / 0.25) 100%);
 }
 
 .aurora-blob {
@@ -40,8 +40,8 @@
   height: 70vmin;
   width: 70vmin;
   background: conic-gradient(from 30deg, hsl(350 96% 60%), hsl(322 92% 58%), hsl(18 96% 60%), hsl(350 96% 60%));
-  opacity: 0.95;
-  animation: float-x 22s ease-in-out infinite;
+  opacity: 1;
+  animation: float-x 22s ease-in-out infinite, pulse-scale 12s ease-in-out infinite;
 }
 
 /* Sphere 2 — teal / blue marble (right) */
@@ -51,8 +51,8 @@
   height: 60vmin;
   width: 60vmin;
   background: conic-gradient(from 220deg, hsl(174 78% 48%), hsl(220 90% 60%), hsl(280 80% 60%), hsl(174 78% 48%));
-  opacity: 0.92;
-  animation: float-y 28s ease-in-out infinite;
+  opacity: 0.95;
+  animation: float-y 28s ease-in-out infinite, pulse-scale 14s ease-in-out infinite alternate;
 }
 
 /* Sphere 3 — orange/red bottom-center */
@@ -62,8 +62,8 @@
   height: 80vmin;
   width: 80vmin;
   background: conic-gradient(from 120deg, hsl(18 96% 60%), hsl(350 96% 60%), hsl(322 92% 58%), hsl(18 96% 60%));
-  opacity: 0.9;
-  animation: float-z 32s ease-in-out infinite;
+  opacity: 0.95;
+  animation: float-z 32s ease-in-out infinite, pulse-scale 16s ease-in-out infinite alternate-reverse;
 }
 
 /* Sphere 4 — small accent magenta */
@@ -92,4 +92,8 @@
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.85; transform: scale(1); }
   50%      { opacity: 1;    transform: scale(1.06); }
+}
+@keyframes pulse-scale {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
 }

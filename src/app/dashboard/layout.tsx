@@ -1,5 +1,6 @@
 "use client";
 import { ReactNode } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./dashboard.module.css";
@@ -123,7 +124,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </header>
 
         <div className={styles.scrollArea}>
-          {children}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
     </div>

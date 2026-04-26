@@ -32,13 +32,14 @@
   --muted-foreground: hsl(240 5% 65%);
 
   /* Glass tokens */
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-bg: rgba(100, 160, 255, 0.04);
+  --glass-border: rgba(120, 180, 255, 0.15);
+  --glass-glow: 0 0 40px -10px rgba(80, 140, 255, 0.25);
   --glass-blur: blur(24px) saturate(180%);
 
   /* Shadows */
-  --shadow-glass: 0 8px 32px -8px hsla(240, 50%, 0%, 0.55),
-                  inset 0 1px 0 0 hsla(0, 0%, 100%, 0.08),
+  --shadow-glass: 0 8px 32px -8px rgba(80, 140, 255, 0.2),
+                  inset 0 1px 0 0 rgba(140, 200, 255, 0.15),
                   inset 0 -1px 0 0 hsla(0, 0%, 0%, 0.4);
   --shadow-glow: 0 0 60px -15px hsla(350, 96%, 60%, 0.6);
   --shadow-elev: 0 20px 60px -20px hsla(240, 50%, 0%, 0.7);
@@ -93,9 +94,9 @@ a {
 /* Glass System Utility Classes */
 /* Liquid glass — translucent, NO backdrop blur. Spheres show through clearly. */
 .glass {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015) 50%, rgba(255, 255, 255, 0.05));
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: var(--shadow-glass);
+  background: linear-gradient(135deg, rgba(100, 160, 255, 0.06), rgba(100, 160, 255, 0.015) 50%, rgba(100, 160, 255, 0.05));
+  border: 1px solid rgba(120, 180, 255, 0.16);
+  box-shadow: var(--shadow-glass), 0 4px 30px -8px rgba(80, 140, 255, 0.15);
   border-radius: var(--radius);
   position: relative;
 }
@@ -104,7 +105,7 @@ a {
   position: absolute; inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 255, 255, 0.2));
+  background: linear-gradient(135deg, rgba(140, 200, 255, 0.4), rgba(140, 200, 255, 0) 35%, rgba(140, 200, 255, 0) 65%, rgba(140, 200, 255, 0.2));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
@@ -113,10 +114,10 @@ a {
 
 .glass-strong {
   background:
-    radial-gradient(120% 100% at 0% 0%, rgba(255, 255, 255, 0.12), transparent 55%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: var(--shadow-glass), var(--shadow-elev);
+    radial-gradient(120% 100% at 0% 0%, rgba(100, 160, 255, 0.12), transparent 55%),
+    linear-gradient(135deg, rgba(100, 160, 255, 0.10), rgba(100, 160, 255, 0.03));
+  border: 1px solid rgba(120, 180, 255, 0.20);
+  box-shadow: var(--shadow-glass), var(--shadow-elev), 0 8px 40px -10px rgba(80, 140, 255, 0.25);
   border-radius: var(--radius);
   position: relative;
 }
@@ -125,7 +126,7 @@ a {
   position: absolute; inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.28));
+  background: linear-gradient(140deg, rgba(160, 210, 255, 0.6), rgba(160, 210, 255, 0) 30%, rgba(160, 210, 255, 0) 70%, rgba(160, 210, 255, 0.35));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
@@ -133,22 +134,22 @@ a {
 }
 
 .glass-pill {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, rgba(100, 160, 255, 0.09), rgba(100, 160, 255, 0.03));
+  border: 1px solid rgba(120, 180, 255, 0.22);
   border-radius: 999px;
-  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(140, 200, 255, 0.2);
 }
 
 .glass-input {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(100, 160, 255, 0.05);
+  border: 1px solid rgba(120, 180, 255, 0.18);
   border-radius: 0.85rem;
   color: var(--foreground);
   transition: all var(--transition-smooth);
 }
 .glass-input:focus-within,
 .glass-input:focus {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(100, 160, 255, 0.08);
   border-color: hsla(350, 96%, 60%, 0.6);
   box-shadow: 0 0 0 4px hsla(350, 96%, 60%, 0.15), 0 0 30px -8px hsla(350, 96%, 60%, 0.5);
 }

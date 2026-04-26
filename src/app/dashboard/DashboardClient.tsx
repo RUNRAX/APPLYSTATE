@@ -50,10 +50,6 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
       {/* Welcome Hero Banner */}
       <motion.div variants={itemVariants}>
         <GlassCard variant="strong" className={styles.welcomeHero} style={{ padding: 0 }}>
-          {/* Background spheres inside the hero */}
-          <div className={styles.heroSphereLeft} />
-          <div className={styles.heroSphereRight} />
-
           <div className={styles.heroContent} style={{ padding: '2.5rem 2rem' }}>
             <div className={styles.heroLabel}>Welcome back</div>
             <h1 className={styles.heroTitle}>
@@ -97,13 +93,13 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
 
       {/* Bento Grid — Activity + Live Feed */}
       <motion.div variants={itemVariants} className={styles.bentoGrid}>
-        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column' }}>
+        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>Application Activity</h3>
             <span style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Last 7 days</span>
           </div>
 
-          <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: '8px', paddingTop: '2rem', height: '200px' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: '8px', paddingTop: '2rem', minHeight: '200px' }}>
             {[4, 7, 3, 8, 2, 9, 5].map((val, i) => (
               <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                 <motion.div
@@ -125,7 +121,7 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
           </div>
         </GlassCard>
 
-        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column' }}>
+        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>Live Event Feed</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -134,7 +130,7 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
             </div>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingRight: '0.5rem' }}>
+          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingRight: '0.5rem', maxHeight: '300px' }}>
             <AnimatePresence>
               {events.length === 0 ? (
                 <div style={{ color: 'var(--muted-foreground)', fontSize: '0.9rem', textAlign: 'center', padding: '2rem 0' }}>

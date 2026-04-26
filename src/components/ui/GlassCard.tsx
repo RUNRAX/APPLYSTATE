@@ -19,7 +19,7 @@ export function GlassCard({ children, className = "", interactive = false, varia
     <motion.div
       className={`${baseClass} ${glowClass} ${interactiveClass} ${className}`}
       transition={springPhysics}
-      whileHover={interactive ? { y: -4, boxShadow: "var(--shadow-elev)" } : undefined}
+      whileHover={interactive ? { y: -4, boxShadow: "var(--shadow-elev), 0 0 30px rgba(80, 140, 255, 0.4)" } : undefined}
       whileTap={interactive ? { scale: 0.98 } : undefined}
       style={{ padding: '1.5rem', ...props.style }}
       {...props}
