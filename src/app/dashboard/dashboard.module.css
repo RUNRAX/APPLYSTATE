@@ -179,9 +179,10 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  overflow: hidden;
 }
 
-/* Header — glass card */
+/* Header — glass card, sticky with blur pass-through */
 .header {
   display: flex;
   flex-wrap: nowrap;
@@ -190,9 +191,22 @@
   gap: 0.75rem;
   padding: 0.85rem 1.5rem;
   margin-bottom: 1.25rem;
-  overflow: hidden;
   flex-shrink: 0;
-  z-index: 15;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  /* Explicit blur so header is always frosted */
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(20px) saturate(1.8);
+  background: linear-gradient(
+    135deg,
+    rgba(14, 14, 30, 0.72),
+    rgba(14, 14, 30, 0.55)
+  );
+  border: 1px solid rgba(120, 180, 255, 0.14);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.45),
+              inset 0 1px 0 rgba(140, 200, 255, 0.12);
 }
 
 .headerLeft {
@@ -299,6 +313,7 @@
 .scrollArea {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }

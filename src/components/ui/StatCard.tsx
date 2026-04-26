@@ -49,6 +49,8 @@ export function StatCard({ label, value, trend, trendValue, icon }: StatCardProp
         padding: "1.5rem",
         position: "relative",
         overflow: "hidden",
+        background: "linear-gradient(135deg, rgba(80, 140, 255, 0.10), rgba(80, 140, 255, 0.04))",
+        filter: "saturate(1.2)",
       }}
     >
       {/* Accent glow on top edge */}

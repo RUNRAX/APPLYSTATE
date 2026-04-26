@@ -89,41 +89,41 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       {/* Main Content */}
       <main className={styles.mainContent}>
-        {/* Header — glass card */}
-        <header className={`glass ${styles.header}`}>
-          <div className={styles.headerLeft}>
-            <div className={styles.headerLabel}>Dashboard</div>
-            <div className={styles.headerTitle}>
-              {currentPage?.label || 'Overview'}
-            </div>
-          </div>
-          <div className={styles.headerActions}>
-            {/* Search bar */}
-            <div className={`glass-pill ${styles.searchBar}`}>
-              <Search style={{ width: '0.875rem', height: '0.875rem', color: 'rgba(255,255,255,0.5)' }} />
-              <input
-                placeholder="Search jobs, companies…"
-                className={styles.searchInput}
-              />
-            </div>
-
-            {/* Agent Active badge */}
-            <div className={`glass-pill ${styles.agentBadge}`}>
-              <span className={styles.agentDot}>
-                <span className={styles.agentDotPing} />
-                <span className={styles.agentDotCore} />
-              </span>
-              <span style={{ fontWeight: 600, color: 'var(--success)' }}>Agent Active</span>
-            </div>
-
-            {/* Notification bell */}
-            <button className={styles.notifBtn} aria-label="Notifications">
-              <Bell style={{ width: '1rem', height: '1rem' }} />
-            </button>
-          </div>
-        </header>
-
         <div className={styles.scrollArea}>
+          {/* Header — sticky inside scroll area so content passes under it */}
+          <header className={styles.header}>
+            <div className={styles.headerLeft}>
+              <div className={styles.headerLabel}>Dashboard</div>
+              <div className={styles.headerTitle}>
+                {currentPage?.label || 'Overview'}
+              </div>
+            </div>
+            <div className={styles.headerActions}>
+              {/* Search bar */}
+              <div className={`glass-pill ${styles.searchBar}`}>
+                <Search style={{ width: '0.875rem', height: '0.875rem', color: 'rgba(255,255,255,0.5)' }} />
+                <input
+                  placeholder="Search jobs, companies…"
+                  className={styles.searchInput}
+                />
+              </div>
+
+              {/* Agent Active badge */}
+              <div className={`glass-pill ${styles.agentBadge}`}>
+                <span className={styles.agentDot}>
+                  <span className={styles.agentDotPing} />
+                  <span className={styles.agentDotCore} />
+                </span>
+                <span style={{ fontWeight: 600, color: 'var(--success)' }}>Agent Active</span>
+              </div>
+
+              {/* Notification bell */}
+              <button className={styles.notifBtn} aria-label="Notifications">
+                <Bell style={{ width: '1rem', height: '1rem' }} />
+              </button>
+            </div>
+          </header>
+
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}
