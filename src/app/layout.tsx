@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
+import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import AuroraBackground from "@/components/ui/AuroraBackground";
 
@@ -10,7 +10,7 @@ const inter = Inter({
   variable: "--font-sans"
 });
 
-const fraunces = Fraunces({ 
+const outfit = Outfit({ 
   subsets: ["latin"],
   variable: "--font-display"
 });
@@ -32,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}>
+      <body className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
         <SessionProvider>
           <AuroraBackground />
           <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

@@ -1,12 +1,5 @@
-# Liquid Lumina Implementation Refinement Task List
-
-- [x] Update `src/app/globals.css`
-  - [x] Replace HSL color variables with exact liquid-lumina values
-  - [x] Rewrite `.glass`, `.glass-strong`, `.glass-pill` using authentic liquid styling (no backdrop-blur, `::before` mask-composite)
-  - [x] Add `.liquid-shine` effect
-- [x] Update UI Components
-  - [x] Reduce padding in `src/components/ui/GlassCard.tsx`
-  - [x] Adjust hover effects in `src/components/ui/Button.tsx`
-- [x] Verify Dashboard Aesthetics
-  - [x] Check if background spheres are visible through cards
-  - [x] Check for sharp inner borders
+- [x] 1. Dashboard Header — Make sticky and update to Outfit font
+- [x] 2. Landing Page Nav — Center nav links perfectly
+- [x] 3. Sphere Colors & Glass Blur — Update to lavender palette and increase blur
+- [x] 4. Sidebar Button Transitions — Add premium staggered multi-property transitions
+- [x] 5. Page-to-Page Transition — Enhance Framer Motion blur/scale effects

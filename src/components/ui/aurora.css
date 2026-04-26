@@ -39,7 +39,7 @@
   left: -10rem;
   height: 70vmin;
   width: 70vmin;
-  background: conic-gradient(from 30deg, hsl(350 96% 60%), hsl(322 92% 58%), hsl(18 96% 60%), hsl(350 96% 60%));
+  background: conic-gradient(from 30deg, hsl(265 65% 55%), hsl(280 50% 40%), hsl(240 60% 35%), hsl(265 65% 55%));
   opacity: 1;
   animation: float-x 22s ease-in-out infinite, pulse-scale 12s ease-in-out infinite;
 }
@@ -50,7 +50,7 @@
   right: -10rem;
   height: 60vmin;
   width: 60vmin;
-  background: conic-gradient(from 220deg, hsl(174 78% 48%), hsl(220 90% 60%), hsl(280 80% 60%), hsl(174 78% 48%));
+  background: conic-gradient(from 220deg, hsl(220 70% 50%), hsl(250 65% 55%), hsl(280 55% 45%), hsl(220 70% 50%));
   opacity: 0.95;
   animation: float-y 28s ease-in-out infinite, pulse-scale 14s ease-in-out infinite alternate;
 }
@@ -61,7 +61,7 @@
   left: 20%;
   height: 80vmin;
   width: 80vmin;
-  background: conic-gradient(from 120deg, hsl(18 96% 60%), hsl(350 96% 60%), hsl(322 92% 58%), hsl(18 96% 60%));
+  background: conic-gradient(from 120deg, hsl(250 55% 30%), hsl(270 60% 40%), hsl(240 50% 25%), hsl(250 55% 30%));
   opacity: 0.95;
   animation: float-z 32s ease-in-out infinite, pulse-scale 16s ease-in-out infinite alternate-reverse;
 }
@@ -72,7 +72,7 @@
   left: 40%;
   height: 35vmin;
   width: 35vmin;
-  background: radial-gradient(circle at 30% 30%, hsl(322 92% 65%), hsl(350 96% 55%) 60%, transparent 80%);
+  background: radial-gradient(circle at 30% 30%, hsl(270 70% 50%), hsl(250 60% 35%) 60%, transparent 80%);
   opacity: 0.85;
   animation: pulse-glow 10s ease-in-out infinite;
 }
