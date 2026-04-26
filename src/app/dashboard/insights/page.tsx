@@ -2,6 +2,7 @@ import { auth } from "@/features/auth/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { StatCard } from "@/components/ui/StatCard";
+import { GlassCard } from "@/components/ui/GlassCard";
 import styles from "../dashboard.module.css";
 
 export default async function InsightsPage() {
@@ -24,8 +25,8 @@ export default async function InsightsPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Insights</h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)' }}>Analytics and performance of your job search.</p>
+        <h1 className="font-display" style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Insights</h1>
+        <p style={{ color: 'var(--muted-foreground)' }}>Analytics and performance of your job search.</p>
       </div>
 
       <div className={styles.statsGrid}>
@@ -35,8 +36,8 @@ export default async function InsightsPage() {
       </div>
 
       <div className={styles.bentoGrid}>
-        <div className={styles.glassCardL2}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '2rem' }}>Applications by Platform</h3>
+        <GlassCard variant="strong">
+          <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '2rem' }}>Applications by Platform</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {['LinkedIn', 'Indeed', 'Wellfound'].map((platform, i) => {
               const platformApps = apps.filter(a => a.jobListing.platform === platform).length;
@@ -45,19 +46,19 @@ export default async function InsightsPage() {
                 <div key={platform}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
                     <span>{platform}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.6)' }}>{platformApps} ({percent}%)</span>
+                    <span style={{ color: 'var(--muted-foreground)' }}>{platformApps} ({percent}%)</span>
                   </div>
                   <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${percent}%`, background: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--secondary)' : 'var(--accent)' }} />
+                    <div style={{ height: '100%', width: `${percent}%`, background: i === 0 ? 'var(--gradient-vivid)' : i === 1 ? 'var(--secondary)' : 'var(--accent)' }} />
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
+        </GlassCard>
 
-        <div className={styles.glassCardL2}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '2rem' }}>Top Matched Keywords</h3>
+        <GlassCard variant="strong">
+          <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '2rem' }}>Top Matched Keywords</h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
             {['React', 'TypeScript', 'Next.js', 'Frontend', 'Tailwind', 'Node.js', 'Prisma'].map((tag, i) => (
               <span key={tag} style={{ 
@@ -71,7 +72,7 @@ export default async function InsightsPage() {
               </span>
             ))}
           </div>
-        </div>
+        </GlassCard>
       </div>
     </div>
   );

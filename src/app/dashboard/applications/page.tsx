@@ -2,6 +2,7 @@ import { auth } from "@/features/auth/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { GlassCard } from "@/components/ui/GlassCard";
 import styles from "../dashboard.module.css";
 
 export default async function ApplicationsPage() {
@@ -17,15 +18,15 @@ export default async function ApplicationsPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Applications</h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)' }}>Track and manage all your automated job applications.</p>
+        <h1 className="font-display" style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Applications</h1>
+        <p style={{ color: 'var(--muted-foreground)' }}>Track and manage all your automated job applications.</p>
       </div>
 
-      <div className={styles.glassCardL2} style={{ padding: 0 }}>
+      <GlassCard variant="strong" style={{ padding: 0, overflow: 'hidden' }}>
         {applications.length === 0 ? (
-          <div style={{ padding: '4rem 2rem', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+          <div style={{ padding: '4rem 2rem', textAlign: 'center', color: 'var(--muted-foreground)' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
-            <h3 style={{ fontSize: '1.2rem', color: '#fff', marginBottom: '0.5rem' }}>No applications yet</h3>
+            <h3 className="font-display" style={{ fontSize: '1.2rem', color: 'var(--foreground)', marginBottom: '0.5rem' }}>No applications yet</h3>
             <p>Your agent will start applying soon. Check back later.</p>
           </div>
         ) : (
@@ -51,14 +52,14 @@ export default async function ApplicationsPage() {
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <div style={{ width: '100%', maxWidth: '60px', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${app.jobListing.matchScore || 0}%`, background: 'var(--primary)' }} />
+                          <div style={{ height: '100%', width: `${app.jobListing.matchScore || 0}%`, background: 'var(--gradient-vivid)' }} />
                         </div>
                         <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.8)' }}>
                           {Math.round(app.jobListing.matchScore || 0)}%
                         </span>
                       </div>
                     </td>
-                    <td style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem' }}>
+                    <td style={{ color: 'var(--muted-foreground)', fontSize: '0.9rem' }}>
                       {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'Pending'}
                     </td>
                   </tr>
@@ -67,7 +68,7 @@ export default async function ApplicationsPage() {
             </table>
           </div>
         )}
-      </div>
+      </GlassCard>
     </div>
   );
 }

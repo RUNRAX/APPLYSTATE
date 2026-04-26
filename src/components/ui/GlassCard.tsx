@@ -6,14 +6,20 @@ export const springPhysics = { type: "spring" as const, damping: 25, stiffness: 
 interface GlassCardProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
   interactive?: boolean;
+  variant?: "default" | "strong";
+  glow?: boolean;
 }
 
-export function GlassCard({ children, className = "", interactive = false, ...props }: GlassCardProps) {
+export function GlassCard({ children, className = "", interactive = false, variant = "default", glow = false, ...props }: GlassCardProps) {
+  const baseClass = variant === "strong" ? "glass-strong" : "glass";
+  const glowClass = glow ? "shadow-glow" : "";
+  const interactiveClass = interactive ? "liquid-shine" : "";
+
   return (
     <motion.div
-      className={`glass-panel ${className}`}
+      className={`${baseClass} ${glowClass} ${interactiveClass} ${className}`}
       transition={springPhysics}
-      whileHover={interactive ? { scale: 1.02, y: -4 } : undefined}
+      whileHover={interactive ? { y: -4, boxShadow: "var(--shadow-elev)" } : undefined}
       whileTap={interactive ? { scale: 0.98 } : undefined}
       style={{ padding: '2rem', ...props.style }}
       {...props}

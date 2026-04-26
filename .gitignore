@@ -42,4 +42,5 @@ next-env.d.ts
 
 /src/generated/prisma
 /graphify-out/
+/_liquid_lumina_ref/
 

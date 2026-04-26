@@ -3,59 +3,73 @@ import { motion, HTMLMotionProps } from "framer-motion";
 import { springPhysics } from "./GlassCard";
 
 interface ButtonProps extends HTMLMotionProps<"button"> {
-  variant?: "primary" | "secondary" | "danger" | "ghost";
+  variant?: "primary" | "glass" | "ghost" | "outline" | "danger";
+  size?: "sm" | "md" | "lg" | "icon";
 }
 
-export function Button({ children, variant = "primary", className = "", style, ...props }: ButtonProps) {
+export function Button({ children, variant = "primary", size = "md", className = "", style, ...props }: ButtonProps) {
   const baseStyle: React.CSSProperties = {
-    padding: "0.85rem 1.75rem",
-    borderRadius: "999px",
     fontWeight: 600,
     cursor: "pointer",
-    border: "none",
-    color: "#fff",
     outline: "none",
     position: "relative",
-    overflow: "hidden",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "0.5rem",
     letterSpacing: "0.02em",
+    transition: "all 0.3s ease",
   };
 
-  const variants = {
-    primary: {
-      background: "linear-gradient(135deg, var(--primary), var(--secondary))",
-      boxShadow: "var(--glass-glow), inset 0 1px 0 rgba(255,255,255,0.3)",
+  const sizes = {
+    sm: { padding: "0.5rem 1rem", fontSize: "0.85rem", borderRadius: "999px" },
+    md: { padding: "0.85rem 1.75rem", fontSize: "0.95rem", borderRadius: "999px" },
+    lg: { padding: "1rem 2rem", fontSize: "1.05rem", borderRadius: "999px" },
+    icon: { width: "44px", height: "44px", borderRadius: "999px", padding: 0 }
+  };
+
+  let customClass = "";
+  let variantStyle: React.CSSProperties = {};
+
+  if (variant === "primary") {
+    customClass = "liquid-shine shadow-glow";
+    variantStyle = {
+      background: "var(--gradient-vivid)",
       border: "1px solid rgba(255, 255, 255, 0.2)",
-    },
-    secondary: {
-      background: "var(--glass-bg)",
-      border: "1px solid var(--glass-border)",
-      backdropFilter: "blur(16px) saturate(180%)",
-      boxShadow: "var(--glass-shadow)",
-    },
-    danger: {
-      background: "linear-gradient(135deg, #ef4444, #b91c1c)",
+      color: "var(--primary-foreground)",
+    };
+  } else if (variant === "glass") {
+    customClass = "glass-pill";
+    variantStyle = { color: "var(--foreground)" };
+  } else if (variant === "ghost") {
+    variantStyle = {
+      background: "transparent",
+      border: "1px solid transparent",
+      color: "rgba(255,255,255,0.8)",
+    };
+  } else if (variant === "outline") {
+    customClass = "glass-pill";
+    variantStyle = {
+      background: "transparent",
+      color: "var(--foreground)",
+    };
+  } else if (variant === "danger") {
+    customClass = "liquid-shine";
+    variantStyle = {
+      background: "var(--error)",
       boxShadow: "0 4px 20px rgba(239, 68, 68, 0.4)",
       border: "1px solid rgba(255, 255, 255, 0.2)",
-    },
-    ghost: {
-      background: "rgba(255, 255, 255, 0.02)",
-      border: "1px solid rgba(255, 255, 255, 0.05)",
-      backdropFilter: "blur(8px)",
-      color: "rgba(255,255,255,0.8)",
-    }
-  };
+      color: "#fff",
+    };
+  }
 
   return (
     <motion.button
-      style={{ ...baseStyle, ...variants[variant], ...style }}
-      className={className}
+      style={{ ...baseStyle, ...sizes[size], ...variantStyle, ...style }}
+      className={`${customClass} ${className}`}
       transition={springPhysics}
-      whileHover={{ scale: 1.05, filter: "brightness(1.1)" }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.02, filter: "brightness(1.1)" }}
+      whileTap={{ scale: 0.96 }}
       {...props}
     >
       {children}

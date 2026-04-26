@@ -3,6 +3,7 @@ import { useSSE } from "@/features/dashboard/useSSE";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./dashboard.module.css";
 import { StatCard } from "@/components/ui/StatCard";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
@@ -42,10 +43,10 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
       style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
     >
       <motion.div variants={itemVariants}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>
-          Welcome back
+        <h1 className="font-display" style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>
+          Overview
         </h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)' }}>Your autonomous agent is active and scanning for opportunities.</p>
+        <p style={{ color: 'var(--muted-foreground)' }}>Your autonomous agent is active and scanning for opportunities.</p>
       </motion.div>
 
       <motion.div variants={itemVariants} className={styles.statsGrid}>
@@ -78,26 +79,26 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
       </motion.div>
 
       <motion.div variants={itemVariants} style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-        <Button variant="primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.9rem' }}>
+        <Button variant="primary">
           Pause Agent
         </Button>
         <Link href="/dashboard/applications">
-          <Button variant="secondary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.9rem' }}>
+          <Button variant="glass">
             View Applications
           </Button>
         </Link>
         <Link href="/dashboard/review">
-          <Button variant="ghost" style={{ padding: '0.6rem 1.2rem', fontSize: '0.9rem' }}>
+          <Button variant="ghost">
             Check Review Queue
           </Button>
         </Link>
       </motion.div>
 
       <motion.div variants={itemVariants} className={styles.bentoGrid}>
-        <div className={styles.glassCardL2} style={{ display: 'flex', flexDirection: 'column' }}>
+        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Application Activity</h3>
-            <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>Last 7 days</span>
+            <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>Application Activity</h3>
+            <span style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)' }}>Last 7 days</span>
           </div>
           
           <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: '8px', paddingTop: '2rem', height: '200px' }}>
@@ -110,32 +111,32 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
                   transition={{ type: "spring", damping: 20, stiffness: 100, delay: 0.2 + (i * 0.1) }}
                   style={{ 
                     width: '100%', 
-                    background: i === 6 ? 'linear-gradient(to top, var(--primary), #c084fc)' : 'rgba(255,255,255,0.1)', 
+                    background: i === 6 ? 'var(--gradient-vivid)' : 'rgba(255,255,255,0.1)', 
                     borderRadius: '4px 4px 0 0',
-                    boxShadow: i === 6 ? '0 0 15px rgba(139, 92, 246, 0.4)' : 'none'
+                    boxShadow: i === 6 ? 'var(--shadow-glow)' : 'none'
                   }} 
                 />
-                <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
                 </span>
               </div>
             ))}
           </div>
-        </div>
+        </GlassCard>
 
-        <div className={styles.glassCardL2} style={{ display: 'flex', flexDirection: 'column' }}>
+        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Live Event Feed</h3>
+            <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>Live Event Feed</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span className="pulse-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 8px #34d399', animation: 'pulse 2s infinite' }}></span>
-              <span style={{ fontSize: '0.75rem', color: '#34d399' }}>Live</span>
+              <span className="pulse-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--success)', boxShadow: '0 0 8px var(--success)', animation: 'pulse 2s infinite' }}></span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--success)', fontWeight: 500 }}>Live</span>
             </div>
           </div>
           
           <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '0.5rem' }}>
             <AnimatePresence>
               {events.length === 0 ? (
-                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', textAlign: 'center', padding: '2rem 0' }}>
+                <div style={{ color: 'var(--muted-foreground)', fontSize: '0.9rem', textAlign: 'center', padding: '2rem 0' }}>
                   Waiting for events...
                 </div>
               ) : (
@@ -153,18 +154,18 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                       <StatusBadge status={ev.type.replace('_', ' ')} />
-                      <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
                         {ev.timestamp || 'Just now'}
                       </span>
                     </div>
                     <div style={{ fontSize: '0.95rem', fontWeight: 500 }}>{ev.title}</div>
-                    {ev.company && <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.25rem' }}>at {ev.company}</div>}
+                    {ev.company && <div style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', marginTop: '0.25rem' }}>at {ev.company}</div>}
                   </motion.div>
                 ))
               )}
             </AnimatePresence>
           </div>
-        </div>
+        </GlassCard>
       </motion.div>
     </motion.div>
   );

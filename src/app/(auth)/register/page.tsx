@@ -2,7 +2,7 @@
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { motion } from "framer-motion";
+import { Logo } from "@/components/ui/Logo";
 import Link from "next/link";
 import { useState } from "react";
 import { registerUser } from "@/app/actions/auth";
@@ -20,8 +20,7 @@ export default function Register() {
         setError(res.error);
       }
     } catch (e) {
-      // Next.js redirect() throws an error. We want it to bubble up or be ignored so Next.js handles it.
-      // If it's a real error, it's not handled gracefully here, but we catch generic errors in the server action.
+      // Handled in server action
     } finally {
       setLoading(false);
     }
@@ -29,15 +28,16 @@ export default function Register() {
 
   return (
     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        style={{ width: '100%', maxWidth: '400px' }}
-      >
-        <GlassCard style={{ padding: '2.5rem 2rem' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', textAlign: 'center' }}>Create Account</h2>
-          <p style={{ color: 'rgba(255,255,255,0.7)', textAlign: 'center', marginBottom: '2rem', fontSize: '0.9rem' }}>
+      <div className="animate-scale-in" style={{ width: '100%', maxWidth: '448px' }}>
+        <GlassCard variant="strong" style={{ padding: '3rem 2.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+            <Logo />
+          </div>
+
+          <h2 className="font-display text-gradient-vivid" style={{ fontSize: '2.5rem', fontWeight: 600, marginBottom: '0.5rem', textAlign: 'center' }}>
+            Create Account
+          </h2>
+          <p style={{ color: 'var(--muted-foreground)', textAlign: 'center', marginBottom: '2.5rem', fontSize: '1rem' }}>
             Start your autonomous job search
           </p>
 
@@ -46,18 +46,22 @@ export default function Register() {
             <Input label="Email address" name="email" type="email" placeholder="you@example.com" required />
             <Input label="Password" name="password" type="password" placeholder="••••••••" required />
             
+            <div style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', marginTop: '0.5rem' }}>
+              By creating an account, you agree to our <Link href="#" className="text-gradient">Terms of Service</Link> and <Link href="#" className="text-gradient">Privacy Policy</Link>.
+            </div>
+
             {error && <div style={{ color: "var(--error)", fontSize: "0.9rem", textAlign: "center" }}>{error}</div>}
 
-            <Button variant="primary" type="submit" disabled={loading} style={{ marginTop: '1.5rem', width: '100%' }}>
+            <Button variant="primary" size="lg" type="submit" disabled={loading} style={{ marginTop: '1rem', width: '100%' }}>
               {loading ? "Creating..." : "Create account"}
             </Button>
           </form>
 
-          <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>
-            Already have an account? <Link href="/login" style={{ color: '#fff', fontWeight: 600 }}>Sign in</Link>
+          <div style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '0.95rem', color: 'var(--muted-foreground)' }}>
+            Already have an account? <Link href="/login" className="text-gradient" style={{ fontWeight: 600, marginLeft: '0.25rem' }}>Sign in</Link>
           </div>
         </GlassCard>
-      </motion.div>
+      </div>
     </div>
   );
 }

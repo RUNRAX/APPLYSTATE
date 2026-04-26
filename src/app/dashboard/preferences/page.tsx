@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { GlassCard } from "@/components/ui/GlassCard";
 import styles from "../dashboard.module.css";
 import { submitOnboarding } from "@/app/actions/onboarding"; // We'll reuse the action for now
 
@@ -17,11 +18,11 @@ export default async function PreferencesPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Job Preferences</h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)' }}>Define exactly what kind of roles the agent should apply for.</p>
+        <h1 className="font-display" style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Job Preferences</h1>
+        <p style={{ color: 'var(--muted-foreground)' }}>Define exactly what kind of roles the agent should apply for.</p>
       </div>
 
-      <div className={styles.glassCardL2} style={{ maxWidth: '800px' }}>
+      <GlassCard variant="strong" style={{ maxWidth: '800px' }}>
         <form action={submitOnboarding} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
@@ -66,7 +67,7 @@ export default async function PreferencesPage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>
             <div style={{ 
-              width: '40px', height: '24px', background: prefs?.remote ? 'var(--primary)' : 'rgba(255,255,255,0.1)', 
+              width: '40px', height: '24px', background: prefs?.remote ? 'var(--gradient-vivid)' : 'rgba(255,255,255,0.1)', 
               borderRadius: '12px', position: 'relative', cursor: 'pointer', transition: 'background 0.2s'
             }}>
               <input 
@@ -83,12 +84,12 @@ export default async function PreferencesPage() {
             <span style={{ fontWeight: 500 }}>Only apply to Remote roles</span>
           </div>
 
-          <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
+          <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem', borderTop: '1px solid var(--glass-border)', paddingTop: '1.5rem' }}>
             <Button variant="ghost" type="button">Discard changes</Button>
             <Button variant="primary" type="submit">Save Preferences</Button>
           </div>
         </form>
-      </div>
+      </GlassCard>
     </div>
   );
 }
