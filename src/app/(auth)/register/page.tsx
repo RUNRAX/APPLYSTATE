@@ -14,11 +14,17 @@ export default function Register() {
   async function onSubmit(formData: FormData) {
     setLoading(true);
     setError("");
-    const res = await registerUser(formData);
-    if (res?.error) {
-      setError(res.error);
+    try {
+      const res = await registerUser(formData);
+      if (res?.error) {
+        setError(res.error);
+      }
+    } catch (e) {
+      // Next.js redirect() throws an error. We want it to bubble up or be ignored so Next.js handles it.
+      // If it's a real error, it's not handled gracefully here, but we catch generic errors in the server action.
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (

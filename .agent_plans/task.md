@@ -1,10 +1,13 @@
-- [x] 1. Initialize global CSS and refine UI primitives (`Button`, `GlassCard`, `Input`).
-- [x] 2. Build Landing Page Navigation and responsive layout.
-- [x] 3. Setup NextAuth in `src/app/api/auth/[...nextauth]/route.ts`.
-- [x] 4. Build Login and Registration pages (`src/app/(auth)`).
-- [x] 5. Implement Onboarding flow (`src/app/(dashboard)/onboarding`).
-- [x] 6. Build Main Dashboard UI (`src/app/(dashboard)/page.tsx`).
-- [x] 7. Implement `features/matching/embeddings.ts` (OpenAI vector generation).
-- [x] 8. Implement `features/resume/tailor.ts` (OpenAI resume tailoring).
-- [x] 9. Setup BullMQ Queue configuration and `application.worker.ts`.
-- [x] 10. Implement basic Playwright automation script in worker.
+# Fix Register Route and Environment Configuration
+
+- [x] Phase 1: Fix Database Connection Strings
+  - [x] URL-encode `#` in `.env` `DATABASE_URL` and `DIRECT_URL`
+  - [x] Add `directUrl` to `prisma.config.ts`
+- [x] Phase 2: Push Schema to Supabase
+  - [x] Run `npx prisma db push` (Completed via IPv4 pooler bypass)
+- [x] Phase 3: Fix `NEXTAUTH_URL`
+  - [x] Comment out `NEXTAUTH_URL` in `.env` to allow Vercel auto-detection
+- [x] Phase 4: Harden Server Action
+  - [x] Add specific error logging in `src/app/actions/auth.ts`
+- [x] Phase 5: User Action Required
+  - [x] Update Vercel Environment Variables in Dashboard

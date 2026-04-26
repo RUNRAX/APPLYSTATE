@@ -4,14 +4,16 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function Login() {
+function LoginForm() {
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const registered = searchParams.get("registered") === "true";
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,6 +63,7 @@ export default function Login() {
               <Link href="#" style={{ color: 'var(--primary)' }}>Forgot password?</Link>
             </div>
 
+            {registered && <div style={{ color: "var(--success)", fontSize: "0.9rem", textAlign: "center", padding: "0.5rem", background: "rgba(16, 185, 129, 0.1)", borderRadius: "8px" }}>Account created successfully! Please sign in.</div>}
             {error && <div style={{ color: "var(--error)", fontSize: "0.9rem", textAlign: "center" }}>{error}</div>}
 
             <Button variant="primary" type="submit" disabled={loading} style={{ marginTop: '1rem', width: '100%' }}>
@@ -74,5 +77,13 @@ export default function Login() {
         </GlassCard>
       </motion.div>
     </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={<div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
