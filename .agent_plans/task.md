@@ -1,13 +1,13 @@
-# Fix Register Route and Environment Configuration
+# Fix Dashboard 404 & Production Deployment Issues
 
-- [x] Phase 1: Fix Database Connection Strings
-  - [x] URL-encode `#` in `.env` `DATABASE_URL` and `DIRECT_URL`
-  - [x] Add `directUrl` to `prisma.config.ts`
-- [x] Phase 2: Push Schema to Supabase
-  - [x] Run `npx prisma db push` (Completed via IPv4 pooler bypass)
-- [x] Phase 3: Fix `NEXTAUTH_URL`
-  - [x] Comment out `NEXTAUTH_URL` in `.env` to allow Vercel auto-detection
-- [x] Phase 4: Harden Server Action
-  - [x] Add specific error logging in `src/app/actions/auth.ts`
-- [x] Phase 5: User Action Required
-  - [x] Update Vercel Environment Variables in Dashboard
+- [x] Phase 1: Fix Prisma Schema
+  - [x] Add `url` and `directUrl` to `prisma/schema.prisma` datasource
+- [x] Phase 2: Add Middleware
+  - [x] Create `src/proxy.ts` (Next.js 16.2.4 convention) to protect routes
+- [x] Phase 3: Update NextAuth Configuration
+  - [x] Add `trustHost: true` to `src/features/auth/auth.ts`
+- [x] Phase 4: Fix THREE.Clock Deprecation
+  - [x] Pinned `three` version to `~0.183.0` in package.json
+- [x] Phase 5: Verification
+  - [x] Run `npx prisma generate` and `npx prisma db push`
+  - [x] Run `npm run build`

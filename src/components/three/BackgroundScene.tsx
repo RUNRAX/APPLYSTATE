@@ -12,6 +12,8 @@ function MovingShapes() {
   const sphereRef = useRef<THREE.Mesh>(null);
 
   useFrame((state) => {
+    // Note: R3F internals use THREE.Clock which causes a deprecation warning in Three.js r184+.
+    // The three package has been pinned to ~0.183.0 to suppress this upstream warning.
     const t = state.clock.getElapsedTime();
     if (torusRef.current) {
       torusRef.current.rotation.x = Math.sin(t / 4) / 2;
