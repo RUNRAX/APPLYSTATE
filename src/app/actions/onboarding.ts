@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 export async function submitOnboarding(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Unauthorized" };
+    throw new Error("Unauthorized");
   }
 
   const targetRolesRaw = formData.get("targetRoles") as string;
