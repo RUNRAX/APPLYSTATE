@@ -1,10 +1,7 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from '@google/genai';
 import prisma from "../../lib/prisma";
 
-const openai = new OpenAI({
-  apiKey: process.env.GROK_API_KEY,
-  baseURL: "https://api.x.ai/v1",
-});
+const ai = new GoogleGenAI({});
 
 export async function tailorResume(userId: string, jobListingId: string) {
   const user = await prisma.user.findUnique({ 
@@ -30,12 +27,12 @@ export async function tailorResume(userId: string, jobListingId: string) {
     - Output in plain text standard ATS format.
   `;
 
-  const response = await openai.chat.completions.create({
-    model: "grok-2-latest",
-    messages: [{ role: "user", content: prompt }],
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: prompt,
   });
 
-  const tailoredContent = response.choices[0].message.content || "";
+  const tailoredContent = response.text || "";
 
   // Save the new version
   const newResume = await prisma.resume.create({

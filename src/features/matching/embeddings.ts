@@ -1,18 +1,14 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from '@google/genai';
 
-const openai = new OpenAI({
-  apiKey: process.env.GROK_API_KEY,
-  baseURL: "https://api.x.ai/v1",
-});
+const ai = new GoogleGenAI({});
 
 export async function embedText(text: string): Promise<number[]> {
   try {
-    const response = await openai.embeddings.create({
-      model: "grok-2-latest",
-      input: text,
-      encoding_format: "float",
+    const response = await ai.models.embedContent({
+      model: "text-embedding-004",
+      contents: text,
     });
-    return response.data[0].embedding;
+    return response.embeddings[0].values || [];
   } catch (error) {
     console.error("Embedding generation failed:", error);
     throw new Error("Failed to generate embedding");

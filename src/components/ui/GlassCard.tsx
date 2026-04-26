@@ -21,7 +21,7 @@ export function GlassCard({ children, className = "", interactive = false, varia
       transition={springPhysics}
       whileHover={interactive ? { y: -4, boxShadow: "var(--shadow-elev)" } : undefined}
       whileTap={interactive ? { scale: 0.98 } : undefined}
-      style={{ padding: '2rem', ...props.style }}
+      style={{ padding: '1.5rem', ...props.style }}
       {...props}
     >
       {children}

@@ -30,37 +30,49 @@ export function Button({ children, variant = "primary", size = "md", className =
 
   let customClass = "";
   let variantStyle: React.CSSProperties = {};
+  let hoverStyle: any = { scale: 1.02, filter: "brightness(1.1)" };
 
   if (variant === "primary") {
-    customClass = "liquid-shine shadow-glow";
+    customClass = "liquid-shine";
     variantStyle = {
       background: "var(--gradient-vivid)",
-      border: "1px solid rgba(255, 255, 255, 0.2)",
+      boxShadow: "0 8px 32px -8px hsla(350, 96%, 60%, 0.6), inset 0 1px 0 0 hsla(0, 0%, 100%, 0.3)",
       color: "var(--primary-foreground)",
+      border: "none",
+    };
+    hoverStyle = {
+      scale: 1.02,
+      boxShadow: "0 12px 48px -8px hsla(350, 96%, 60%, 0.85), inset 0 1px 0 0 hsla(0, 0%, 100%, 0.4)",
+      filter: "brightness(1.1)"
     };
   } else if (variant === "glass") {
     customClass = "glass-pill";
     variantStyle = { color: "var(--foreground)" };
+    hoverStyle = { scale: 1.02, background: "rgba(255, 255, 255, 0.05)" };
   } else if (variant === "ghost") {
     variantStyle = {
       background: "transparent",
       border: "1px solid transparent",
       color: "rgba(255,255,255,0.8)",
     };
+    hoverStyle = { scale: 1.02, background: "rgba(255, 255, 255, 0.05)", color: "var(--foreground)" };
   } else if (variant === "outline") {
-    customClass = "glass-pill";
     variantStyle = {
       background: "transparent",
+      border: "1px solid rgba(255, 255, 255, 0.2)",
       color: "var(--foreground)",
+      backdropFilter: "blur(12px)",
     };
+    hoverStyle = { scale: 1.02, background: "rgba(255, 255, 255, 0.05)" };
   } else if (variant === "danger") {
     customClass = "liquid-shine";
     variantStyle = {
-      background: "var(--error)",
+      background: "hsla(0, 84%, 60%, 0.9)",
       boxShadow: "0 4px 20px rgba(239, 68, 68, 0.4)",
-      border: "1px solid rgba(255, 255, 255, 0.2)",
       color: "#fff",
+      border: "none",
     };
+    hoverStyle = { scale: 1.02, background: "var(--error)" };
   }
 
   return (
@@ -68,7 +80,7 @@ export function Button({ children, variant = "primary", size = "md", className =
       style={{ ...baseStyle, ...sizes[size], ...variantStyle, ...style }}
       className={`${customClass} ${className}`}
       transition={springPhysics}
-      whileHover={{ scale: 1.02, filter: "brightness(1.1)" }}
+      whileHover={hoverStyle}
       whileTap={{ scale: 0.96 }}
       {...props}
     >
