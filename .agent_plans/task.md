@@ -1,0 +1,10 @@
+- [x] 1. Initialize global CSS and refine UI primitives (`Button`, `GlassCard`, `Input`).
+- [x] 2. Build Landing Page Navigation and responsive layout.
+- [x] 3. Setup NextAuth in `src/app/api/auth/[...nextauth]/route.ts`.
+- [x] 4. Build Login and Registration pages (`src/app/(auth)`).
+- [x] 5. Implement Onboarding flow (`src/app/(dashboard)/onboarding`).
+- [x] 6. Build Main Dashboard UI (`src/app/(dashboard)/page.tsx`).
+- [x] 7. Implement `features/matching/embeddings.ts` (OpenAI vector generation).
+- [x] 8. Implement `features/resume/tailor.ts` (OpenAI resume tailoring).
+- [x] 9. Setup BullMQ Queue configuration and `application.worker.ts`.
+- [x] 10. Implement basic Playwright automation script in worker.

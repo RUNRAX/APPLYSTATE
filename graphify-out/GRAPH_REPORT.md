@@ -1,11 +1,11 @@
-# Graph Report - .  (2026-04-25)
+# Graph Report - .  (2026-04-26)
 
 ## Corpus Check
-- 29 files · ~7,754 words
+- 33 files · ~8,680 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 48 nodes · 21 edges · 29 communities detected
+- 55 nodes · 25 edges · 32 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -39,13 +39,17 @@
 - [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
+- [[_COMMUNITY_Community 29|Community 29]]
+- [[_COMMUNITY_Community 30|Community 30]]
+- [[_COMMUNITY_Community 31|Community 31]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `LinkedinStrategy` - 3 edges
-2. `cosineSimilarity()` - 2 edges
-3. `matchJob()` - 2 edges
-4. `authenticateVault()` - 2 edges
-5. `getCredential()` - 2 edges
+2. `onSubmit()` - 2 edges
+3. `cosineSimilarity()` - 2 edges
+4. `matchJob()` - 2 edges
+5. `authenticateVault()` - 2 edges
+6. `getCredential()` - 2 edges
 
 ## Surprising Connections (you probably didn't know these)
 - None detected - all connections are within the same source files.
@@ -62,15 +66,15 @@ Nodes (2): cosineSimilarity(), matchJob()
 
 ### Community 2 - "Community 2"
 Cohesion: 0.67
-Nodes (0): 
+Nodes (1): onSubmit()
 
 ### Community 3 - "Community 3"
-Cohesion: 1.0
-Nodes (2): authenticateVault(), getCredential()
+Cohesion: 0.67
+Nodes (0): 
 
 ### Community 4 - "Community 4"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): authenticateVault(), getCredential()
 
 ### Community 5 - "Community 5"
 Cohesion: 1.0
@@ -168,56 +172,72 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
+### Community 29 - "Community 29"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 30 - "Community 30"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 31 - "Community 31"
+Cohesion: 1.0
+Nodes (0): 
+
 ## Knowledge Gaps
-- **Thin community `Community 4`** (2 nodes): `GET()`, `route.ts`
+- **Thin community `Community 5`** (2 nodes): `registerUser()`, `auth.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 5`** (2 nodes): `MovingShapes()`, `BackgroundScene.tsx`
+- **Thin community `Community 6`** (2 nodes): `submitOnboarding()`, `onboarding.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 6`** (2 nodes): `Button()`, `Button.tsx`
+- **Thin community `Community 7`** (2 nodes): `GET()`, `route.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 7`** (2 nodes): `GlassCard()`, `GlassCard.tsx`
+- **Thin community `Community 8`** (2 nodes): `MovingShapes()`, `BackgroundScene.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 8`** (2 nodes): `Modal()`, `Modal.tsx`
+- **Thin community `Community 9`** (2 nodes): `Button()`, `Button.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 9`** (2 nodes): `useSSE.ts`, `useSSE()`
+- **Thin community `Community 10`** (2 nodes): `GlassCard()`, `GlassCard.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 10`** (2 nodes): `generateCoverLetter()`, `coverLetter.ts`
+- **Thin community `Community 11`** (2 nodes): `Modal()`, `Modal.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 11`** (2 nodes): `tailor.ts`, `tailorResume()`
+- **Thin community `Community 12`** (2 nodes): `useSSE.ts`, `useSSE()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 12`** (2 nodes): `prismaClientSingleton()`, `prisma.ts`
+- **Thin community `Community 13`** (2 nodes): `generateCoverLetter()`, `coverLetter.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 13`** (1 nodes): `next-env.d.ts`
+- **Thin community `Community 14`** (2 nodes): `tailor.ts`, `tailorResume()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 14`** (1 nodes): `next.config.ts`
+- **Thin community `Community 15`** (2 nodes): `prismaClientSingleton()`, `prisma.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 15`** (1 nodes): `prisma.config.ts`
+- **Thin community `Community 16`** (1 nodes): `next-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 16`** (1 nodes): `layout.tsx`
+- **Thin community `Community 17`** (1 nodes): `next.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 17`** (1 nodes): `page.tsx`
+- **Thin community `Community 18`** (1 nodes): `prisma.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 18`** (1 nodes): `page.tsx`
+- **Thin community `Community 19`** (1 nodes): `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 19`** (1 nodes): `page.tsx`
+- **Thin community `Community 20`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 20`** (1 nodes): `layout.tsx`
+- **Thin community `Community 21`** (1 nodes): `DashboardClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 21`** (1 nodes): `page.tsx`
+- **Thin community `Community 22`** (1 nodes): `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 22`** (1 nodes): `route.ts`
+- **Thin community `Community 23`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 23`** (1 nodes): `ParticleField.tsx`
+- **Thin community `Community 24`** (1 nodes): `route.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 24`** (1 nodes): `Input.tsx`
+- **Thin community `Community 25`** (1 nodes): `ParticleField.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 25`** (1 nodes): `auth.ts`
+- **Thin community `Community 26`** (1 nodes): `Input.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 26`** (1 nodes): `application.worker.ts`
+- **Thin community `Community 27`** (1 nodes): `auth.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 27`** (1 nodes): `discovery.worker.ts`
+- **Thin community `Community 28`** (1 nodes): `next-auth.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 28`** (1 nodes): `tailoring.worker.ts`
+- **Thin community `Community 29`** (1 nodes): `application.worker.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 30`** (1 nodes): `discovery.worker.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 31`** (1 nodes): `tailoring.worker.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions

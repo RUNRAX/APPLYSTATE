@@ -1,16 +1,24 @@
 :root {
-  --background: #050505;
-  --foreground: #ededed;
+  --background: #030014;
+  --foreground: #f0f0f0;
   
   /* Liquid Glassmorphism Tokens */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-blur: blur(24px) saturate(180%);
-  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(20, 20, 30, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(32px) saturate(200%);
+  --glass-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.5);
   
-  /* Colors */
-  --primary: #4F46E5;
-  --primary-glow: rgba(79, 70, 229, 0.4);
+  /* Vibrant Colors */
+  --primary: #8b5cf6;
+  --primary-glow: rgba(139, 92, 246, 0.5);
+  --secondary: #ec4899;
+  --secondary-glow: rgba(236, 72, 153, 0.3);
+  --accent: #14b8a6;
+  --success: #10b981;
+  --error: #ef4444;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 html, body {
@@ -21,7 +29,7 @@ html, body {
   color: var(--foreground);
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -42,12 +50,20 @@ a {
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
+  *, ::before, ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -56,6 +72,6 @@ a {
   
   .glass-panel {
     backdrop-filter: none;
-    background: rgba(20, 20, 20, 0.8);
+    background: rgba(20, 20, 20, 0.9);
   }
 }

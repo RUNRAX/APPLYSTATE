@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -17,8 +18,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email: credentials.email as string }
         });
 
-        // Basic verification for scaffolding, would use bcrypt in prod
-        if (user && user.passwordHash === credentials.password) {
+        if (!user || !user.passwordHash) return null;
+
+        const isPasswordValid = bcrypt.compareSync(credentials.password as string, user.passwordHash);
+
+        if (isPasswordValid) {
           return { id: user.id, email: user.email, name: user.name };
         }
         return null;

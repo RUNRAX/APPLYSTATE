@@ -4,8 +4,37 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (res?.error) {
+      setError("Invalid credentials");
+    } else {
+      router.push("/dashboard");
+    }
+    setLoading(false);
+  }
+
   return (
     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
       <motion.div
@@ -20,9 +49,9 @@ export default function Login() {
             Sign in to your ApplyMate account
           </p>
 
-          <form style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }} onSubmit={(e) => e.preventDefault()}>
-            <Input label="Email address" type="email" placeholder="you@example.com" />
-            <Input label="Password" type="password" placeholder="••••••••" />
+          <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <Input label="Email address" name="email" type="email" placeholder="you@example.com" required />
+            <Input label="Password" name="password" type="password" placeholder="••••••••" required />
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', marginTop: '0.5rem' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>
@@ -32,8 +61,10 @@ export default function Login() {
               <Link href="#" style={{ color: 'var(--primary)' }}>Forgot password?</Link>
             </div>
 
-            <Button variant="primary" style={{ marginTop: '1rem', width: '100%' }}>
-              Sign in
+            {error && <div style={{ color: "var(--error)", fontSize: "0.9rem", textAlign: "center" }}>{error}</div>}
+
+            <Button variant="primary" type="submit" disabled={loading} style={{ marginTop: '1rem', width: '100%' }}>
+              {loading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 

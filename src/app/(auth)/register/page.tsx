@@ -4,8 +4,23 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
+import { registerUser } from "@/app/actions/auth";
 
 export default function Register() {
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+
+  async function onSubmit(formData: FormData) {
+    setLoading(true);
+    setError("");
+    const res = await registerUser(formData);
+    if (res?.error) {
+      setError(res.error);
+    }
+    setLoading(false);
+  }
+
   return (
     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
       <motion.div
@@ -20,13 +35,15 @@ export default function Register() {
             Start your autonomous job search
           </p>
 
-          <form style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }} onSubmit={(e) => e.preventDefault()}>
-            <Input label="Full Name" type="text" placeholder="John Doe" />
-            <Input label="Email address" type="email" placeholder="you@example.com" />
-            <Input label="Password" type="password" placeholder="••••••••" />
+          <form action={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <Input label="Full Name" name="name" type="text" placeholder="John Doe" required />
+            <Input label="Email address" name="email" type="email" placeholder="you@example.com" required />
+            <Input label="Password" name="password" type="password" placeholder="••••••••" required />
             
-            <Button variant="primary" style={{ marginTop: '1.5rem', width: '100%' }}>
-              Create account
+            {error && <div style={{ color: "var(--error)", fontSize: "0.9rem", textAlign: "center" }}>{error}</div>}
+
+            <Button variant="primary" type="submit" disabled={loading} style={{ marginTop: '1.5rem', width: '100%' }}>
+              {loading ? "Creating..." : "Create account"}
             </Button>
           </form>
 
