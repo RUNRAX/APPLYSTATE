@@ -8,7 +8,7 @@ export async function embedText(text: string): Promise<number[]> {
       model: "text-embedding-004",
       contents: text,
     });
-    return response.embeddings[0].values || [];
+    return response.embeddings?.[0]?.values ?? [];
   } catch (error) {
     console.error("Embedding generation failed:", error);
     throw new Error("Failed to generate embedding");
