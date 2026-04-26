@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import AuroraBackground from "@/components/ui/AuroraBackground";
+import BackgroundScene from "@/components/three/BackgroundScene";
 
 import SessionProvider from "@/components/providers/SessionProvider";
 
@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}>
         <SessionProvider>
-          <AuroraBackground />
+          <BackgroundScene />
           <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             {children}
           </main>

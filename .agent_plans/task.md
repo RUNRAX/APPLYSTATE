@@ -7,6 +7,6 @@
 - [x] Update UI Components
   - [x] Reduce padding in `src/components/ui/GlassCard.tsx`
   - [x] Adjust hover effects in `src/components/ui/Button.tsx`
-- [ ] Verify Dashboard Aesthetics
-  - [ ] Check if background spheres are visible through cards
-  - [ ] Check for sharp inner borders
+- [x] Verify Dashboard Aesthetics
+  - [x] Check if background spheres are visible through cards
+  - [x] Check for sharp inner borders
