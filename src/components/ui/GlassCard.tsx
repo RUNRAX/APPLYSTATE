@@ -13,7 +13,7 @@ export function GlassCard({ children, className = "", interactive = false, ...pr
     <motion.div
       className={`glass-panel ${className}`}
       transition={springPhysics}
-      whileHover={interactive ? { scale: 1.02, y: -4, boxShadow: "0 12px 40px rgba(0,0,0,0.6)" } : undefined}
+      whileHover={interactive ? { scale: 1.02, y: -4 } : undefined}
       whileTap={interactive ? { scale: 0.98 } : undefined}
       style={{ padding: '2rem', ...props.style }}
       {...props}

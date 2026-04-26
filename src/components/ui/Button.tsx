@@ -9,7 +9,7 @@ interface ButtonProps extends HTMLMotionProps<"button"> {
 export function Button({ children, variant = "primary", className = "", style, ...props }: ButtonProps) {
   const baseStyle: React.CSSProperties = {
     padding: "0.85rem 1.75rem",
-    borderRadius: "16px",
+    borderRadius: "999px",
     fontWeight: 600,
     cursor: "pointer",
     border: "none",
@@ -27,22 +27,25 @@ export function Button({ children, variant = "primary", className = "", style, .
   const variants = {
     primary: {
       background: "linear-gradient(135deg, var(--primary), var(--secondary))",
-      boxShadow: "0 4px 20px var(--primary-glow), inset 0 1px 0 rgba(255,255,255,0.3)",
+      boxShadow: "var(--glass-glow), inset 0 1px 0 rgba(255,255,255,0.3)",
+      border: "1px solid rgba(255, 255, 255, 0.2)",
     },
     secondary: {
       background: "var(--glass-bg)",
       border: "1px solid var(--glass-border)",
-      backdropFilter: "var(--glass-blur)",
+      backdropFilter: "blur(16px) saturate(180%)",
       boxShadow: "var(--glass-shadow)",
     },
     danger: {
       background: "linear-gradient(135deg, #ef4444, #b91c1c)",
       boxShadow: "0 4px 20px rgba(239, 68, 68, 0.4)",
+      border: "1px solid rgba(255, 255, 255, 0.2)",
     },
     ghost: {
-      background: "transparent",
-      border: "1px solid transparent",
-      color: "rgba(255,255,255,0.7)",
+      background: "rgba(255, 255, 255, 0.02)",
+      border: "1px solid rgba(255, 255, 255, 0.05)",
+      backdropFilter: "blur(8px)",
+      color: "rgba(255,255,255,0.8)",
     }
   };
 

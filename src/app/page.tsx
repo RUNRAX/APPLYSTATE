@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Navigation Bar */}
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 3rem', width: '100%', maxWidth: '1200px', margin: '0 auto', zIndex: 10 }}>
+      <nav className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 3rem', width: '100%', maxWidth: '1200px', margin: '1rem auto 0 auto', zIndex: 10 }}>
         <div style={{ fontSize: '1.5rem', fontWeight: 800, background: 'linear-gradient(to right, #fff, var(--primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em' }}>
           ApplyMate
         </div>
@@ -42,11 +42,6 @@ export default function Home() {
             <Link href="/register">
               <Button variant="primary" style={{ fontSize: '1.1rem', padding: '1rem 2.5rem' }}>
                 Get Started
-              </Button>
-            </Link>
-            <Link href="/demo">
-              <Button variant="secondary" style={{ fontSize: '1.1rem', padding: '1rem 2.5rem' }}>
-                View Demo
               </Button>
             </Link>
           </div>

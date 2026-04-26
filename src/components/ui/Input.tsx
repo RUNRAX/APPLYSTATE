@@ -20,13 +20,13 @@ export function Input({ label, error, className = "", style, ...props }: InputPr
         transition={springPhysics}
         whileFocus={{ scale: 1.01, borderColor: "var(--primary)", boxShadow: "0 0 0 2px var(--primary-glow)" }}
         style={{
-          background: "rgba(10, 10, 15, 0.4)",
-          border: error ? "1px solid var(--error)" : "1px solid var(--glass-border)",
+          background: "rgba(255, 255, 255, 0.03)",
+          border: error ? "1px solid var(--error)" : "1px solid rgba(255, 255, 255, 0.12)",
           padding: "0.85rem 1.25rem",
           borderRadius: "16px",
           color: "#fff",
           outline: "none",
-          backdropFilter: "blur(12px)",
+          backdropFilter: "blur(16px) saturate(160%)",
           width: "100%",
           fontSize: "1rem",
           transition: "border-color 0.2s ease, box-shadow 0.2s ease",

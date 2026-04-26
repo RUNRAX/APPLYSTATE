@@ -27,7 +27,7 @@ export default async function DashboardOverview() {
 
   // Check if they need onboarding
   if (!profile) {
-    redirect("/onboarding");
+    redirect("/dashboard/onboarding");
   }
 
   return (

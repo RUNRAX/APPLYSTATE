@@ -1,0 +1,98 @@
+.aurora-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -10;
+  overflow: hidden;
+  background-color: var(--background); /* dark background */
+  pointer-events: none;
+}
+
+/* 
+  We use a slight overlay over the blobs to soften them, 
+  and mix-blend-mode: screen on the blobs to merge colors.
+*/
+.aurora-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, rgba(3, 0, 20, 0) 0%, rgba(3, 0, 20, 0.4) 100%);
+  z-index: 2;
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.7;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+/* Purple blob */
+.aurora-blob-1 {
+  width: 80vw;
+  height: 80vh;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  top: -20vh;
+  left: -20vw;
+  animation: aurora-move-1 25s infinite alternate ease-in-out;
+}
+
+/* Pink/Secondary blob */
+.aurora-blob-2 {
+  width: 70vw;
+  height: 70vh;
+  background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
+  bottom: -20vh;
+  right: -10vw;
+  animation: aurora-move-2 30s infinite alternate ease-in-out;
+}
+
+/* Teal/Accent blob */
+.aurora-blob-3 {
+  width: 60vw;
+  height: 60vh;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+  top: 40vh;
+  left: 30vw;
+  animation: aurora-move-3 22s infinite alternate ease-in-out;
+}
+
+/* Blue blob */
+.aurora-blob-4 {
+  width: 75vw;
+  height: 75vh;
+  background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+  top: -10vh;
+  right: -30vw;
+  animation: aurora-move-4 28s infinite alternate ease-in-out;
+}
+
+@keyframes aurora-move-1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(15vw, 15vh) scale(1.1); }
+  100% { transform: translate(-5vw, 30vh) scale(0.9); }
+}
+
+@keyframes aurora-move-2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-20vw, -10vh) scale(1.2); }
+  100% { transform: translate(-10vw, -30vh) scale(0.95); }
+}
+
+@keyframes aurora-move-3 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15vw, 20vh) scale(1.15); }
+  100% { transform: translate(15vw, -10vh) scale(0.85); }
+}
+
+@keyframes aurora-move-4 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30vw, 15vh) scale(0.9); }
+  100% { transform: translate(-10vw, -5vh) scale(1.2); }
+}
