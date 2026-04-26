@@ -7,8 +7,7 @@ export default auth((req) => {
   
   const isAuthRoute = nextUrl.pathname.startsWith("/login") || 
                       nextUrl.pathname.startsWith("/register");
-  const isProtectedRoute = nextUrl.pathname.startsWith("/dashboard") || 
-                           nextUrl.pathname.startsWith("/onboarding");
+  const isProtectedRoute = nextUrl.pathname.startsWith("/dashboard");
   const isApiRoute = nextUrl.pathname.startsWith("/api");
   const isPublicRoute = nextUrl.pathname === "/";
 
