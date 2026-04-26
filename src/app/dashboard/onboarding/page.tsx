@@ -60,13 +60,13 @@ export default function OnboardingWizard() {
                 <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>Securely connect the job boards you want ApplyMate to use.</p>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <Button type="button" variant="secondary" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Button type="button" variant="outline" style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>LinkedIn</span> <span>Connect</span>
                   </Button>
-                  <Button type="button" variant="secondary" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Button type="button" variant="outline" style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Indeed</span> <span>Connect</span>
                   </Button>
-                  <Button type="button" variant="secondary" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Button type="button" variant="outline" style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Wellfound</span> <span>Connect</span>
                   </Button>
                 </div>
@@ -88,7 +88,7 @@ export default function OnboardingWizard() {
 
         <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem', display: 'flex', justifyContent: 'space-between' }}>
           {step > 1 ? (
-            <Button type="button" variant="secondary" onClick={prevStep}>Back</Button>
+            <Button type="button" variant="outline" onClick={prevStep}>Back</Button>
           ) : <div />}
           
           {step < 4 && (
