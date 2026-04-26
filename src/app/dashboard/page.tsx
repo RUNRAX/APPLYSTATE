@@ -20,6 +20,15 @@ export default async function DashboardOverview() {
   const queuedApps = await prisma.application.count({
     where: { userId, status: "QUEUED" }
   });
+  
+  const allApps = await prisma.application.findMany({
+    where: { userId },
+    include: { jobListing: true }
+  });
+  
+  const avgMatch = allApps.length > 0 
+    ? Math.round(allApps.reduce((acc, app) => acc + (app.jobListing.matchScore || 0), 0) / allApps.length) 
+    : 0;
 
   const profile = await prisma.profile.findUnique({
     where: { userId }
@@ -35,7 +44,7 @@ export default async function DashboardOverview() {
       stats={{
         totalApplied,
         queuedApps,
-        matchRate: "86%", // Still mocked until embeddings run
+        matchRate: `${avgMatch}%`,
         activeBots: queuedApps > 0 ? 1 : 0
       }} 
     />

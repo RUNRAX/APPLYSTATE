@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AuroraBackground from "@/components/ui/AuroraBackground";
 
+import SessionProvider from "@/components/providers/SessionProvider";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,10 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuroraBackground />
-        <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-          {children}
-        </main>
+        <SessionProvider>
+          <AuroraBackground />
+          <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+            {children}
+          </main>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -1,20 +1,23 @@
-# Fix Dashboard 404 & Liquid Glass Overhaul
+# Dashboard Overhaul Tasks
 
-- [x] Phase 1: Fix 404 Errors & Links
-  - [x] Fix `/onboarding` redirect in `dashboard/page.tsx`
-  - [x] Remove `/demo` link in `src/app/page.tsx`
-- [x] Phase 2: Aurora Background Integration
-  - [x] Delete `BackgroundScene.tsx` and `ParticleField.tsx`
-  - [x] Create `AuroraBackground.tsx`
-  - [x] Update `src/app/layout.tsx` to use `AuroraBackground`
-- [x] Phase 3: Liquid Glass Design System
-  - [x] Update `globals.css` with new tokens and aurora animations
-  - [x] Update `GlassCard.tsx`
-  - [x] Update `Button.tsx` (pill shape, variants)
-  - [x] Update `Input.tsx` (glass inputs)
-  - [x] Update `Modal.tsx`
-  - [x] Update landing page `<nav>` to be a glass panel
-  - [x] Update `dashboard/layout.tsx` sidebar to be a glass panel
-- [x] Phase 4: Clean up & Verification
-  - [x] Remove Three.js packages from `package.json`
-  - [x] Build and verify site visually
+- [x] Phase 1: Create Dashboard Sub-Pages & Routing
+  - [x] `src/app/dashboard/applications/page.tsx`
+  - [x] `src/app/dashboard/review/page.tsx`
+  - [x] `src/app/dashboard/insights/page.tsx`
+  - [x] `src/app/dashboard/preferences/page.tsx`
+  - [x] `src/app/dashboard/settings/page.tsx`
+- [x] Phase 2: Fix Sidebar Navigation
+  - [x] Update `src/app/dashboard/layout.tsx` to use CSS modules and `<Link>`
+- [x] Phase 3: Seed Realistic Demo Data
+  - [x] Install `tsx` and add seed script to `package.json`
+  - [x] Create `prisma/seed.ts`
+  - [x] Update `src/app/dashboard/page.tsx` queries
+- [x] Phase 4: Premium Liquid Glass Design System
+  - [x] Create `src/app/dashboard/dashboard.module.css`
+  - [x] Create `src/components/ui/StatusBadge.tsx`
+  - [x] Create `src/components/ui/StatCard.tsx`
+  - [x] Rewrite `src/app/dashboard/DashboardClient.tsx`
+- [x] Phase 5: SSE Feed Enhancement
+  - [x] Update `src/app/api/sse/stream/route.ts`
+  - [x] Update `src/features/dashboard/useSSE.ts`
+- [x] Verify Data and Build

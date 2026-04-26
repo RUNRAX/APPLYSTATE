@@ -18,10 +18,11 @@ export async function GET(req: NextRequest) {
       // Mock real-time updates for demonstration
       const interval = setInterval(() => {
         const events = [
-          { type: 'status_update', title: 'Senior Engineer at Stripe', status: 'viewed' },
-          { type: 'applied', title: 'Frontend Dev at Vercel' },
-          { type: 'needs_review', title: 'CAPTCHA at Adobe' },
-          { type: 'interview_invite', title: 'Product Engineer at OpenAI' }
+          { type: 'matched', title: 'New highly matched role', company: 'Netflix', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) },
+          { type: 'tailored', title: 'Resume successfully tailored', company: 'Google', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) },
+          { type: 'submitted', title: 'Application submitted', company: 'Vercel', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) },
+          { type: 'needs_review', title: 'CAPTCHA challenge detected', company: 'Stripe', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) },
+          { type: 'interview_invite', title: 'Interview Invitation Received', company: 'OpenAI', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
         ];
         const randomEvent = events[Math.floor(Math.random() * events.length)];
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(randomEvent)}\n\n`));
