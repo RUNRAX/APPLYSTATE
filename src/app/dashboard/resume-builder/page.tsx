@@ -63,13 +63,13 @@ export default function ResumeBuilderPage() {
       const opt = {
         margin:       15,
         filename:     'Tailored_Resume.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
+        image:        { type: 'jpeg' as const, quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:    { mode: 'css', before: '.page-break' }
       };
       
-      html2pdf.default().set(opt).from(resumeRef.current).save();
+      html2pdf.default().set(opt as any).from(resumeRef.current).save();
     });
   };
 
