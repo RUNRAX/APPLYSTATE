@@ -198,7 +198,7 @@ export default function ResumeBuilderPage() {
                       width: '210mm', // A4 width
                       minHeight: '297mm', // A4 height
                       margin: '0 auto',
-                      transformOrigin: 'top left',
+                      transformOrigin: 'top center',
                       transform: 'scale(0.8)', // Scale down for preview
                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                       fontFamily: 'Arial, Helvetica, sans-serif',
@@ -211,8 +211,14 @@ export default function ResumeBuilderPage() {
                       fontSize: '11pt', lineHeight: '1.4'
                     }}>
                       <style>{`
-                        .resume-preview h1 { font-size: 18pt; font-weight: bold; text-align: center; text-transform: uppercase; margin-bottom: 4px; }
-                        .resume-preview h2 { font-size: 13pt; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; margin-top: 16px; margin-bottom: 8px; padding-bottom: 2px; }
+                        .resume-preview, .resume-preview * {
+                          font-family: Arial, Helvetica, sans-serif !important;
+                          text-transform: none !important;
+                        }
+                        .resume-preview h1 { font-size: 18pt; font-weight: bold; text-align: center; text-transform: uppercase !important; margin-bottom: 4px; }
+                        .resume-preview h1 + p { text-align: center; margin-bottom: 4px; }
+                        .resume-preview h1 + p + p { text-align: center; margin-bottom: 12px; }
+                        .resume-preview h2 { font-size: 13pt; font-weight: bold; text-transform: uppercase !important; border-bottom: 1px solid #000; margin-top: 16px; margin-bottom: 8px; padding-bottom: 2px; }
                         .resume-preview h3 { font-size: 11pt; font-weight: bold; margin-top: 8px; }
                         .resume-preview p { margin-bottom: 4px; }
                         .resume-preview ul { margin-left: 20px; margin-bottom: 8px; list-style-type: disc; }
