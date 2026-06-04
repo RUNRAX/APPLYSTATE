@@ -56,7 +56,8 @@ export default function ResumeBuilderPage() {
   };
 
   const handleDownload = () => {
-    if (!resumeRef.current) return;
+    const el = resumeRef.current;
+    if (!el) return;
     
     // @ts-ignore
     import('html2pdf.js').then((html2pdf) => {
@@ -69,7 +70,7 @@ export default function ResumeBuilderPage() {
         pagebreak:    { mode: 'css', before: '.page-break' }
       };
       
-      html2pdf.default().set(opt as any).from(resumeRef.current).save();
+      html2pdf.default().set(opt as any).from(el).save();
     });
   };
 
