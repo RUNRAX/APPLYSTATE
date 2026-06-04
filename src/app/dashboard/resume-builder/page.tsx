@@ -55,32 +55,8 @@ export default function ResumeBuilderPage() {
     }
   };
 
-  const handleDownload = async () => {
-    if (!resumeRef.current) return;
-    
-    try {
-      // Temporarily ensure the element is fully visible for canvas
-      const canvas = await html2canvas(resumeRef.current, {
-        scale: 2, // High resolution
-        useCORS: true,
-        backgroundColor: "#ffffff",
-      });
-      
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-      
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("Tailored_Resume.pdf");
-    } catch (err) {
-      console.error("Failed to generate PDF", err);
-    }
+  const handleDownload = () => {
+    window.print();
   };
 
   return (
@@ -226,8 +202,32 @@ export default function ResumeBuilderPage() {
                         .resume-preview li { margin-bottom: 2px; text-align: justify; }
                         .resume-preview strong { font-weight: bold; }
                         .resume-preview span[style*="float:right"] { float: right; }
+                        
+                        @media print {
+                          body * {
+                            visibility: hidden;
+                          }
+                          #printable-resume, #printable-resume * {
+                            visibility: visible;
+                          }
+                          #printable-resume {
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            width: 100%;
+                            padding: 0 !important;
+                            margin: 0 !important;
+                            transform: none !important;
+                            box-shadow: none !important;
+                            background: transparent !important;
+                          }
+                          @page {
+                            size: auto;
+                            margin: 15mm;
+                          }
+                        }
                       `}</style>
-                      <div className="resume-preview">
+                      <div id="printable-resume" className="resume-preview">
                         <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                           {result.tailoredResumeMarkdown}
                         </ReactMarkdown>
