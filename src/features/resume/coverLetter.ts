@@ -24,7 +24,7 @@ export async function generateCoverLetter(userId: string, jobListingId: string) 
   `;
 
   const response = await ai.chat.completions.create({
-    model: 'llama3-70b-8192',
+    model: 'llama-3.3-70b-versatile',
     messages: [{ role: 'user', content: prompt }],
   });
 
