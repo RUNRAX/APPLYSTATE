@@ -89,9 +89,9 @@ export default function ResumeBuilderPage() {
         <p style={{ color: 'var(--muted-foreground)' }}>Upload your resume and a job description to get a perfectly tailored PDF instantly.</p>
       </div>
 
-      <div className={styles.bentoGrid}>
-        {/* Left Side: Input Form */}
-        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        {/* Top: Input Form */}
+        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '2rem' }}>
           <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>1. Provide Details</h3>
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
             
@@ -142,8 +142,8 @@ export default function ResumeBuilderPage() {
           </form>
         </GlassCard>
 
-        {/* Right Side: Results */}
-        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', overflow: 'hidden' }}>
+        {/* Bottom: Results */}
+        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '2rem', overflow: 'hidden' }}>
           <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>2. Result</h3>
           
           {!result && !loading && (
