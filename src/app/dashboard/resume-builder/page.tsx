@@ -56,7 +56,21 @@ export default function ResumeBuilderPage() {
   };
 
   const handleDownload = () => {
-    window.print();
+    if (!resumeRef.current) return;
+    
+    // @ts-ignore
+    import('html2pdf.js').then((html2pdf) => {
+      const opt = {
+        margin:       15,
+        filename:     'Tailored_Resume.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: 'css', before: '.page-break' }
+      };
+      
+      html2pdf.default().set(opt).from(resumeRef.current).save();
+    });
   };
 
   return (
@@ -165,24 +179,20 @@ export default function ResumeBuilderPage() {
                   flex: 1, height: '400px', overflowY: 'auto', background: '#333', 
                   borderRadius: '8px', padding: '1rem', border: '1px solid var(--glass-border)'
                 }}>
-                  {/* The actual printable area */}
-                  <div 
-                    ref={resumeRef}
-                    style={{
-                      background: '#ffffff',
-                      color: '#000000',
-                      padding: '40px',
-                      width: '210mm', // A4 width
-                      minHeight: '297mm', // A4 height
-                      margin: '0 auto',
-                      transformOrigin: 'top center',
-                      transform: 'scale(0.8)', // Scale down for preview
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      fontFamily: 'Arial, Helvetica, sans-serif',
-                      letterSpacing: 'normal',
-                      wordSpacing: 'normal'
-                    }}
-                  >
+                  <div style={{ transform: 'scale(0.8)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
+                    {/* The actual printable area */}
+                    <div 
+                      ref={resumeRef}
+                      style={{
+                        background: '#ffffff',
+                        color: '#000000',
+                        padding: '40px',
+                        width: '210mm', // A4 width
+                        minHeight: '297mm', // A4 height
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        fontFamily: 'Arial, Helvetica, sans-serif',
+                      }}
+                    >
                     <div style={{ 
                       display: 'flex', flexDirection: 'column', gap: '0.5em',
                       fontSize: '11pt', lineHeight: '1.4'
@@ -190,6 +200,10 @@ export default function ResumeBuilderPage() {
                       <style>{`
                         .resume-preview, .resume-preview * {
                           font-family: Arial, Helvetica, sans-serif !important;
+                          font-feature-settings: normal !important;
+                          font-variant: normal !important;
+                          letter-spacing: normal !important;
+                          word-spacing: normal !important;
                           text-transform: none !important;
                         }
                         .resume-preview h1 { font-size: 18pt; font-weight: bold; text-align: center; text-transform: uppercase !important; margin-bottom: 4px; }
@@ -197,9 +211,9 @@ export default function ResumeBuilderPage() {
                         .resume-preview h1 + p + p { text-align: center; margin-bottom: 12px; }
                         .resume-preview h2 { font-size: 13pt; font-weight: bold; text-transform: uppercase !important; border-bottom: 1px solid #000; margin-top: 16px; margin-bottom: 8px; padding-bottom: 2px; }
                         .resume-preview h3 { font-size: 11pt; font-weight: bold; margin-top: 8px; }
-                        .resume-preview p { text-align: justify; margin-bottom: 4px; }
+                        .resume-preview p { text-align: left; margin-bottom: 4px; }
                         .resume-preview ul { margin-left: 20px; margin-bottom: 8px; list-style-type: disc; }
-                        .resume-preview li { margin-bottom: 2px; text-align: justify; }
+                        .resume-preview li { margin-bottom: 2px; text-align: left; }
                         .resume-preview strong { font-weight: bold; }
                         .resume-preview span[style*="float:right"] { float: right; }
                         
@@ -231,6 +245,7 @@ export default function ResumeBuilderPage() {
                         <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                           {result.tailoredResumeMarkdown}
                         </ReactMarkdown>
+                      </div>
                       </div>
                     </div>
                   </div>
