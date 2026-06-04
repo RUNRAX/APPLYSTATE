@@ -15,6 +15,7 @@ import {
   LogOut,
   Bell,
   Search,
+  FileEdit,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 
@@ -26,6 +27,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, end: true },
     { label: 'Applications', href: '/dashboard/applications', icon: FileText },
     { label: 'Review Queue', href: '/dashboard/review', icon: Eye },
+    { label: 'Resume Builder', href: '/dashboard/resume-builder', icon: FileEdit },
     { label: 'Insights', href: '/dashboard/insights', icon: BarChart3 },
     { label: 'Preferences', href: '/dashboard/preferences', icon: SlidersHorizontal },
     { label: 'Settings', href: '/dashboard/settings', icon: Lock },
