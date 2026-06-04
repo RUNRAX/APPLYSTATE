@@ -221,6 +221,15 @@ a {
   100% { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes nav-fade-up {
+  0% { opacity: 0; transform: translate(-50%, 16px); }
+  100% { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.animate-nav-fade-up {
+  animation: nav-fade-up 0.8s var(--ease-out-expo) forwards;
+}
+
 @keyframes scale-in {
   0% { opacity: 0; transform: scale(0.95); }
   100% { opacity: 1; transform: scale(1); }
