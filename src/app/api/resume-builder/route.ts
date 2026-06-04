@@ -63,17 +63,20 @@ export async function POST(req: NextRequest) {
       - **[Category]:** [skills]
       
       ## PROFESSIONAL EXPERIENCE
+      (List ALL existing jobs from the original resume in this exact format:)
       **[Job Title]** <span style="float:right">**[Month Year - Month Year]**</span>
       *[Company]* — [Location]
       - [Bullet point 1]
       - [Bullet point 2]
       
       ## KEY TECHNICAL PROJECTS
+      (List ALL existing projects from the original resume in this exact format:)
       **[Project Name] | [Role]** <span style="float:right">**[Month Year - Month Year]**</span>
       *Technologies: [Tech stack]*
       - [Bullet point 1]
       
       ## EDUCATION
+      (List ALL existing degrees from the original resume in this exact format:)
       **[Degree]** <span style="float:right">**[Month Year - Month Year]**</span>
       [University], [Location] | [CGPA]
       

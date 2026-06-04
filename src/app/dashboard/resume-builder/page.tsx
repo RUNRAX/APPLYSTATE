@@ -56,22 +56,7 @@ export default function ResumeBuilderPage() {
   };
 
   const handleDownload = () => {
-    const el = resumeRef.current;
-    if (!el) return;
-    
-    // @ts-ignore
-    import('html2pdf.js').then((html2pdf) => {
-      const opt = {
-        margin:       15,
-        filename:     'Tailored_Resume.pdf',
-        image:        { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: 'css', before: '.page-break' }
-      };
-      
-      html2pdf.default().set(opt as any).from(el).save();
-    });
+    window.print();
   };
 
   return (
