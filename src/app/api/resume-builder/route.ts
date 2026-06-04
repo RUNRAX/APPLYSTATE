@@ -46,7 +46,40 @@ export async function POST(req: NextRequest) {
       Tasks:
       1. Tailor the original resume specifically for this job description by subtly enhancing bullet points with relevant keywords.
       CRITICAL: DO NOT delete any existing jobs, degrees, or projects. DO NOT invent new experience. Keep the exact same factual information, just rewrite the descriptions to better highlight skills matching the Job Description.
-      2. Format the tailored resume strictly in standard Markdown. Use '#' for the Name, '##' for Section Headers, '**' for bold text, and '-' for bullet points. Ensure it mimics a traditional, professional resume layout.
+      
+      2. Format the tailored resume strictly in standard Markdown. You MUST use the following exact structure and headers:
+
+      # [FULL NAME]
+      
+      **[Title 1] | [Title 2]**
+      [Email] | [Phone] | [Location]
+      [LinkedIn] | [GitHub]
+      
+      ## PROFESSIONAL SUMMARY
+      [1 paragraph summary]
+      
+      ## TECHNICAL SKILLS
+      - **[Category]:** [skills]
+      - **[Category]:** [skills]
+      
+      ## PROFESSIONAL EXPERIENCE
+      **[Job Title]** | **[Month Year - Month Year]**
+      *[Company]* — [Location]
+      - [Bullet point 1]
+      - [Bullet point 2]
+      
+      ## KEY TECHNICAL PROJECTS
+      **[Project Name] | [Role]** | **[Month Year - Month Year]**
+      *Technologies: [Tech stack]*
+      - [Bullet point 1]
+      
+      ## EDUCATION
+      **[Degree]** | **[Month Year - Month Year]**
+      [University], [Location] | [CGPA]
+      
+      ## CERTIFICATIONS
+      - [Certification 1]
+      
       3. Calculate an ATS match score (0-100) for the ORIGINAL resume based strictly on keyword overlap and relevance to the JD.
       4. Calculate an ATS match score (0-100) for the NEW TAILORED resume.
 
