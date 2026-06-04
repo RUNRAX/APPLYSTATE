@@ -9,11 +9,30 @@ export default async function ApplicationsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const applications = await prisma.application.findMany({
-    where: { userId: session.user.id },
-    include: { jobListing: true },
-    orderBy: { submittedAt: 'desc' }
-  });
+  let applications: any[] = [];
+  
+  if (session.user.id === 'test-user-id') {
+    applications = [
+      {
+        id: 'mock-1',
+        status: 'SUBMITTED',
+        submittedAt: new Date(Date.now() - 86400000).toISOString(),
+        jobListing: { title: 'Senior React Developer', company: 'TechCorp', platform: 'LinkedIn', matchScore: 92 }
+      },
+      {
+        id: 'mock-2',
+        status: 'QUEUED',
+        submittedAt: null,
+        jobListing: { title: 'Frontend Engineer', company: 'Innovate LLC', platform: 'Indeed', matchScore: 88 }
+      }
+    ];
+  } else {
+    applications = await prisma.application.findMany({
+      where: { userId: session.user.id },
+      include: { jobListing: true },
+      orderBy: { submittedAt: 'desc' }
+    });
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

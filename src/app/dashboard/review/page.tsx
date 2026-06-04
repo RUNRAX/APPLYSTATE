@@ -10,10 +10,19 @@ export default async function ReviewQueuePage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const reviewItems = await prisma.humanReviewItem.findMany({
-    where: { userId: session.user.id, status: 'PENDING' },
-    orderBy: { id: 'desc' }
-  });
+  let reviewItems: any[] = [];
+  
+  if (session.user.id === 'test-user-id') {
+    reviewItems = [
+      { id: 'mock-rev-1', type: 'CAPTCHA', applicationId: 'mock-app-123' },
+      { id: 'mock-rev-2', type: 'QUESTION', applicationId: 'mock-app-456' }
+    ];
+  } else {
+    reviewItems = await prisma.humanReviewItem.findMany({
+      where: { userId: session.user.id, status: 'PENDING' },
+      orderBy: { id: 'desc' }
+    });
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

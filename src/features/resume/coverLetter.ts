@@ -1,7 +1,10 @@
-import { GoogleGenAI } from '@google/genai';
+import OpenAI from 'openai';
 import prisma from "../../lib/prisma";
 
-const ai = new GoogleGenAI({});
+const ai = new OpenAI({
+  apiKey: process.env.GROK_API_KEY,
+  baseURL: 'https://api.x.ai/v1',
+});
 
 export async function generateCoverLetter(userId: string, jobListingId: string) {
   const user = await prisma.user.findUnique({ where: { id: userId }, include: { profile: true } });
@@ -20,12 +23,12 @@ export async function generateCoverLetter(userId: string, jobListingId: string) 
     - Professional, modern tone.
   `;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
-    contents: prompt,
+  const response = await ai.chat.completions.create({
+    model: 'grok-beta',
+    messages: [{ role: 'user', content: prompt }],
   });
 
-  const content = response.text || "";
+  const content = response.choices[0]?.message?.content || "";
 
   const cl = await prisma.coverLetter.create({
     data: {

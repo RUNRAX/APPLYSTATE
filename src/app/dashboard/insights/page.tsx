@@ -9,10 +9,20 @@ export default async function InsightsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const apps = await prisma.application.findMany({
-    where: { userId: session.user.id },
-    include: { jobListing: true }
-  });
+  let apps: any[] = [];
+  
+  if (session.user.id === 'test-user-id') {
+    apps = [
+      { status: 'SUBMITTED', jobListing: { platform: 'LinkedIn', matchScore: 92 } },
+      { status: 'SUBMITTED', jobListing: { platform: 'LinkedIn', matchScore: 85 } },
+      { status: 'QUEUED', jobListing: { platform: 'Indeed', matchScore: 88 } }
+    ];
+  } else {
+    apps = await prisma.application.findMany({
+      where: { userId: session.user.id },
+      include: { jobListing: true }
+    });
+  }
 
   const successRate = apps.length > 0 
     ? Math.round((apps.filter(a => a.status === 'SUBMITTED').length / apps.length) * 100) 

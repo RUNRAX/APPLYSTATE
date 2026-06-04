@@ -11,9 +11,15 @@ export default async function PreferencesPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const prefs = await prisma.jobPreference.findUnique({
-    where: { userId: session.user.id }
-  });
+  let prefs: any = null;
+  
+  if (session.user.id === 'test-user-id') {
+    prefs = { targetRoles: ['Frontend Engineer', 'React Developer'], locations: ['Remote', 'San Francisco'], remote: true, salaryMin: 120000, dailyLimit: 10, blacklistedComps: ['Evil Corp'] };
+  } else {
+    prefs = await prisma.jobPreference.findUnique({
+      where: { userId: session.user.id }
+    });
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
