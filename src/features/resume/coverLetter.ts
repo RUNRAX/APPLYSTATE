@@ -2,8 +2,8 @@ import OpenAI from 'openai';
 import prisma from "../../lib/prisma";
 
 const ai = new OpenAI({
-  apiKey: process.env.GROK_API_KEY,
-  baseURL: 'https://api.x.ai/v1',
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/openai/v1',
 });
 
 export async function generateCoverLetter(userId: string, jobListingId: string) {
@@ -24,7 +24,7 @@ export async function generateCoverLetter(userId: string, jobListingId: string) 
   `;
 
   const response = await ai.chat.completions.create({
-    model: 'grok-beta',
+    model: 'llama3-70b-8192',
     messages: [{ role: 'user', content: prompt }],
   });
 

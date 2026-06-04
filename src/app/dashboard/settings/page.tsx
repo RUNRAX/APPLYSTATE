@@ -11,7 +11,7 @@ export default async function SettingsPage() {
   if (!session?.user?.id) redirect("/login");
 
   // Mock API key state for now
-  const apiKeyPrefix = process.env.GROK_API_KEY ? "sk-..." + process.env.GROK_API_KEY.slice(-4) : "";
+  const apiKeyPrefix = process.env.GROQ_API_KEY ? "gsk_..." + process.env.GROQ_API_KEY.slice(-4) : "";
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -36,15 +36,15 @@ export default async function SettingsPage() {
         <GlassCard variant="strong">
           <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>AI Integration</h3>
           <p style={{ fontSize: '0.9rem', color: 'var(--muted-foreground)', marginBottom: '1.5rem' }}>
-            ApplyMate uses Grok to tailor your resume and answer complex application questions.
+            ApplyMate uses Groq to tailor your resume and answer complex application questions at lightning speed.
           </p>
           
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
             <div style={{ flex: 1 }}>
               <Input 
-                label="Grok API Key" 
+                label="Groq API Key" 
                 type="password" 
-                placeholder="xai-..." 
+                placeholder="gsk_..." 
                 defaultValue={apiKeyPrefix}
               />
             </div>

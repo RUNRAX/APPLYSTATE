@@ -1,14 +1,14 @@
 import OpenAI from 'openai';
 
 const ai = new OpenAI({
-  apiKey: process.env.GROK_API_KEY,
-  baseURL: 'https://api.x.ai/v1',
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/openai/v1',
 });
 
 export async function embedText(text: string): Promise<number[]> {
   try {
     const response = await ai.embeddings.create({
-      model: "grok-embedding", // Placeholder model for Grok embeddings
+      model: "nomic-embed-text-v1_5", // Groq embedding model (if available) or fallback
       input: text,
     });
     return response.data[0]?.embedding ?? [];
