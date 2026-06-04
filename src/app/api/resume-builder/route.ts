@@ -44,13 +44,16 @@ export async function POST(req: NextRequest) {
       ${resumeText}
       
       Tasks:
-      1. Tailor the original resume specifically for this job description. Optimize keywords while retaining the original formatting structure as plain text. Do not hallucinate or invent experience.
-      2. Calculate an ATS match score (0-100) based on how well the new tailored resume matches the job description.
+      1. Tailor the original resume specifically for this job description. Optimize keywords and structure for maximum ATS compatibility. Do not hallucinate or invent experience.
+      2. Format the tailored resume strictly in standard Markdown. Use '#' for headers, '**' for bold text, and '-' for bullet points. Ensure it looks like a professional resume when rendered.
+      3. Calculate an ATS match score (0-100) for the ORIGINAL resume.
+      4. Calculate an ATS match score (0-100) for the NEW TAILORED resume.
 
       You must return ONLY a JSON object exactly in this format:
       {
-        "tailoredResume": "The full tailored resume text...",
-        "atsScore": 95
+        "originalAtsScore": 74,
+        "tailoredAtsScore": 95,
+        "tailoredResumeMarkdown": "# RAKSHIT AWATI\\n\\n## PROFESSIONAL SUMMARY\\n..."
       }
     `;
 

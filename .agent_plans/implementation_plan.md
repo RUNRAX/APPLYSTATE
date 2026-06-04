@@ -1,25 +1,22 @@
-# Resume Builder feature
+# Resume Builder Improvements
 
-We will build a new page inside the dashboard specifically for interactive resume tailoring. This tool will accept a job description and a PDF upload of your current resume, use Groq (LLaMA3) to analyze it, rewrite the resume, and provide an ATS score.
+The current implementation extracts raw text from your PDF, which destroys your original formatting. Furthermore, it only shows a single ATS score without showing the improvement.
+
+To solve this, we will upgrade the Resume Builder with the following architecture:
 
 ## Proposed Changes
 
 ### 1. Dependencies
-- Run `npm install pdf-parse` and `npm install -D @types/pdf-parse` to handle extracting raw text from uploaded PDF files on the backend.
+- Install `react-markdown` to safely render markdown to HTML.
+- Install `html2canvas` to take a high-quality visual snapshot of the rendered HTML to convert into a beautifully formatted PDF.
 
-### 2. New API Route (`src/app/api/resume-builder/route.ts`)
-- A new `POST` handler that accepts `FormData` containing the `jobDescription` and `resumeFile` (PDF).
-- **Process:**
-  1. Parse the uploaded PDF Buffer using `pdf-parse`.
-  2. Send a structured prompt to the **Groq API** (using `llama3-70b-8192` via the OpenAI SDK).
-  3. The prompt will enforce a JSON response containing two fields: `tailoredResume` (the rewritten resume retaining the original formatting) and `atsScore` (an integer score 0-100).
+### 2. API Route Upgrade (`src/app/api/resume-builder/route.ts`)
+- Update the prompt to the Groq AI (`llama-3.3-70b-versatile`) to explicitly output three fields in its JSON response:
+  - `originalAtsScore`: The ATS match score of the *uploaded* resume.
+  - `tailoredAtsScore`: The improved ATS match score of the *newly tailored* resume (aiming for 90%+).
+  - `tailoredResumeMarkdown`: The tailored resume formatted in **Markdown** (using `#` for headers, `**` for bold text, and `-` for bullet points) to mimic the visual hierarchy of your original resume.
 
-### 3. Resume Builder UI (`src/app/dashboard/resume-builder/page.tsx`)
-- Create a new React component using the `GlassCard` layout.
-- **Left/Top panel:** A form to paste the Job Description and an area to drop/upload a PDF file.
-- **Right/Bottom panel:** A results area that appears after loading, showing:
-  - A prominent ATS Score (e.g., in a glowing radial progress ring or badge).
-  - The generated tailored resume (in an editable textarea or markdown view) so you can review and copy it.
-
-### 4. Sidebar Navigation (`src/app/dashboard/layout.tsx`)
-- Add a new `navItem`: `{ label: 'Resume Builder', href: '/dashboard/resume-builder', icon: FileEdit }` so you can access it easily from the dashboard.
+### 3. UI and PDF Generation (`src/app/dashboard/resume-builder/page.tsx`)
+- **Dual Score Display**: Update the UI to show both the `Original ATS Score` (e.g., 74%) and the `Improved ATS Score` (e.g., 95%) side-by-side.
+- **Rich Text Preview**: Instead of a raw `<textarea>`, we will render the `tailoredResumeMarkdown` using `react-markdown` inside a styled preview container that closely resembles a real, physical paper resume (white background, black text, proper margins, bold headers).
+- **Formatted PDF Download**: Rewrite the `handleDownload` function. Instead of blindly writing text to `jsPDF`, we will use `html2canvas` to capture the perfectly formatted React Markdown component and embed that high-resolution image into `jsPDF`. This ensures the downloaded PDF looks exactly like a real resume, preserving all bolding and bullet points.

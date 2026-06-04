@@ -1,5 +1,6 @@
-- [x] Install `pdf-parse` and `@types/pdf-parse`
-- [x] Create API route `src/app/api/resume-builder/route.ts` with PDF parsing and Groq LLM integration
-- [x] Create `src/app/dashboard/resume-builder/page.tsx` UI with PDF upload, JD input, and results display
-- [x] Update `src/app/dashboard/layout.tsx` to include "Resume Builder" link in sidebar
-- [x] Commit and push changes
+- [x] Install `react-markdown` and `html2canvas`
+- [x] Update `src/app/api/resume-builder/route.ts` to request markdown and dual ATS scores
+- [x] Update `src/app/dashboard/resume-builder/page.tsx` UI to display dual ATS scores
+- [x] Implement `react-markdown` preview container styled like a real resume
+- [x] Implement `html2canvas` PDF generation
+- [ ] Commit and push changes
