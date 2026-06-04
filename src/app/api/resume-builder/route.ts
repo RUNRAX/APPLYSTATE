@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       1. Tailor the original resume specifically for this job description by subtly enhancing bullet points with relevant keywords.
       CRITICAL: DO NOT delete any existing jobs, degrees, or projects. DO NOT invent new experience. Keep the exact same factual information, just rewrite the descriptions to better highlight skills matching the Job Description.
       
-      2. Format the tailored resume strictly in standard Markdown. You MUST use the following exact structure and headers:
+      2. Format the tailored resume strictly in standard Markdown, but use HTML spans for right-aligned dates. You MUST use the following exact structure and headers:
 
       # [FULL NAME]
       
@@ -56,25 +56,25 @@ export async function POST(req: NextRequest) {
       [LinkedIn] | [GitHub]
       
       ## PROFESSIONAL SUMMARY
-      [1 paragraph summary]
+      [1 paragraph summary (fully justified)]
       
       ## TECHNICAL SKILLS
       - **[Category]:** [skills]
       - **[Category]:** [skills]
       
       ## PROFESSIONAL EXPERIENCE
-      **[Job Title]** | **[Month Year - Month Year]**
+      **[Job Title]** <span style="float:right">**[Month Year - Month Year]**</span>
       *[Company]* — [Location]
       - [Bullet point 1]
       - [Bullet point 2]
       
       ## KEY TECHNICAL PROJECTS
-      **[Project Name] | [Role]** | **[Month Year - Month Year]**
+      **[Project Name] | [Role]** <span style="float:right">**[Month Year - Month Year]**</span>
       *Technologies: [Tech stack]*
       - [Bullet point 1]
       
       ## EDUCATION
-      **[Degree]** | **[Month Year - Month Year]**
+      **[Degree]** <span style="float:right">**[Month Year - Month Year]**</span>
       [University], [Location] | [CGPA]
       
       ## CERTIFICATIONS

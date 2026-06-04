@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import { FileText, Download, Target, Wand2, ArrowRight } from "lucide-react";
 import styles from "../dashboard.module.css";
 
@@ -220,13 +221,14 @@ export default function ResumeBuilderPage() {
                         .resume-preview h1 + p + p { text-align: center; margin-bottom: 12px; }
                         .resume-preview h2 { font-size: 13pt; font-weight: bold; text-transform: uppercase !important; border-bottom: 1px solid #000; margin-top: 16px; margin-bottom: 8px; padding-bottom: 2px; }
                         .resume-preview h3 { font-size: 11pt; font-weight: bold; margin-top: 8px; }
-                        .resume-preview p { margin-bottom: 4px; }
+                        .resume-preview p { text-align: justify; margin-bottom: 4px; }
                         .resume-preview ul { margin-left: 20px; margin-bottom: 8px; list-style-type: disc; }
-                        .resume-preview li { margin-bottom: 2px; }
+                        .resume-preview li { margin-bottom: 2px; text-align: justify; }
                         .resume-preview strong { font-weight: bold; }
+                        .resume-preview span[style*="float:right"] { float: right; }
                       `}</style>
                       <div className="resume-preview">
-                        <ReactMarkdown>
+                        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                           {result.tailoredResumeMarkdown}
                         </ReactMarkdown>
                       </div>
