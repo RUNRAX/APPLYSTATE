@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import pdfParse from "pdf-parse";
+const pdfParse = require("pdf-parse");
 
 const ai = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: process.env.GROQ_API_KEY || "dummy_key_for_build",
   baseURL: 'https://api.groq.com/openai/v1',
 });
 

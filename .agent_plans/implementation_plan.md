@@ -1,41 +1,25 @@
-# Liquid Lumina Design System Alignment
+# Resume Builder feature
 
-This plan addresses the discrepancies between the current `APPLYSTATE` application and the reference `liquid-lumina` design system. The previous implementation incorrectly used standard frosted glassmorphism (`backdrop-filter: blur`), whereas the authentic design relies on a translucent liquid aesthetic with NO backdrop blur, allowing the vibrant spheres to show through clearly.
-
-## Open Questions
-
-None at this moment. The goal is to perfectly mirror the CSS techniques and layout structures found in the `RUNRAX/liquid-lumina` repository.
+We will build a new page inside the dashboard specifically for interactive resume tailoring. This tool will accept a job description and a PDF upload of your current resume, use Groq (LLaMA3) to analyze it, rewrite the resume, and provide an ATS score.
 
 ## Proposed Changes
 
-### Core Styles
-We will replace the incorrectly implemented glass classes in `globals.css` with the exact, authentic techniques from the repo.
+### 1. Dependencies
+- Run `npm install pdf-parse` and `npm install -D @types/pdf-parse` to handle extracting raw text from uploaded PDF files on the backend.
 
-#### [MODIFY] [globals.css](file:///d:/APPLYSTATE/src/app/globals.css)
-- **Colors:** Ensure all HSL CSS variables perfectly match `liquid-lumina/src/index.css`.
-- **Glass Utilities:**
-  - Remove `backdrop-filter: blur(12px) saturate(180%)`.
-  - Implement authentic `.glass` using `linear-gradient` backgrounds with low opacity.
-  - Add the `::before` pseudo-element with `mask-composite: exclude` to create sharp, premium inner borders.
-  - Implement `.glass-strong` with radial gradient backgrounds.
-  - Update `.glass-input` and `.glass-pill` to exactly match the repository's styling.
+### 2. New API Route (`src/app/api/resume-builder/route.ts`)
+- A new `POST` handler that accepts `FormData` containing the `jobDescription` and `resumeFile` (PDF).
+- **Process:**
+  1. Parse the uploaded PDF Buffer using `pdf-parse`.
+  2. Send a structured prompt to the **Groq API** (using `llama3-70b-8192` via the OpenAI SDK).
+  3. The prompt will enforce a JSON response containing two fields: `tailoredResume` (the rewritten resume retaining the original formatting) and `atsScore` (an integer score 0-100).
 
-### UI Components
-We will adjust the component styles to match the padding, sizing, and specific variants used in the reference repository, while retaining `framer-motion` for interactions (since we do not have `tailwindcss` configured).
+### 3. Resume Builder UI (`src/app/dashboard/resume-builder/page.tsx`)
+- Create a new React component using the `GlassCard` layout.
+- **Left/Top panel:** A form to paste the Job Description and an area to drop/upload a PDF file.
+- **Right/Bottom panel:** A results area that appears after loading, showing:
+  - A prominent ATS Score (e.g., in a glowing radial progress ring or badge).
+  - The generated tailored resume (in an editable textarea or markdown view) so you can review and copy it.
 
-#### [MODIFY] [GlassCard.tsx](file:///d:/APPLYSTATE/src/components/ui/GlassCard.tsx)
-- Reduce inline padding from `2rem` to `1.5rem` (to match Tailwind's `p-6`).
-
-#### [MODIFY] [Button.tsx](file:///d:/APPLYSTATE/src/components/ui/Button.tsx)
-- Match hover states (scale `1.02`).
-
-#### [MODIFY] [AuroraBackground.tsx](file:///d:/APPLYSTATE/src/components/ui/AuroraBackground.tsx)
-- Check `aurora.css` and align sizes with `liquid-lumina` `LiquidBackground.tsx`.
-
-## Verification Plan
-
-### Manual Verification
-- We will visually inspect the application dashboard.
-- The background spheres should be perfectly clear when seen through the cards (no blurring).
-- The inner borders of the cards should look sharp and premium due to the `mask-composite` technique.
-- Padding and sizing will match the reference layout.
+### 4. Sidebar Navigation (`src/app/dashboard/layout.tsx`)
+- Add a new `navItem`: `{ label: 'Resume Builder', href: '/dashboard/resume-builder', icon: FileEdit }` so you can access it easily from the dashboard.
