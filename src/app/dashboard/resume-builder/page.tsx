@@ -201,7 +201,9 @@ export default function ResumeBuilderPage() {
                       transformOrigin: 'top left',
                       transform: 'scale(0.8)', // Scale down for preview
                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif'
+                      fontFamily: 'Arial, Helvetica, sans-serif',
+                      letterSpacing: 'normal',
+                      wordSpacing: 'normal'
                     }}
                   >
                     <div style={{ 
