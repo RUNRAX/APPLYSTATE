@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-const pdfParse = require("pdf-parse");
+
+if (typeof globalThis.DOMMatrix === "undefined") {
+  (globalThis as any).DOMMatrix = class DOMMatrix {};
+}
+if (typeof globalThis.Path2D === "undefined") {
+  (globalThis as any).Path2D = class Path2D {};
+}
 
 const ai = new OpenAI({
   apiKey: process.env.GROQ_API_KEY || "dummy_key_for_build",
@@ -9,6 +15,7 @@ const ai = new OpenAI({
 
 export async function POST(req: NextRequest) {
   try {
+    const pdfParse = require("pdf-parse");
     const formData = await req.formData();
     const pdfFile = formData.get("pdf") as File | null;
     const jobDescription = formData.get("jobDescription") as string | null;
