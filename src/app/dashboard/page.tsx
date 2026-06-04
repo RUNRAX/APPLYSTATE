@@ -12,6 +12,20 @@ export default async function DashboardOverview() {
 
   const userId = session.user.id;
 
+  // Bypass for testing UI while DB is down
+  if (userId === 'test-user-id') {
+    return (
+      <DashboardClient 
+        stats={{
+          totalApplied: 42,
+          queuedApps: 5,
+          matchRate: '88%',
+          activeBots: 1
+        }} 
+      />
+    );
+  }
+
   // Fetch real stats
   const totalApplied = await prisma.application.count({
     where: { userId, status: "SUBMITTED" }
