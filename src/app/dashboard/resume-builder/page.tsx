@@ -165,10 +165,11 @@ export default function ResumeBuilderPage() {
                   flex: 1, height: '400px', overflowY: 'auto', background: '#333', 
                   borderRadius: '8px', padding: '1rem', border: '1px solid var(--glass-border)'
                 }}>
-                  <div style={{ transform: 'scale(0.8)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
+                  <div className="scale-wrapper" style={{ transform: 'scale(0.8)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
                     {/* The actual printable area */}
                     <div 
                       ref={resumeRef}
+                      className="print-container"
                       style={{
                         background: '#ffffff',
                         color: '#000000',
@@ -207,23 +208,26 @@ export default function ResumeBuilderPage() {
                           body * {
                             visibility: hidden;
                           }
-                          #printable-resume, #printable-resume * {
+                          .scale-wrapper, .scale-wrapper * {
                             visibility: visible;
                           }
-                          #printable-resume {
-                            position: absolute;
-                            left: 0;
-                            top: 0;
-                            width: 100%;
-                            padding: 0 !important;
-                            margin: 0 !important;
+                          .scale-wrapper {
+                            position: absolute !important;
+                            left: 0 !important;
+                            top: 0 !important;
                             transform: none !important;
+                            width: 100% !important;
+                            margin: 0 !important;
+                          }
+                          .print-container {
+                            width: 100% !important;
+                            min-height: auto !important;
                             box-shadow: none !important;
-                            background: transparent !important;
+                            padding: 0 !important;
                           }
                           @page {
                             size: auto;
-                            margin: 15mm;
+                            margin: 10mm;
                           }
                         }
                       `}</style>
