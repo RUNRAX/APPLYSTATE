@@ -76,7 +76,7 @@ export default function ResumeBuilderPage() {
     // @ts-ignore
     import('html2pdf.js').then((html2pdf) => {
       const opt = {
-        margin:       10,
+        margin:       0,
         filename:     'Tailored_Resume.pdf',
         image:        { type: 'jpeg' as const, quality: 1 },
         html2canvas:  { scale: 4, useCORS: true, letterRendering: true, scrollY: 0 },
