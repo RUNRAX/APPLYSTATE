@@ -120,6 +120,15 @@ export default function ResumeBuilderPage() {
           attempt++;
           continue;
         }
+        if (!response.ok && response.status !== 429) {
+          const errData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          setMessages(prev => {
+            const next = [...prev];
+            next[next.length - 1].content = `⚠️ Error: ${errData.error || 'Something went wrong. Please try again.'}`;
+            return next;
+          });
+          break;
+        }
 
         if (!response.body) throw new Error("No response body");
 

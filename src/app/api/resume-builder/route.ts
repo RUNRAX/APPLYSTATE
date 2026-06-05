@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
       1. Tailor the original resume specifically for this job description by subtly enhancing bullet points with relevant keywords.
       
       CRITICAL INSTRUCTIONS TO PREVENT HALLUCINATIONS:
+      - FIX CAPITALIZATION: The PDF parser often extracts Small Caps text with broken capitalization (e.g. "mICROSERVICE", "dATA aNALYSIS", "nEERING"). You MUST fix ALL such text to use standard professional capitalization (e.g. "Microservice", "Data Analysis", "Engineering"). Every single word in the output must have proper capitalization.
       - DO NOT DUPLICATE ENTRIES: You are strictly forbidden from listing the same experience or project twice. Each item must appear EXACTLY ONCE.
       - STRICT CATEGORIZATION: "PROFESSIONAL EXPERIENCE" is ONLY for employment at companies (e.g., Jyesta, MindMatrix, TCS/Ediquity Exam Centers). "KEY TECHNICAL PROJECTS" is ONLY for software applications you built (e.g., TCS iON Manpower, SSCA, Synaptic Cinema).
       - NEVER put projects under Professional Experience. If it is a software project or application, it belongs ONLY in KEY TECHNICAL PROJECTS.

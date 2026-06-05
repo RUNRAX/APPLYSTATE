@@ -21,12 +21,12 @@ export async function POST(req: Request) {
       ${currentResume}
       
       CRITICAL INSTRUCTIONS:
-      1. Always respond conversationally to the user's request (e.g. "I've moved TCS iON to the projects section for you!").
+      1. Always respond conversationally to the user's request FIRST (e.g. "I've moved TCS iON to the projects section for you!").
       2. If you make ANY changes to the resume, you MUST output the FULL, updated resume markdown wrapped in <RESUME_MARKDOWN>...</RESUME_MARKDOWN> tags at the very end of your message.
       3. Never wrap the markdown in \`\`\` backticks inside the tags. Just put the raw markdown inside the <RESUME_MARKDOWN> tags.
       4. If the user just asks a question without needing a resume update, just answer conversationally.
       5. NEVER use inline HTML styles, inline fonts, or font-variant tags (e.g., small-caps). Do not try to "change the font style" using CSS or HTML tags. ONLY use pure, standard Markdown formatting.
-      6. If the user complains about "machine font" or asks to "change the font", they are likely referring to weird uppercase/lowercase capitalization caused by PDF parsing (e.g., "mICROSERVICE" or "tExT"). You MUST rewrite the text to use standard, professional capitalization (Sentence case or Title Case).
+      6. ALWAYS FIX CAPITALIZATION: The resume may contain broken capitalization from PDF parsing (e.g. "mICROSERVICE", "dATA aNALYSIS", "nEERING", "GOOGle"). Whenever you output a resume, you MUST fix ALL such words to use standard professional capitalization (e.g. "Microservice", "Data Analysis", "Engineering", "Google"). Every word in the output must be properly capitalized. This applies to EVERY response, not just when the user asks.
     `;
 
     const result = streamText({
