@@ -119,35 +119,20 @@ export default function ResumeBuilderPage() {
     // Add empty assistant message stub for streaming
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
-    // Build clean history for the API: strip markdown blocks, ensure alternating roles
-    // Only keep the last 6 messages to avoid exceeding Groq's token limits
-    const recentMessages = newMessages.slice(-6);
-    const cleanHistoryForAPI = recentMessages.map(m => ({
-      role: m.role,
-      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/ig, '\n[Resume updated]\n').trim() || '[Message]'
-    })).reduce((acc: any[], m) => {
-      if (acc.length > 0 && acc[acc.length - 1].role === m.role) {
-        acc[acc.length - 1].content += '\n\n' + m.content;
-      } else {
-        acc.push(m);
-      }
-      return acc;
-    }, []);
-
-    // Ensure the history starts with a user message (required by LLaMA)
-    while (cleanHistoryForAPI.length > 0 && cleanHistoryForAPI[0].role !== 'user') {
-      cleanHistoryForAPI.shift();
-    }
+    // Send only the latest user message to the API.
+    // The system prompt already includes the full current resume + JD,
+    // so the AI has all context needed. This keeps us under Groq's 6,000 TPM free-tier limit.
+    const apiMessages = [{ role: 'user', content: input }];
 
     let success = false;
     let attempt = 0;
-    while (attempt < 2) {
+    while (attempt < 3) {
       try {
         const response = await fetch('/api/resume-copilot', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: cleanHistoryForAPI,
+            messages: apiMessages,
             currentResume: (result?.tailoredResumeMarkdown || "").substring(0, 15000),
             jobDescription: jobDescription,
           }),
@@ -222,15 +207,28 @@ export default function ResumeBuilderPage() {
           }
         }
 
-        // If stream completed but no content was received, show error
+        // If stream completed but no content was received, it's likely Groq TPM exhausted.
+        // Auto-retry after a short wait.
         if (!fullContent.trim()) {
+          // Show countdown to user
+          for (let i = 30; i > 0; i--) {
+            setRateLimitWait(i);
+            setMessages(prev => {
+              const next = [...prev];
+              next[next.length - 1].content = `⏳ AI is temporarily busy. Auto-retrying in ${i}s...`;
+              return next;
+            });
+            await new Promise(r => setTimeout(r, 1000));
+          }
+          setRateLimitWait(null);
+          // Clear the stub message for retry
           setMessages(prev => {
             const next = [...prev];
-            next[next.length - 1].content = `⚠️ No response received. The AI may be temporarily overloaded. Please wait a moment and try again.`;
+            next[next.length - 1].content = '';
             return next;
           });
-          success = true;
-          break;
+          attempt++;
+          continue;
         }
 
         const finalMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
