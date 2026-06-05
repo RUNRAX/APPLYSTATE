@@ -55,8 +55,42 @@ export default function ResumeBuilderPage() {
     }
   };
 
+  const scaleWrapperRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   const handleDownload = () => {
-    window.print();
+    const scaleWrapper = scaleWrapperRef.current;
+    const resumeEl = resumeRef.current;
+    const scrollContainer = scrollContainerRef.current;
+    if (!scaleWrapper || !resumeEl || !scrollContainer) return;
+    
+    // Temporarily remove scale and expand scroll container so html2canvas captures full height at native resolution
+    const originalTransform = scaleWrapper.style.transform;
+    const originalHeight = scrollContainer.style.height;
+    const originalOverflow = scrollContainer.style.overflowY;
+    
+    scaleWrapper.style.transform = 'none';
+    scrollContainer.style.height = 'auto';
+    scrollContainer.style.overflowY = 'visible';
+    
+    // @ts-ignore
+    import('html2pdf.js').then((html2pdf) => {
+      const opt = {
+        margin:       10,
+        filename:     'Tailored_Resume.pdf',
+        image:        { type: 'jpeg' as const, quality: 1 },
+        html2canvas:  { scale: 4, useCORS: true, letterRendering: true, scrollY: 0 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: 'css', before: '.page-break' }
+      };
+      
+      html2pdf.default().set(opt).from(resumeEl).save().then(() => {
+        // Restore scale and container
+        scaleWrapper.style.transform = originalTransform;
+        scrollContainer.style.height = originalHeight;
+        scrollContainer.style.overflowY = originalOverflow;
+      });
+    });
   };
 
   return (
@@ -161,11 +195,13 @@ export default function ResumeBuilderPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
                 <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--foreground)' }}>Formatted Preview</label>
                 
-                <div style={{ 
+                <div 
+                  ref={scrollContainerRef}
+                  style={{ 
                   flex: 1, height: '400px', overflowY: 'auto', background: '#333', 
                   borderRadius: '8px', padding: '1rem', border: '1px solid var(--glass-border)'
                 }}>
-                  <div className="scale-wrapper" style={{ transform: 'scale(0.8)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
+                  <div ref={scaleWrapperRef} className="scale-wrapper" style={{ transform: 'scale(0.8)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
                     {/* The actual printable area */}
                     <div 
                       ref={resumeRef}
