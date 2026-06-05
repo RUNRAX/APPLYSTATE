@@ -21,20 +21,29 @@ export default function ResumeBuilderPage() {
   } | null>(null);
   const [error, setError] = useState("");
   
-  const { messages, input, handleInputChange, handleSubmit: handleChatSubmit, isLoading: isChatLoading } = useChat({
+  const [input, setInput] = useState("");
+  const { messages, sendMessage, status } = useChat({
     api: '/api/resume-copilot',
     body: {
       currentResume: result?.tailoredResumeMarkdown || "",
       jobDescription: jobDescription,
     },
     onFinish: (msg) => {
-      // Extract markdown from <RESUME_MARKDOWN>...</RESUME_MARKDOWN>
       const match = msg.content.match(/<RESUME_MARKDOWN>([\s\S]*?)<\/RESUME_MARKDOWN>/);
       if (match && match[1]) {
         setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: match[1].trim() } : null);
       }
     }
   });
+
+  const isChatLoading = status === 'streaming' || status === 'submitted';
+
+  const handleChatSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input) return;
+    sendMessage({ role: 'user', content: input });
+    setInput("");
+  };
 
   // Calculate the live display markdown from the streaming message
   const lastMessage = messages[messages.length - 1];
@@ -262,7 +271,7 @@ export default function ResumeBuilderPage() {
                   <form onSubmit={handleChatSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <textarea 
                       value={input}
-                      onChange={handleInputChange}
+                      onChange={(e) => setInput(e.target.value)}
                       placeholder="Tell the Copilot what to change..."
                       style={{ 
                         width: '100%', minHeight: '80px', background: 'rgba(255,255,255,0.02)', 
