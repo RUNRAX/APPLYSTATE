@@ -38,12 +38,18 @@ export default function ResumeBuilderPage() {
     // Add empty assistant message stub
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
+    // Strip out the massive markdown blocks from the history so we don't blow up the LLM context!
+    const cleanHistoryForAPI = newMessages.map(m => ({
+      ...m,
+      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(<\/RESUME_MARKDOWN>|$)/, '').trim()
+    }));
+
     try {
       const response = await fetch('/api/resume-copilot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: newMessages,
+          messages: cleanHistoryForAPI,
           currentResume: result?.tailoredResumeMarkdown || "",
           jobDescription: jobDescription,
         }),
@@ -268,24 +274,35 @@ export default function ResumeBuilderPage() {
               <div style={{ display: 'flex', gap: '2rem', flex: 1 }}>
                 {/* Left Side: Copilot Chat */}
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '300px' }}>
-                  <div>
-                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem', fontWeight: 600, color: 'var(--foreground)' }}>
-                      <MessageSquare size={18} color="var(--primary)" />
-                      AI Copilot
-                    </h4>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', marginTop: '0.25rem' }}>
-                      Notice a mistake? Ask the AI to fix it directly. 
-                      e.g. "Move TCS iON to projects"
-                    </p>
+                  {/* Removed duplicated preview container */}
+                </div>
+
+                {/* Agentic Copilot Chat Interface */}
+                <div style={{ 
+                  flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', 
+                  background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--glass-border)',
+                  maxHeight: '600px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                    <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+                      <MessageSquare size={20} color="var(--primary)" />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--foreground)' }}>Resume Copilot</h3>
+                      <p style={{ fontSize: '0.85rem', margin: 0, color: 'var(--foreground-muted)' }}>
+                        Chat to adjust spacing, move sections, or tweak wording.
+                      </p>
+                    </div>
                   </div>
                   
                   <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingRight: '0.5rem' }}>
                     {messages.filter(m => m.role !== 'system').map((m, idx) => {
-                      // Hide the <RESUME_MARKDOWN> block from the chat UI bubble
                       const cleanText = m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(<\/RESUME_MARKDOWN>|$)/, '').trim();
-                      if (!cleanText) return null;
-                      
                       const isUser = m.role === 'user';
+                      const isTyping = !isUser && !cleanText && isChatLoading && idx === messages.length - 1;
+                      
+                      if (!cleanText && !isTyping) return null;
+                      
                       return (
                         <div key={idx} style={{
                           alignSelf: isUser ? 'flex-end' : 'flex-start',
@@ -297,9 +314,17 @@ export default function ResumeBuilderPage() {
                           borderBottomLeftRadius: !isUser ? '2px' : '12px',
                           maxWidth: '90%',
                           fontSize: '0.9rem',
-                          lineHeight: 1.4
+                          lineHeight: 1.4,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem'
                         }}>
-                          {cleanText}
+                          {isTyping ? (
+                            <>
+                              <Loader2 size={14} className="animate-spin" />
+                              <span style={{ opacity: 0.7 }}>Agent is thinking...</span>
+                            </>
+                          ) : cleanText}
                         </div>
                       );
                     })}
@@ -334,7 +359,7 @@ export default function ResumeBuilderPage() {
                   <div 
                     ref={scrollContainerRef}
                     style={{ 
-                    flex: 1, height: '400px', overflowY: 'auto', background: '#333', 
+                    flex: 1, height: '400px', overflowY: 'auto', background: 'transparent', 
                     borderRadius: '8px', padding: '1rem', border: '1px solid var(--glass-border)'
                   }}>
                     <div ref={scaleWrapperRef} className="scale-wrapper" style={{ transform: 'scale(0.8)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
