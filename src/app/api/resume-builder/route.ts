@@ -91,13 +91,15 @@ export async function POST(req: NextRequest) {
       ## CERTIFICATIONS
       - [Certification 1]
       
-      3. Calculate an ATS match score (0-100) for the ORIGINAL resume based strictly on keyword overlap and relevance to the JD.
-      4. Calculate an ATS match score (0-100) for the NEW TAILORED resume.
+      3. Extract an array of the most critical hard skills and keywords from the Job Description (max 15-20).
+      4. Calculate an AI-estimated ATS match score (0-100) for the ORIGINAL resume. BE HARSH AND REALISTIC. Do not artificially inflate the score.
+      5. Calculate an AI-estimated ATS match score (0-100) for the NEW TAILORED resume. BE REALISTIC. Even with tailoring, a resume rarely scores above 80-85% unless it's a 100% perfect match. Do not give fake 90%+ scores just to look good.
 
       You must return ONLY a JSON object exactly in this format:
       {
-        "originalAtsScore": 74,
-        "tailoredAtsScore": 95,
+        "extractedKeywords": ["Python", "React", "AWS", "Machine Learning"],
+        "originalAtsScore": 45,
+        "tailoredAtsScore": 65,
         "tailoredResumeMarkdown": "# RAKSHIT AWATI\\n\\n## PROFESSIONAL SUMMARY\\n..."
       }
     `;
@@ -113,6 +115,27 @@ export async function POST(req: NextRequest) {
 
     const result = JSON.parse(resultText);
     
+    // Deterministic algorithm for a true ATS score
+    const calculateDeterministicScore = (text: string, keywords: string[]) => {
+      if (!keywords || keywords.length === 0) return 0;
+      const normalizedText = text.toLowerCase();
+      let matches = 0;
+      for (const kw of keywords) {
+        if (normalizedText.includes(kw.toLowerCase())) {
+          matches++;
+        }
+      }
+      return Math.round((matches / keywords.length) * 100);
+    };
+
+    const keywords = result.extractedKeywords || [];
+    const originalMathScore = calculateDeterministicScore(resumeText, keywords);
+    const tailoredMathScore = calculateDeterministicScore(result.tailoredResumeMarkdown, keywords);
+
+    // Blend the AI's semantic score with the deterministic math score for the most realistic result
+    result.originalAtsScore = Math.round((result.originalAtsScore + originalMathScore) / 2);
+    result.tailoredAtsScore = Math.round((result.tailoredAtsScore + tailoredMathScore) / 2);
+
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("Resume Builder Error:", error);
