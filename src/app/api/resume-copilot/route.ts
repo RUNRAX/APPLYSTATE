@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       prompt: prompt,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
   } catch (error: any) {
     console.error("Resume Copilot Error:", error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
