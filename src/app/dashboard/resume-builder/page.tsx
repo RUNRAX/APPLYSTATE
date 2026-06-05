@@ -77,14 +77,14 @@ export default function ResumeBuilderPage() {
 
           // Check for markdown updates
           const match = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(<\/RESUME_MARKDOWN>|$)/);
+          const match = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
           if (match && match[1]) {
             setLiveMarkdown(match[1].trim());
           }
         }
       }
 
-      // Final save
-      const finalMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)<\/RESUME_MARKDOWN>/);
+      const finalMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
       if (finalMatch && finalMatch[1]) {
         const finalMarkdown = finalMatch[1].trim();
         setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: finalMarkdown } : null);
@@ -93,13 +93,19 @@ export default function ResumeBuilderPage() {
       console.error(err);
     } finally {
       setIsChatLoading(false);
-      setLiveMarkdown(null);
+      setLiveMarkdown(current => {
+        if (current) {
+          setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: current } : null);
+        }
+        return null;
+      });
     }
   };
 
   const displayMarkdown = liveMarkdown ?? result?.tailoredResumeMarkdown;
 
   const resumeRef = useRef<HTMLDivElement>(null);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,7 +179,7 @@ export default function ResumeBuilderPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative' }}>
       <div>
         <h1 className="font-display" style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Interactive Resume Builder</h1>
         <p style={{ color: 'var(--muted-foreground)' }}>Upload your resume and a job description to get a perfectly tailored PDF instantly.</p>
@@ -233,7 +239,7 @@ export default function ResumeBuilderPage() {
         </GlassCard>
 
         {/* Bottom: Results */}
-        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '2rem', overflow: 'hidden' }}>
+        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '2rem', overflow: 'hidden', position: 'relative', minHeight: '600px' }}>
           <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>2. Result</h3>
           
           {!result && !loading && (
@@ -271,112 +277,34 @@ export default function ResumeBuilderPage() {
 
               </div>
 
-              <div style={{ display: 'flex', gap: '2rem', flex: 1 }}>
-                {/* Left Side: Copilot Chat */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '300px' }}>
-                  {/* Removed duplicated preview container */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--foreground)' }}>Formatted Preview</label>
+                  {isChatLoading && <span style={{ fontSize: '0.8rem', color: 'var(--primary)', animation: 'pulse 2s infinite' }}>Real-time editing...</span>}
                 </div>
-
-                {/* Agentic Copilot Chat Interface */}
-                <div style={{ 
-                  flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', 
-                  background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--glass-border)',
-                  maxHeight: '600px'
+                
+                {/* Full Width Preview */}
+                <div 
+                  ref={scrollContainerRef}
+                  style={{ 
+                  flex: 1, height: '600px', overflowY: 'auto', background: 'transparent', 
+                  borderRadius: '8px', padding: '1rem', border: '1px solid var(--glass-border)'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                    <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
-                      <MessageSquare size={20} color="var(--primary)" />
-                    </div>
-                    <div>
-                      <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--foreground)' }}>Resume Copilot</h3>
-                      <p style={{ fontSize: '0.85rem', margin: 0, color: 'var(--foreground-muted)' }}>
-                        Chat to adjust spacing, move sections, or tweak wording.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingRight: '0.5rem' }}>
-                    {messages.filter(m => m.role !== 'system').map((m, idx) => {
-                      const cleanText = m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(<\/RESUME_MARKDOWN>|$)/, '').trim();
-                      const isUser = m.role === 'user';
-                      const isTyping = !isUser && !cleanText && isChatLoading && idx === messages.length - 1;
-                      
-                      if (!cleanText && !isTyping) return null;
-                      
-                      return (
-                        <div key={idx} style={{
-                          alignSelf: isUser ? 'flex-end' : 'flex-start',
-                          background: isUser ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
-                          color: isUser ? '#fff' : 'var(--foreground)',
-                          padding: '0.75rem 1rem',
-                          borderRadius: '12px',
-                          borderBottomRightRadius: isUser ? '2px' : '12px',
-                          borderBottomLeftRadius: !isUser ? '2px' : '12px',
-                          maxWidth: '90%',
-                          fontSize: '0.9rem',
-                          lineHeight: 1.4,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem'
-                        }}>
-                          {isTyping ? (
-                            <>
-                              <Loader2 size={14} className="animate-spin" />
-                              <span style={{ opacity: 0.7 }}>Agent is thinking...</span>
-                            </>
-                          ) : cleanText}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  <form onSubmit={handleChatSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <textarea 
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      placeholder="Tell the Copilot what to change..."
-                      style={{ 
-                        width: '100%', minHeight: '80px', background: 'rgba(255,255,255,0.02)', 
-                        border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '0.75rem', 
-                        color: 'var(--foreground)', resize: 'none', fontFamily: 'inherit', fontSize: '0.9rem'
+                  <div ref={scaleWrapperRef} className="scale-wrapper" style={{ transform: 'scale(1)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
+                    {/* The actual printable area */}
+                    <div 
+                      ref={resumeRef}
+                      className="print-container"
+                      style={{
+                        background: '#ffffff',
+                        color: '#000000',
+                        padding: '40px',
+                        width: '210mm',
+                        minHeight: '297mm',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        fontFamily: 'Arial, Helvetica, sans-serif',
                       }}
-                      disabled={isChatLoading}
-                    />
-                    <Button type="submit" variant="primary" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }} disabled={isChatLoading || !input}>
-                      {isChatLoading ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
-                      {isChatLoading ? "Applying..." : "Send Request"}
-                    </Button>
-                  </form>
-                </div>
-
-                {/* Right Side: Preview */}
-                <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--foreground)' }}>Formatted Preview</label>
-                    {isChatLoading && <span style={{ fontSize: '0.8rem', color: 'var(--primary)', animation: 'pulse 2s infinite' }}>Real-time editing...</span>}
-                  </div>
-                  
-                  <div 
-                    ref={scrollContainerRef}
-                    style={{ 
-                    flex: 1, height: '400px', overflowY: 'auto', background: 'transparent', 
-                    borderRadius: '8px', padding: '1rem', border: '1px solid var(--glass-border)'
-                  }}>
-                    <div ref={scaleWrapperRef} className="scale-wrapper" style={{ transform: 'scale(0.8)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
-                      {/* The actual printable area */}
-                      <div 
-                        ref={resumeRef}
-                        className="print-container"
-                        style={{
-                          background: '#ffffff',
-                          color: '#000000',
-                          padding: '40px',
-                          width: '210mm', // A4 width
-                          minHeight: '297mm', // A4 height
-                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                          fontFamily: 'Arial, Helvetica, sans-serif',
-                        }}
-                      >
+                    >
                       <div style={{ 
                         display: 'flex', flexDirection: 'column', gap: '0.5em',
                         fontSize: '11pt', lineHeight: '1.4'
@@ -384,11 +312,6 @@ export default function ResumeBuilderPage() {
                         <style>{`
                           .resume-preview, .resume-preview * {
                             font-family: Arial, Helvetica, sans-serif !important;
-                            font-feature-settings: normal !important;
-                            font-variant: normal !important;
-                            letter-spacing: normal !important;
-                            word-spacing: normal !important;
-                            text-transform: none !important;
                           }
                           .resume-preview h1 { font-size: 18pt; font-weight: bold; text-align: center; text-transform: uppercase !important; margin-bottom: 4px; }
                           .resume-preview h1 + p { text-align: center; margin-bottom: 4px; }
@@ -401,39 +324,11 @@ export default function ResumeBuilderPage() {
                           .resume-preview h2, .resume-preview h3, .resume-preview strong, .resume-preview div { page-break-inside: avoid; }
                           .resume-preview strong { font-weight: bold; }
                           .resume-preview span[style*="float:right"] { float: right; }
-                          
-                          @media print {
-                            body * {
-                              visibility: hidden;
-                            }
-                            .scale-wrapper, .scale-wrapper * {
-                              visibility: visible;
-                            }
-                            .scale-wrapper {
-                              position: absolute !important;
-                              left: 0 !important;
-                              top: 0 !important;
-                              transform: none !important;
-                              width: 100% !important;
-                              margin: 0 !important;
-                            }
-                            .print-container {
-                              width: 100% !important;
-                              min-height: auto !important;
-                              box-shadow: none !important;
-                              padding: 0 !important;
-                            }
-                            @page {
-                              size: auto;
-                              margin: 10mm;
-                            }
-                          }
                         `}</style>
                         <div id="printable-resume" className="resume-preview">
                           <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                             {displayMarkdown || ""}
                           </ReactMarkdown>
-                        </div>
                         </div>
                       </div>
                     </div>
@@ -445,6 +340,112 @@ export default function ResumeBuilderPage() {
                 <Download size={18} />
                 Download Formatted PDF
               </Button>
+
+              {/* Floating Copilot Overlay */}
+              <div style={{
+                position: 'absolute',
+                bottom: '20px',
+                left: '20px',
+                zIndex: 50,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                width: isCopilotOpen ? '380px' : 'auto',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}>
+                {isCopilotOpen ? (
+                  <div style={{ 
+                    display: 'flex', flexDirection: 'column', gap: '1rem', 
+                    background: 'rgba(20, 20, 30, 0.85)', backdropFilter: 'blur(16px)',
+                    padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px inset rgba(255,255,255,0.05)',
+                    height: '500px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ padding: '0.5rem', background: 'var(--primary)', borderRadius: '8px', color: '#fff' }}>
+                          <Wand2 size={18} />
+                        </div>
+                        <div>
+                          <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--foreground)' }}>Resume Copilot</h3>
+                          <p style={{ fontSize: '0.8rem', margin: 0, color: 'var(--foreground-muted)' }}>Real-time formatting agent</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => setIsCopilotOpen(false)}
+                        style={{ background: 'none', border: 'none', color: 'var(--foreground-muted)', cursor: 'pointer', padding: '0.5rem' }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    
+                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingRight: '0.5rem' }}>
+                      {messages.filter(m => m.role !== 'system').map((m, idx) => {
+                        const cleanText = m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(<\/RESUME_MARKDOWN>|$)/, '').trim();
+                        const isUser = m.role === 'user';
+                        const isTyping = !isUser && !cleanText && isChatLoading && idx === messages.length - 1;
+                        
+                        if (!cleanText && !isTyping) return null;
+                        
+                        return (
+                          <div key={idx} style={{
+                            alignSelf: isUser ? 'flex-end' : 'flex-start',
+                            background: isUser ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                            color: isUser ? '#fff' : 'var(--foreground)',
+                            padding: '0.75rem 1rem',
+                            borderRadius: '12px',
+                            borderBottomRightRadius: isUser ? '2px' : '12px',
+                            borderBottomLeftRadius: !isUser ? '2px' : '12px',
+                            maxWidth: '90%',
+                            fontSize: '0.9rem',
+                            lineHeight: 1.4,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem'
+                          }}>
+                            {isTyping ? (
+                              <>
+                                <Loader2 size={14} className="animate-spin" />
+                                <span style={{ opacity: 0.7 }}>Agent is thinking...</span>
+                              </>
+                            ) : cleanText}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    
+                    <form onSubmit={handleChatSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      <textarea 
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder="Tell Copilot what to change..."
+                        style={{ 
+                          width: '100%', minHeight: '80px', background: 'rgba(0,0,0,0.2)', 
+                          border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '0.75rem', 
+                          color: 'var(--foreground)', resize: 'none', fontFamily: 'inherit', fontSize: '0.9rem'
+                        }}
+                        disabled={isChatLoading}
+                      />
+                      <Button type="submit" variant="primary" style={{ width: '100%', display: 'flex', gap: '0.5rem', justifyContent: 'center' }} disabled={isChatLoading || !input}>
+                        {isChatLoading ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
+                        {isChatLoading ? "Applying..." : "Send Request"}
+                      </Button>
+                    </form>
+                  </div>
+                ) : (
+                  <Button 
+                    onClick={() => setIsCopilotOpen(true)}
+                    variant="primary" 
+                    style={{ 
+                      borderRadius: '30px', padding: '0.75rem 1.5rem', display: 'flex', gap: '0.5rem', 
+                      boxShadow: '0 8px 30px rgba(99, 102, 241, 0.4)' 
+                    }}
+                  >
+                    <MessageSquare size={20} />
+                    Open Copilot
+                  </Button>
+                )}
+              </div>
             </div>
           )}
         </GlassCard>
