@@ -416,9 +416,10 @@ export default function ResumeBuilderPage() {
                     
                     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingRight: '0.5rem' }}>
                       {messages.filter(m => m.role !== 'system').map((m, idx) => {
-                        const cleanText = m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(<\/RESUME_MARKDOWN>|$)/, '').trim();
+                        const baseCleanText = m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/, '').trim();
+                        const cleanText = baseCleanText || (m.content.includes('<RESUME_MARKDOWN>') ? "I've updated your resume!" : "");
                         const isUser = m.role === 'user';
-                        const isTyping = !isUser && !cleanText && isChatLoading && idx === messages.length - 1;
+                        const isTyping = !isUser && !m.content && isChatLoading && idx === messages.length - 1;
                         
                         if (!cleanText && !isTyping) return null;
                         
