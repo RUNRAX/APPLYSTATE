@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { FileText, Download, Target, Wand2, ArrowRight, MessageSquare, Loader2 } from "lucide-react";
 import styles from "../dashboard.module.css";
-import { useCompletion } from 'ai/react';
+import { useCompletion } from '@ai-sdk/react';
 
 export default function ResumeBuilderPage() {
   const [jobDescription, setJobDescription] = useState("");
