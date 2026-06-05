@@ -111,7 +111,6 @@ export default function ResumeBuilderPage() {
           });
 
           // Check for markdown updates
-          const match = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(<\/RESUME_MARKDOWN>|$)/);
           const match = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
           if (match && match[1]) {
             setLiveMarkdown(match[1].trim());
