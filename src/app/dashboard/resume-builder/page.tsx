@@ -80,9 +80,16 @@ export default function ResumeBuilderPage() {
     // Strip out the massive markdown blocks from the history so we don't blow up the LLM context!
     // Replace with a placeholder so the assistant message isn't empty (which breaks Groq API)
     const cleanHistoryForAPI = newMessages.map(m => ({
-      ...m,
-      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/, '\n[Resume updated by Copilot]\n').trim() || '[Empty Message]'
-    }));
+      role: m.role,
+      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/ig, '\n[Resume updated by Copilot]\n').trim() || '[Empty Message]'
+    })).reduce((acc: any[], m) => {
+      if (acc.length > 0 && acc[acc.length - 1].role === m.role) {
+        acc[acc.length - 1].content += '\n\n' + m.content;
+      } else {
+        acc.push(m);
+      }
+      return acc;
+    }, []);
 
     let attempt = 0;
     while (attempt < 2) {
@@ -227,7 +234,7 @@ export default function ResumeBuilderPage() {
         margin:       0,
         filename:     'Tailored_Resume.pdf',
         image:        { type: 'jpeg' as const, quality: 1 },
-        html2canvas:  { scale: 4, useCORS: true, letterRendering: true, scrollY: 0 },
+        html2canvas:  { scale: 4, useCORS: true, scrollY: 0 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
       };
