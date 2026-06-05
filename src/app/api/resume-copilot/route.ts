@@ -10,6 +10,9 @@ export async function POST(req: Request) {
   try {
     const { messages, currentResume, jobDescription } = await req.json();
 
+    // Truncate resume to avoid exceeding token limits
+    const truncatedResume = (currentResume || "").substring(0, 10000);
+
     const systemMessage = `
       You are an expert ATS resume writer and interactive Copilot helping a user build their resume.
       The user will chat with you to request changes to their resume.
@@ -18,7 +21,7 @@ export async function POST(req: Request) {
       ${jobDescription}
       
       Current Resume Markdown:
-      ${currentResume}
+      ${truncatedResume}
       
       CRITICAL INSTRUCTIONS:
       1. Always respond conversationally to the user's request FIRST (e.g. "I've moved TCS iON to the projects section for you!").
@@ -33,11 +36,18 @@ export async function POST(req: Request) {
       model: groq('llama-3.3-70b-versatile'),
       system: systemMessage,
       messages: messages,
+      maxTokens: 4000,
     });
 
     return result.toTextStreamResponse();
   } catch (error: any) {
     console.error("Resume Copilot Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    const status = error?.status || error?.statusCode || 500;
+    const message = error?.message || "Failed to process request";
+    // Forward rate limit errors as 429
+    if (status === 429 || message.includes('rate_limit') || message.includes('Rate limit')) {
+      return new Response(JSON.stringify({ error: message }), { status: 429 });
+    }
+    return new Response(JSON.stringify({ error: message }), { status: 500 });
   }
 }

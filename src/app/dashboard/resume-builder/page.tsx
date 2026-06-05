@@ -120,7 +120,9 @@ export default function ResumeBuilderPage() {
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
     // Build clean history for the API: strip markdown blocks, ensure alternating roles
-    const cleanHistoryForAPI = newMessages.map(m => ({
+    // Only keep the last 6 messages to avoid exceeding Groq's token limits
+    const recentMessages = newMessages.slice(-6);
+    const cleanHistoryForAPI = recentMessages.map(m => ({
       role: m.role,
       content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/ig, '\n[Resume updated]\n').trim() || '[Message]'
     })).reduce((acc: any[], m) => {
@@ -132,6 +134,11 @@ export default function ResumeBuilderPage() {
       return acc;
     }, []);
 
+    // Ensure the history starts with a user message (required by LLaMA)
+    while (cleanHistoryForAPI.length > 0 && cleanHistoryForAPI[0].role !== 'user') {
+      cleanHistoryForAPI.shift();
+    }
+
     let success = false;
     let attempt = 0;
     while (attempt < 2) {
@@ -141,7 +148,7 @@ export default function ResumeBuilderPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             messages: cleanHistoryForAPI,
-            currentResume: result?.tailoredResumeMarkdown || "",
+            currentResume: (result?.tailoredResumeMarkdown || "").substring(0, 15000),
             jobDescription: jobDescription,
           }),
         });
@@ -170,7 +177,7 @@ export default function ResumeBuilderPage() {
             next[next.length - 1].content = `⚠️ Error: ${errData.error || 'Something went wrong. Please try again.'}`;
             return next;
           });
-          success = true; // Mark as handled so we don't remove the error message
+          success = true;
           break;
         }
 
@@ -181,25 +188,49 @@ export default function ResumeBuilderPage() {
         let done = false;
         let fullContent = "";
 
-        while (!done) {
-          const { value, done: doneReading } = await reader.read();
-          done = doneReading;
-          if (value) {
-            const chunk = decoder.decode(value, { stream: !done });
-            fullContent += chunk;
-            
-            setMessages(prev => {
-              const next = [...prev];
-              next[next.length - 1].content = fullContent;
-              return next;
-            });
+        try {
+          while (!done) {
+            const { value, done: doneReading } = await reader.read();
+            done = doneReading;
+            if (value) {
+              const chunk = decoder.decode(value, { stream: !done });
+              fullContent += chunk;
+              
+              setMessages(prev => {
+                const next = [...prev];
+                next[next.length - 1].content = fullContent;
+                return next;
+              });
 
-            // Check for markdown updates
-            const mdMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
-            if (mdMatch && mdMatch[1]) {
-              setLiveMarkdown(mdMatch[1].trim());
+              // Check for markdown updates
+              const mdMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
+              if (mdMatch && mdMatch[1]) {
+                setLiveMarkdown(mdMatch[1].trim());
+              }
             }
           }
+        } catch (streamErr) {
+          console.error("Stream error:", streamErr);
+          if (!fullContent.trim()) {
+            setMessages(prev => {
+              const next = [...prev];
+              next[next.length - 1].content = `⚠️ Connection interrupted. Please try again.`;
+              return next;
+            });
+            success = true;
+            break;
+          }
+        }
+
+        // If stream completed but no content was received, show error
+        if (!fullContent.trim()) {
+          setMessages(prev => {
+            const next = [...prev];
+            next[next.length - 1].content = `⚠️ No response received. The AI may be temporarily overloaded. Please wait a moment and try again.`;
+            return next;
+          });
+          success = true;
+          break;
         }
 
         const finalMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
@@ -212,12 +243,17 @@ export default function ResumeBuilderPage() {
         break;
       } catch (err) {
         console.error("Copilot error:", err);
+        setMessages(prev => {
+          const next = [...prev];
+          next[next.length - 1].content = `⚠️ Request failed: ${err instanceof Error ? err.message : 'Unknown error'}. Please try again.`;
+          return next;
+        });
+        success = true;
         break;
       }
     }
 
     // If the request failed entirely, remove the empty assistant stub
-    // so it doesn't poison the next request
     if (!success) {
       setMessages(prev => {
         const next = [...prev];
