@@ -45,11 +45,12 @@ export async function POST(req: NextRequest) {
       
       Tasks:
       1. Tailor the original resume specifically for this job description by subtly enhancing bullet points with relevant keywords.
-      CRITICAL RULE 1: DO NOT delete ANY jobs, degrees, or projects. You MUST include EVERY SINGLE project and EVERY SINGLE job from the original resume. DO NOT summarize or truncate.
-      CRITICAL RULE 2: ONLY rewrite the bullet point descriptions to better highlight skills matching the Job Description. DO NOT change company names, project names, dates, or job titles. Keep exact original titles (e.g. do not remove 'Full-Stack' from a project name).
-      CRITICAL RULE 3: DO NOT MIX Experience and Projects. You MUST respect the original resume's categorization. Put ONLY employment/internships at companies under PROFESSIONAL EXPERIENCE. Put ONLY software applications and academic/personal projects under KEY TECHNICAL PROJECTS. Do not move projects into the experience section.
-      CRITICAL RULE 4: You MAY reorder the items within the "PROFESSIONAL EXPERIENCE" and "KEY TECHNICAL PROJECTS" sections so that the most relevant ones to the Job Description appear at the top.
-      CRITICAL RULE 5: You MUST put a blank line (double newline) after the bullet points of each job/project, before starting the next job/project, so they do not clump together.
+      CRITICAL RULE 1: The original resume text is a raw PDF dump that lost its formatting. You MUST use the exact section headers in the text (e.g. "PROFESSIONAL EXPERIENCE" and "KEY TECHNICAL PROJECTS") as strict boundaries. Everything listed BEFORE "KEY TECHNICAL PROJECTS" is experience. Everything listed AFTER is a project.
+      CRITICAL RULE 2: DO NOT delete ANY jobs, degrees, or projects. You MUST include EVERY SINGLE project and EVERY SINGLE job from the original resume. DO NOT summarize or truncate.
+      CRITICAL RULE 3: ONLY rewrite the bullet point descriptions to better highlight skills matching the Job Description. DO NOT change company names, project names, dates, or job titles.
+      CRITICAL RULE 4: DO NOT MIX Experience and Projects. Put ONLY the items found in the original experience section under PROFESSIONAL EXPERIENCE. Put ONLY the items found in the original projects section under KEY TECHNICAL PROJECTS.
+      CRITICAL RULE 5: You MAY reorder the items within the sections so that the most relevant ones to the Job Description appear at the top.
+      CRITICAL RULE 6: You MUST put a blank line (double newline) after the bullet points of each job/project, before starting the next job/project.
       
       2. Format the tailored resume strictly in standard Markdown, but use HTML spans for right-aligned dates. You MUST use the following exact structure and headers:
 
