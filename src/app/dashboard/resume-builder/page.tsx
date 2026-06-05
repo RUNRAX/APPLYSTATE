@@ -84,7 +84,7 @@ export default function ResumeBuilderPage() {
         pagebreak:    { mode: 'css', before: '.page-break' }
       };
       
-      html2pdf.default().set(opt).from(resumeEl).save().then(() => {
+      html2pdf.default().set(opt as any).from(resumeEl).save().then(() => {
         // Restore scale and container
         scaleWrapper.style.transform = originalTransform;
         scrollContainer.style.height = originalHeight;
