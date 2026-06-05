@@ -17,6 +17,7 @@ export default function ResumeBuilderPage() {
     originalAtsScore: number; 
     tailoredAtsScore: number; 
     tailoredResumeMarkdown: string; 
+    extractedKeywords?: string[];
   } | null>(null);
   const [error, setError] = useState("");
   
@@ -234,7 +235,34 @@ export default function ResumeBuilderPage() {
         const finalMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
         if (finalMatch && finalMatch[1]) {
           const finalMarkdown = finalMatch[1].trim();
-          setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: finalMarkdown } : null);
+          setResult(prev => {
+            if (!prev) return null;
+            
+            // Recalculate deterministic math score based on the new resume
+            let newMathScore = 0;
+            if (prev.extractedKeywords && prev.extractedKeywords.length > 0) {
+              const normalizedText = finalMarkdown.toLowerCase();
+              let matches = 0;
+              for (const kw of prev.extractedKeywords) {
+                if (normalizedText.includes(kw.toLowerCase())) {
+                  matches++;
+                }
+              }
+              newMathScore = Math.round((matches / prev.extractedKeywords.length) * 100);
+            }
+            
+            // If we have a new math score, smoothly pull the displayed ATS score towards it
+            // We use a weighted average so manual tailoring realistically moves the needle
+            const newTailoredScore = newMathScore > 0 
+              ? Math.round((prev.tailoredAtsScore + newMathScore) / 2)
+              : prev.tailoredAtsScore;
+
+            return { 
+              ...prev, 
+              tailoredResumeMarkdown: finalMarkdown,
+              tailoredAtsScore: newTailoredScore
+            };
+          });
         }
         
         success = true;
