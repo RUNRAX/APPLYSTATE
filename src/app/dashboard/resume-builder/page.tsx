@@ -6,8 +6,9 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import { FileText, Download, Target, Wand2, ArrowRight } from "lucide-react";
+import { FileText, Download, Target, Wand2, ArrowRight, MessageSquare, Loader2 } from "lucide-react";
 import styles from "../dashboard.module.css";
+import { useCompletion } from 'ai/react';
 
 export default function ResumeBuilderPage() {
   const [jobDescription, setJobDescription] = useState("");
@@ -20,6 +21,21 @@ export default function ResumeBuilderPage() {
   } | null>(null);
   const [error, setError] = useState("");
   
+  const { completion, input, handleInputChange, handleSubmit: handleChatSubmit, isLoading: isChatLoading, setCompletion } = useCompletion({
+    api: '/api/resume-copilot',
+    body: {
+      currentResume: result?.tailoredResumeMarkdown || "",
+      jobDescription: jobDescription,
+    },
+    onFinish: (prompt, finalCompletion) => {
+      // Persist the copilot's changes into the main result state
+      setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: finalCompletion } : null);
+      setCompletion(''); // clear stream after save
+    }
+  });
+
+  const displayMarkdown = (isChatLoading && completion) ? completion : result?.tailoredResumeMarkdown;
+
   const resumeRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -192,87 +208,125 @@ export default function ResumeBuilderPage() {
 
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--foreground)' }}>Formatted Preview</label>
-                
-                <div 
-                  ref={scrollContainerRef}
-                  style={{ 
-                  flex: 1, height: '400px', overflowY: 'auto', background: '#333', 
-                  borderRadius: '8px', padding: '1rem', border: '1px solid var(--glass-border)'
-                }}>
-                  <div ref={scaleWrapperRef} className="scale-wrapper" style={{ transform: 'scale(0.8)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
-                    {/* The actual printable area */}
-                    <div 
-                      ref={resumeRef}
-                      className="print-container"
-                      style={{
-                        background: '#ffffff',
-                        color: '#000000',
-                        padding: '40px',
-                        width: '210mm', // A4 width
-                        minHeight: '297mm', // A4 height
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                        fontFamily: 'Arial, Helvetica, sans-serif',
+              <div style={{ display: 'flex', gap: '2rem', flex: 1 }}>
+                {/* Left Side: Copilot Chat */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '300px' }}>
+                  <div>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem', fontWeight: 600, color: 'var(--foreground)' }}>
+                      <MessageSquare size={18} color="var(--primary)" />
+                      AI Copilot
+                    </h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', marginTop: '0.25rem' }}>
+                      Notice a mistake? Ask the AI to fix it directly. 
+                      e.g. "Move TCS iON to projects"
+                    </p>
+                  </div>
+                  
+                  <form onSubmit={handleChatSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+                    <textarea 
+                      value={input}
+                      onChange={handleInputChange}
+                      placeholder="Tell the Copilot what to change..."
+                      style={{ 
+                        flex: 1, minHeight: '250px', background: 'rgba(255,255,255,0.02)', 
+                        border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1rem', 
+                        color: 'var(--foreground)', resize: 'none', fontFamily: 'inherit'
                       }}
-                    >
-                    <div style={{ 
-                      display: 'flex', flexDirection: 'column', gap: '0.5em',
-                      fontSize: '11pt', lineHeight: '1.4'
-                    }}>
-                      <style>{`
-                        .resume-preview, .resume-preview * {
-                          font-family: Arial, Helvetica, sans-serif !important;
-                          font-feature-settings: normal !important;
-                          font-variant: normal !important;
-                          letter-spacing: normal !important;
-                          word-spacing: normal !important;
-                          text-transform: none !important;
-                        }
-                        .resume-preview h1 { font-size: 18pt; font-weight: bold; text-align: center; text-transform: uppercase !important; margin-bottom: 4px; }
-                        .resume-preview h1 + p { text-align: center; margin-bottom: 4px; }
-                        .resume-preview h1 + p + p { text-align: center; margin-bottom: 12px; }
-                        .resume-preview h2 { font-size: 13pt; font-weight: bold; text-transform: uppercase !important; border-bottom: 1px solid #000; margin-top: 16px; margin-bottom: 8px; padding-bottom: 2px; }
-                        .resume-preview h3 { font-size: 11pt; font-weight: bold; margin-top: 8px; }
-                        .resume-preview p { text-align: left; margin-bottom: 4px; page-break-inside: avoid; }
-                        .resume-preview ul { margin-left: 20px; margin-bottom: 8px; list-style-type: disc; }
-                        .resume-preview li { margin-bottom: 2px; text-align: left; page-break-inside: avoid; }
-                        .resume-preview h2, .resume-preview h3, .resume-preview strong, .resume-preview div { page-break-inside: avoid; }
-                        .resume-preview strong { font-weight: bold; }
-                        .resume-preview span[style*="float:right"] { float: right; }
-                        
-                        @media print {
-                          body * {
-                            visibility: hidden;
+                      disabled={isChatLoading}
+                    />
+                    <Button type="submit" variant="primary" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }} disabled={isChatLoading || !input}>
+                      {isChatLoading ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
+                      {isChatLoading ? "Applying Changes..." : "Apply Changes"}
+                    </Button>
+                  </form>
+                </div>
+
+                {/* Right Side: Preview */}
+                <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--foreground)' }}>Formatted Preview</label>
+                    {isChatLoading && <span style={{ fontSize: '0.8rem', color: 'var(--primary)', animation: 'pulse 2s infinite' }}>Real-time editing...</span>}
+                  </div>
+                  
+                  <div 
+                    ref={scrollContainerRef}
+                    style={{ 
+                    flex: 1, height: '400px', overflowY: 'auto', background: '#333', 
+                    borderRadius: '8px', padding: '1rem', border: '1px solid var(--glass-border)'
+                  }}>
+                    <div ref={scaleWrapperRef} className="scale-wrapper" style={{ transform: 'scale(0.8)', transformOrigin: 'top center', margin: '0 auto', width: 'fit-content' }}>
+                      {/* The actual printable area */}
+                      <div 
+                        ref={resumeRef}
+                        className="print-container"
+                        style={{
+                          background: '#ffffff',
+                          color: '#000000',
+                          padding: '40px',
+                          width: '210mm', // A4 width
+                          minHeight: '297mm', // A4 height
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                          fontFamily: 'Arial, Helvetica, sans-serif',
+                        }}
+                      >
+                      <div style={{ 
+                        display: 'flex', flexDirection: 'column', gap: '0.5em',
+                        fontSize: '11pt', lineHeight: '1.4'
+                      }}>
+                        <style>{`
+                          .resume-preview, .resume-preview * {
+                            font-family: Arial, Helvetica, sans-serif !important;
+                            font-feature-settings: normal !important;
+                            font-variant: normal !important;
+                            letter-spacing: normal !important;
+                            word-spacing: normal !important;
+                            text-transform: none !important;
                           }
-                          .scale-wrapper, .scale-wrapper * {
-                            visibility: visible;
+                          .resume-preview h1 { font-size: 18pt; font-weight: bold; text-align: center; text-transform: uppercase !important; margin-bottom: 4px; }
+                          .resume-preview h1 + p { text-align: center; margin-bottom: 4px; }
+                          .resume-preview h1 + p + p { text-align: center; margin-bottom: 12px; }
+                          .resume-preview h2 { font-size: 13pt; font-weight: bold; text-transform: uppercase !important; border-bottom: 1px solid #000; margin-top: 16px; margin-bottom: 8px; padding-bottom: 2px; }
+                          .resume-preview h3 { font-size: 11pt; font-weight: bold; margin-top: 8px; }
+                          .resume-preview p { text-align: left; margin-bottom: 4px; page-break-inside: avoid; }
+                          .resume-preview ul { margin-left: 20px; margin-bottom: 8px; list-style-type: disc; }
+                          .resume-preview li { margin-bottom: 2px; text-align: left; page-break-inside: avoid; }
+                          .resume-preview h2, .resume-preview h3, .resume-preview strong, .resume-preview div { page-break-inside: avoid; }
+                          .resume-preview strong { font-weight: bold; }
+                          .resume-preview span[style*="float:right"] { float: right; }
+                          
+                          @media print {
+                            body * {
+                              visibility: hidden;
+                            }
+                            .scale-wrapper, .scale-wrapper * {
+                              visibility: visible;
+                            }
+                            .scale-wrapper {
+                              position: absolute !important;
+                              left: 0 !important;
+                              top: 0 !important;
+                              transform: none !important;
+                              width: 100% !important;
+                              margin: 0 !important;
+                            }
+                            .print-container {
+                              width: 100% !important;
+                              min-height: auto !important;
+                              box-shadow: none !important;
+                              padding: 0 !important;
+                            }
+                            @page {
+                              size: auto;
+                              margin: 10mm;
+                            }
                           }
-                          .scale-wrapper {
-                            position: absolute !important;
-                            left: 0 !important;
-                            top: 0 !important;
-                            transform: none !important;
-                            width: 100% !important;
-                            margin: 0 !important;
-                          }
-                          .print-container {
-                            width: 100% !important;
-                            min-height: auto !important;
-                            box-shadow: none !important;
-                            padding: 0 !important;
-                          }
-                          @page {
-                            size: auto;
-                            margin: 10mm;
-                          }
-                        }
-                      `}</style>
-                      <div id="printable-resume" className="resume-preview">
-                        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                          {result.tailoredResumeMarkdown}
-                        </ReactMarkdown>
-                      </div>
+                        `}</style>
+                        <div id="printable-resume" className="resume-preview">
+                          <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                            {displayMarkdown || ""}
+                          </ReactMarkdown>
+                        </div>
+                        </div>
                       </div>
                     </div>
                   </div>
