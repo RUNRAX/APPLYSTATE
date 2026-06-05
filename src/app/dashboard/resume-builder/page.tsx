@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { FileText, Download, Target, Wand2, ArrowRight, MessageSquare, Loader2 } from "lucide-react";
 import styles from "../dashboard.module.css";
-import { useCompletion } from '@ai-sdk/react';
+import { useChat } from '@ai-sdk/react';
 
 export default function ResumeBuilderPage() {
   const [jobDescription, setJobDescription] = useState("");
@@ -21,20 +21,31 @@ export default function ResumeBuilderPage() {
   } | null>(null);
   const [error, setError] = useState("");
   
-  const { completion, input, handleInputChange, handleSubmit: handleChatSubmit, isLoading: isChatLoading, setCompletion } = useCompletion({
+  const { messages, input, handleInputChange, handleSubmit: handleChatSubmit, isLoading: isChatLoading } = useChat({
     api: '/api/resume-copilot',
     body: {
       currentResume: result?.tailoredResumeMarkdown || "",
       jobDescription: jobDescription,
     },
-    onFinish: (prompt, finalCompletion) => {
-      // Persist the copilot's changes into the main result state
-      setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: finalCompletion } : null);
-      setCompletion(''); // clear stream after save
+    onFinish: (msg) => {
+      // Extract markdown from <RESUME_MARKDOWN>...</RESUME_MARKDOWN>
+      const match = msg.content.match(/<RESUME_MARKDOWN>([\s\S]*?)<\/RESUME_MARKDOWN>/);
+      if (match && match[1]) {
+        setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: match[1].trim() } : null);
+      }
     }
   });
 
-  const displayMarkdown = (isChatLoading && completion) ? completion : result?.tailoredResumeMarkdown;
+  // Calculate the live display markdown from the streaming message
+  const lastMessage = messages[messages.length - 1];
+  let displayMarkdown = result?.tailoredResumeMarkdown;
+  
+  if (isChatLoading && lastMessage?.role === 'assistant') {
+    const match = lastMessage.content.match(/<RESUME_MARKDOWN>([\s\S]*?)(<\/RESUME_MARKDOWN>|$)/);
+    if (match && match[1]) {
+      displayMarkdown = match[1].trim();
+    }
+  }
 
   const resumeRef = useRef<HTMLDivElement>(null);
 
@@ -222,21 +233,47 @@ export default function ResumeBuilderPage() {
                     </p>
                   </div>
                   
-                  <form onSubmit={handleChatSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingRight: '0.5rem' }}>
+                    {messages.filter(m => m.role !== 'system').map((m, idx) => {
+                      // Hide the <RESUME_MARKDOWN> block from the chat UI bubble
+                      const cleanText = m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(<\/RESUME_MARKDOWN>|$)/, '').trim();
+                      if (!cleanText) return null;
+                      
+                      const isUser = m.role === 'user';
+                      return (
+                        <div key={idx} style={{
+                          alignSelf: isUser ? 'flex-end' : 'flex-start',
+                          background: isUser ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                          color: isUser ? '#fff' : 'var(--foreground)',
+                          padding: '0.75rem 1rem',
+                          borderRadius: '12px',
+                          borderBottomRightRadius: isUser ? '2px' : '12px',
+                          borderBottomLeftRadius: !isUser ? '2px' : '12px',
+                          maxWidth: '90%',
+                          fontSize: '0.9rem',
+                          lineHeight: 1.4
+                        }}>
+                          {cleanText}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  <form onSubmit={handleChatSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <textarea 
                       value={input}
                       onChange={handleInputChange}
                       placeholder="Tell the Copilot what to change..."
                       style={{ 
-                        flex: 1, minHeight: '250px', background: 'rgba(255,255,255,0.02)', 
-                        border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1rem', 
-                        color: 'var(--foreground)', resize: 'none', fontFamily: 'inherit'
+                        width: '100%', minHeight: '80px', background: 'rgba(255,255,255,0.02)', 
+                        border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '0.75rem', 
+                        color: 'var(--foreground)', resize: 'none', fontFamily: 'inherit', fontSize: '0.9rem'
                       }}
                       disabled={isChatLoading}
                     />
                     <Button type="submit" variant="primary" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }} disabled={isChatLoading || !input}>
                       {isChatLoading ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
-                      {isChatLoading ? "Applying Changes..." : "Apply Changes"}
+                      {isChatLoading ? "Applying..." : "Send Request"}
                     </Button>
                   </form>
                 </div>

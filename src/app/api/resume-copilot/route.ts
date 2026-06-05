@@ -8,11 +8,11 @@ const groq = createOpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { prompt, currentResume, jobDescription } = await req.json();
+    const { messages, currentResume, jobDescription } = await req.json();
 
     const systemMessage = `
-      You are an expert ATS resume writer and interactive Copilot. 
-      The user is trying to format their resume in Markdown based on a specific Job Description.
+      You are an expert ATS resume writer and interactive Copilot helping a user build their resume.
+      The user will chat with you to request changes to their resume.
       
       Current Job Description:
       ${jobDescription}
@@ -20,24 +20,20 @@ export async function POST(req: Request) {
       Current Resume Markdown:
       ${currentResume}
       
-      The user will request changes to their resume.
-      You must respond with the FULL REVISED MARKDOWN of the resume, incorporating their requested changes.
-      
-      CRITICAL RULES:
-      - Always return ONLY the raw markdown of the resume. 
-      - DO NOT wrap it in \`\`\`markdown backticks. 
-      - DO NOT output any conversational text, greetings, or explanations (e.g. do not say "Here is the updated resume"). 
-      - ONLY output the raw markdown text starting with "# [Name]" so it can be directly rendered.
-      - Apply the requested change cleanly to the markdown.
+      CRITICAL INSTRUCTIONS:
+      1. Always respond conversationally to the user's request (e.g. "I've moved TCS iON to the projects section for you!").
+      2. If you make ANY changes to the resume, you MUST output the FULL, updated resume markdown wrapped in <RESUME_MARKDOWN>...</RESUME_MARKDOWN> tags at the very end of your message.
+      3. Never wrap the markdown in \`\`\` backticks inside the tags. Just put the raw markdown inside the <RESUME_MARKDOWN> tags.
+      4. If the user just asks a question without needing a resume update, just answer conversationally.
     `;
 
     const result = streamText({
       model: groq('llama-3.3-70b-versatile'),
       system: systemMessage,
-      prompt: prompt,
+      messages: messages,
     });
 
-    return result.toTextStreamResponse();
+    return result.toDataStreamResponse();
   } catch (error: any) {
     console.error("Resume Copilot Error:", error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
