@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       model: groq('llama-3.3-70b-versatile'),
       system: systemMessage,
       messages: messages,
-      maxTokens: 4000,
+      maxOutputTokens: 4000,
     });
 
     return result.toTextStreamResponse();
