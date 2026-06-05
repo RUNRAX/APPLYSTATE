@@ -138,6 +138,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 filter: { duration: 0.35 },
                 scale: { duration: 0.4 }
               }}
+              style={{ padding: '0 1.5rem 2rem 1.5rem' }}
             >
               {children}
             </motion.div>
