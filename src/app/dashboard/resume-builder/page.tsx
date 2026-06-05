@@ -6,7 +6,7 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import { FileText, Download, Target, Wand2, ArrowRight, MessageSquare, Loader2 } from "lucide-react";
+import { FileText, Download, Target, Wand2, ArrowRight, MessageSquare, Loader2, Trash2 } from "lucide-react";
 import styles from "../dashboard.module.css";
 
 export default function ResumeBuilderPage() {
@@ -24,6 +24,8 @@ export default function ResumeBuilderPage() {
   const [input, setInput] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [liveMarkdown, setLiveMarkdown] = useState<string | null>(null);
+
+  const [rateLimitWait, setRateLimitWait] = useState<number | null>(null);
 
   // Load from local storage on mount
   useEffect(() => {
@@ -57,11 +59,13 @@ export default function ResumeBuilderPage() {
   useEffect(() => {
     if (messages.length > 0) {
       localStorage.setItem('resume_builder_messages', JSON.stringify(messages));
+    } else {
+      localStorage.removeItem('resume_builder_messages');
     }
   }, [messages]);
 
-  const handleChatSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleChatSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!input || isChatLoading) return;
 
     const userMsg = { role: 'user', content: input };
@@ -80,61 +84,85 @@ export default function ResumeBuilderPage() {
       content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/, '\n[Resume updated by Copilot]\n').trim() || '[Empty Message]'
     }));
 
-    try {
-      const response = await fetch('/api/resume-copilot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: cleanHistoryForAPI,
-          currentResume: result?.tailoredResumeMarkdown || "",
-          jobDescription: jobDescription,
-        }),
-      });
+    let attempt = 0;
+    while (attempt < 2) {
+      try {
+        const response = await fetch('/api/resume-copilot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: cleanHistoryForAPI,
+            currentResume: result?.tailoredResumeMarkdown || "",
+            jobDescription: jobDescription,
+          }),
+        });
 
-      if (!response.body) throw new Error("No response body");
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-      let fullContent = "";
-
-      while (!done) {
-        const { value, done: doneReading } = await reader.read();
-        done = doneReading;
-        if (value) {
-          const chunk = decoder.decode(value, { stream: !done });
-          fullContent += chunk;
+        if (response.status === 429) {
+          const errData = await response.json().catch(() => ({}));
+          let waitTime = 60;
+          const match = errData.error?.match(/(\d+(?:\.\d+)?)s/);
+          if (match) {
+            waitTime = Math.ceil(parseFloat(match[1]));
+          }
           
-          setMessages(prev => {
-            const next = [...prev];
-            next[next.length - 1].content = fullContent;
-            return next;
-          });
+          for (let i = waitTime; i > 0; i--) {
+            setRateLimitWait(i);
+            await new Promise(r => setTimeout(r, 1000));
+          }
+          setRateLimitWait(null);
+          attempt++;
+          continue;
+        }
 
-          // Check for markdown updates
-          const match = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
-          if (match && match[1]) {
-            setLiveMarkdown(match[1].trim());
+        if (!response.body) throw new Error("No response body");
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        let fullContent = "";
+
+        while (!done) {
+          const { value, done: doneReading } = await reader.read();
+          done = doneReading;
+          if (value) {
+            const chunk = decoder.decode(value, { stream: !done });
+            fullContent += chunk;
+            
+            setMessages(prev => {
+              const next = [...prev];
+              next[next.length - 1].content = fullContent;
+              return next;
+            });
+
+            // Check for markdown updates
+            const match = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
+            if (match && match[1]) {
+              setLiveMarkdown(match[1].trim());
+            }
           }
         }
-      }
 
-      const finalMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
-      if (finalMatch && finalMatch[1]) {
-        const finalMarkdown = finalMatch[1].trim();
-        setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: finalMarkdown } : null);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsChatLoading(false);
-      setLiveMarkdown(current => {
-        if (current) {
-          setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: current } : null);
+        const finalMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
+        if (finalMatch && finalMatch[1]) {
+          const finalMarkdown = finalMatch[1].trim();
+          setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: finalMarkdown } : null);
         }
-        return null;
-      });
+        
+        break; // Success! Break out of retry loop
+      } catch (err) {
+        console.error(err);
+        break;
+      }
     }
+
+    setIsChatLoading(false);
+    setRateLimitWait(null);
+    setLiveMarkdown(current => {
+      if (current) {
+        setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: current } : null);
+      }
+      return null;
+    });
   };
 
   const displayMarkdown = liveMarkdown ?? result?.tailoredResumeMarkdown;
@@ -406,12 +434,21 @@ export default function ResumeBuilderPage() {
                           <p style={{ fontSize: '0.8rem', margin: 0, color: 'var(--foreground-muted)' }}>Real-time formatting agent</p>
                         </div>
                       </div>
-                      <button 
-                        onClick={() => setIsCopilotOpen(false)}
-                        style={{ background: 'none', border: 'none', color: 'var(--foreground-muted)', cursor: 'pointer', padding: '0.5rem' }}
-                      >
-                        ✕
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <button 
+                          onClick={() => setMessages([])}
+                          title="Clear Chat History"
+                          style={{ background: 'none', border: 'none', color: 'var(--foreground-muted)', cursor: 'pointer', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                        <button 
+                          onClick={() => setIsCopilotOpen(false)}
+                          style={{ background: 'none', border: 'none', color: 'var(--foreground-muted)', cursor: 'pointer', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }}
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                     
                     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingRight: '0.5rem' }}>
@@ -448,6 +485,25 @@ export default function ResumeBuilderPage() {
                           </div>
                         );
                       })}
+                      {rateLimitWait !== null && (
+                        <div style={{
+                          alignSelf: 'flex-start',
+                          background: 'rgba(239, 68, 68, 0.1)',
+                          color: '#ef4444',
+                          padding: '0.75rem 1rem',
+                          borderRadius: '12px',
+                          borderBottomLeftRadius: '2px',
+                          maxWidth: '90%',
+                          fontSize: '0.9rem',
+                          lineHeight: 1.4,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem'
+                        }}>
+                          <Loader2 size={14} className="animate-spin" />
+                          <span>Rate limit exceeded. Retrying in {rateLimitWait}s...</span>
+                        </div>
+                      )}
                     </div>
                     
                     <form onSubmit={handleChatSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
