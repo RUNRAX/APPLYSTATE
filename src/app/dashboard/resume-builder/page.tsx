@@ -74,11 +74,11 @@ export default function ResumeBuilderPage() {
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
     // Strip out the massive markdown blocks from the history so we don't blow up the LLM context!
-    // Also filter out empty messages, because the Groq API throws a 400 Bad Request if content is empty.
+    // Replace with a placeholder so the assistant message isn't empty (which breaks Groq API)
     const cleanHistoryForAPI = newMessages.map(m => ({
       ...m,
-      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/, '').trim()
-    })).filter(m => m.content !== '');
+      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/, '\n[Resume updated by Copilot]\n').trim() || '[Empty Message]'
+    }));
 
     try {
       const response = await fetch('/api/resume-copilot', {
@@ -362,7 +362,7 @@ export default function ResumeBuilderPage() {
                         `}</style>
                         <div id="printable-resume" className="resume-preview">
                           <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                            {displayMarkdown || ""}
+                            {(displayMarkdown || "").replace(/```(?:markdown)?\n?/g, '').replace(/```/g, '')}
                           </ReactMarkdown>
                         </div>
                       </div>
@@ -379,7 +379,7 @@ export default function ResumeBuilderPage() {
               {/* Floating Copilot Overlay */}
               <div style={{
                 position: 'absolute',
-                bottom: '20px',
+                bottom: '80px',
                 left: '20px',
                 zIndex: 50,
                 display: 'flex',
