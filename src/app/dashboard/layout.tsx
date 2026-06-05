@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode } from "react";
+import { ReactNode, useId } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,10 +18,12 @@ import {
   FileEdit,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { LiquidGlassFilter } from "@/components/ui/LiquidGlassFilter";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const filterId = useId().replace(/:/g, "");
 
   const navItems = [
     { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, end: true },
@@ -39,6 +41,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.dashboardOuter}>
+      <LiquidGlassFilter id={`glass-filter-${filterId}`} />
+      
       {/* Sidebar — floating glass-strong card */}
       <aside className={`glass-strong ${styles.sidebar}`}>
         <div className={styles.sidebarHeader}>
@@ -93,7 +97,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <main className={styles.mainContent}>
         <div className={styles.scrollArea}>
           {/* Header — sticky inside scroll area so content passes under it */}
-          <header className={styles.header}>
+          <header 
+            id={`glass-filter-${filterId}`}
+            className={styles.header}
+            style={{ 
+              backdropFilter: `url(#glass-filter-${filterId})`,
+              WebkitBackdropFilter: `url(#glass-filter-${filterId})`
+            }}
+          >
             <div className={styles.headerLeft}>
               <div className={styles.headerLabel}>Dashboard</div>
               <div className={styles.headerTitle}>

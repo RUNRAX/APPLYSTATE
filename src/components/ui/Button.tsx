@@ -1,6 +1,8 @@
 "use client";
 import { motion, HTMLMotionProps } from "framer-motion";
+import React, { useId } from "react";
 import { springPhysics } from "./GlassCard";
+import { LiquidGlassFilter } from "./LiquidGlassFilter";
 
 interface ButtonProps extends HTMLMotionProps<"button"> {
   variant?: "primary" | "glass" | "ghost" | "outline" | "danger" | "secondary";
@@ -10,6 +12,9 @@ interface ButtonProps extends HTMLMotionProps<"button"> {
 const smoothSpring = { type: "spring" as const, damping: 30, stiffness: 200, mass: 0.8 };
 
 export function Button({ children, variant = "primary", size = "md", className = "", style, ...props }: ButtonProps) {
+  const filterId = useId().replace(/:/g, "");
+  const isGlass = variant === "glass" || variant === "secondary";
+
   const baseStyle: React.CSSProperties = {
     fontWeight: 600,
     cursor: "pointer",
@@ -46,9 +51,13 @@ export function Button({ children, variant = "primary", size = "md", className =
       boxShadow: "0 12px 48px -8px hsla(350, 96%, 60%, 0.7), inset 0 1px 0 0 hsla(0, 0%, 100%, 0.35)",
       filter: "brightness(1.08)"
     };
-  } else if (variant === "glass" || variant === "secondary") {
+  } else if (isGlass) {
     customClass = "glass-pill";
-    variantStyle = { color: "var(--foreground)" };
+    variantStyle = { 
+      color: "var(--foreground)",
+      backdropFilter: `url(#glass-filter-${filterId})`,
+      WebkitBackdropFilter: `url(#glass-filter-${filterId})`,
+    };
     hoverStyle = { scale: 1.02, background: "rgba(100, 160, 255, 0.12)", boxShadow: "0 8px 24px -8px rgba(80, 140, 255, 0.4)" };
   } else if (variant === "ghost") {
     variantStyle = {
@@ -75,15 +84,19 @@ export function Button({ children, variant = "primary", size = "md", className =
   }
 
   return (
-    <motion.button
-      style={{ ...baseStyle, ...sizes[size], ...variantStyle, ...style }}
-      className={`${customClass} ${className}`}
-      transition={smoothSpring}
-      whileHover={hoverStyle}
-      whileTap={{ scale: 0.97 }}
-      {...props}
-    >
-      {children}
-    </motion.button>
+    <>
+      {isGlass && <LiquidGlassFilter id={`glass-filter-${filterId}`} />}
+      <motion.button
+        id={isGlass ? `glass-filter-${filterId}` : undefined}
+        style={{ ...baseStyle, ...sizes[size], ...variantStyle, ...style }}
+        className={`${customClass} ${className}`}
+        transition={smoothSpring}
+        whileHover={hoverStyle}
+        whileTap={{ scale: 0.97 }}
+        {...props}
+      >
+        {children}
+      </motion.button>
+    </>
   );
 }
