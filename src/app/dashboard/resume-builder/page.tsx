@@ -8,7 +8,6 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { FileText, Download, Target, Wand2, ArrowRight, MessageSquare, Loader2 } from "lucide-react";
 import styles from "../dashboard.module.css";
-import { useChat } from '@ai-sdk/react';
 
 export default function ResumeBuilderPage() {
   const [jobDescription, setJobDescription] = useState("");
@@ -21,40 +20,78 @@ export default function ResumeBuilderPage() {
   } | null>(null);
   const [error, setError] = useState("");
   
+  const [messages, setMessages] = useState<{role: string, content: string}[]>([]);
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = useChat({
-    api: '/api/resume-copilot',
-    body: {
-      currentResume: result?.tailoredResumeMarkdown || "",
-      jobDescription: jobDescription,
-    },
-    onFinish: (msg) => {
-      const match = msg.content.match(/<RESUME_MARKDOWN>([\s\S]*?)<\/RESUME_MARKDOWN>/);
-      if (match && match[1]) {
-        setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: match[1].trim() } : null);
-      }
-    }
-  });
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [liveMarkdown, setLiveMarkdown] = useState<string | null>(null);
 
-  const isChatLoading = status === 'streaming' || status === 'submitted';
-
-  const handleChatSubmit = (e: React.FormEvent) => {
+  const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input) return;
-    sendMessage({ role: 'user', content: input });
+    if (!input || isChatLoading) return;
+
+    const userMsg = { role: 'user', content: input };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     setInput("");
+    setIsChatLoading(true);
+
+    // Add empty assistant message stub
+    setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+
+    try {
+      const response = await fetch('/api/resume-copilot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newMessages,
+          currentResume: result?.tailoredResumeMarkdown || "",
+          jobDescription: jobDescription,
+        }),
+      });
+
+      if (!response.body) throw new Error("No response body");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let fullContent = "";
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: !done });
+          fullContent += chunk;
+          
+          setMessages(prev => {
+            const next = [...prev];
+            next[next.length - 1].content = fullContent;
+            return next;
+          });
+
+          // Check for markdown updates
+          const match = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(<\/RESUME_MARKDOWN>|$)/);
+          if (match && match[1]) {
+            setLiveMarkdown(match[1].trim());
+          }
+        }
+      }
+
+      // Final save
+      const finalMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)<\/RESUME_MARKDOWN>/);
+      if (finalMatch && finalMatch[1]) {
+        const finalMarkdown = finalMatch[1].trim();
+        setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: finalMarkdown } : null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsChatLoading(false);
+      setLiveMarkdown(null);
+    }
   };
 
-  // Calculate the live display markdown from the streaming message
-  const lastMessage = messages[messages.length - 1];
-  let displayMarkdown = result?.tailoredResumeMarkdown;
-  
-  if (isChatLoading && lastMessage?.role === 'assistant') {
-    const match = lastMessage.content.match(/<RESUME_MARKDOWN>([\s\S]*?)(<\/RESUME_MARKDOWN>|$)/);
-    if (match && match[1]) {
-      displayMarkdown = match[1].trim();
-    }
-  }
+  const displayMarkdown = liveMarkdown ?? result?.tailoredResumeMarkdown;
 
   const resumeRef = useRef<HTMLDivElement>(null);
 
