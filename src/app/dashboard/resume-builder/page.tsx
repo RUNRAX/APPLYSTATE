@@ -81,7 +81,7 @@ export default function ResumeBuilderPage() {
         image:        { type: 'jpeg' as const, quality: 1 },
         html2canvas:  { scale: 4, useCORS: true, letterRendering: true, scrollY: 0 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: 'css', before: '.page-break' }
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
       };
       
       html2pdf.default().set(opt as any).from(resumeEl).save().then(() => {
@@ -234,9 +234,10 @@ export default function ResumeBuilderPage() {
                         .resume-preview h1 + p + p { text-align: center; margin-bottom: 12px; }
                         .resume-preview h2 { font-size: 13pt; font-weight: bold; text-transform: uppercase !important; border-bottom: 1px solid #000; margin-top: 16px; margin-bottom: 8px; padding-bottom: 2px; }
                         .resume-preview h3 { font-size: 11pt; font-weight: bold; margin-top: 8px; }
-                        .resume-preview p { text-align: left; margin-bottom: 4px; }
+                        .resume-preview p { text-align: left; margin-bottom: 4px; page-break-inside: avoid; }
                         .resume-preview ul { margin-left: 20px; margin-bottom: 8px; list-style-type: disc; }
-                        .resume-preview li { margin-bottom: 2px; text-align: left; }
+                        .resume-preview li { margin-bottom: 2px; text-align: left; page-break-inside: avoid; }
+                        .resume-preview h2, .resume-preview h3, .resume-preview strong, .resume-preview div { page-break-inside: avoid; }
                         .resume-preview strong { font-weight: bold; }
                         .resume-preview span[style*="float:right"] { float: right; }
                         
