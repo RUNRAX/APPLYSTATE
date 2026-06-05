@@ -64,24 +64,65 @@ export default function ResumeBuilderPage() {
     }
   }, [messages]);
 
+  // Normalize Small Caps PDF extraction artifacts
+  // Detects patterns like "nEERING", "mANUAL", "tRACKING" and fixes them
+  const normalizeSmallCaps = (text: string): string => {
+    // Known acronyms/abbreviations that should stay uppercase
+    const keepUppercase = new Set([
+      'SQL', 'AWS', 'GCP', 'API', 'REST', 'JWT', 'CSS', 'HTML', 'CI', 'CD',
+      'IIT', 'IOT', 'ML', 'AI', 'NLP', 'DL', 'OOP', 'SDK', 'CLI', 'GUI',
+      'HTTP', 'HTTPS', 'TCP', 'UDP', 'DNS', 'SSH', 'SSL', 'TLS', 'URL',
+      'JSON', 'XML', 'CSV', 'PDF', 'YAML', 'TOML', 'CGPA', 'GPA', 'ATS',
+      'TCS', 'SSCA', 'ION', 'CRUD', 'ETL', 'KPI', 'SLA', 'CEO', 'CTO',
+      'LLM', 'GPT', 'RAG', 'IEEE', 'ACM', 'PhD', 'MSc', 'BSc', 'MBA',
+    ]);
+
+    return text.replace(/\b([A-Za-z])([A-Za-z]+)\b/g, (match) => {
+      // Skip if it's a known acronym
+      if (keepUppercase.has(match.toUpperCase())) return match.toUpperCase();
+      // Skip short words (1-2 chars) and already properly cased words
+      if (match.length <= 2) return match;
+      
+      // Count uppercase vs lowercase
+      const upperCount = (match.match(/[A-Z]/g) || []).length;
+      const lowerCount = (match.match(/[a-z]/g) || []).length;
+      
+      // If mostly uppercase (>60%) and word is 4+ chars, it's likely a Small Caps artifact
+      if (match.length >= 4 && upperCount > lowerCount && upperCount >= match.length * 0.6) {
+        return match.charAt(0).toUpperCase() + match.slice(1).toLowerCase();
+      }
+      
+      // Detect pattern: 1-2 lowercase + rest UPPERCASE (e.g., "nEERING", "aIOHTTP")
+      const smallCapsMatch = match.match(/^([a-z]{1,2})([A-Z]{2,})$/);
+      if (smallCapsMatch) {
+        const full = match.toLowerCase();
+        return full.charAt(0).toUpperCase() + full.slice(1);
+      }
+      
+      return match;
+    });
+  };
+
   const handleChatSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!input || isChatLoading) return;
 
     const userMsg = { role: 'user', content: input };
-    const newMessages = [...messages, userMsg];
+    
+    // Filter out any previous empty/failed assistant stubs before adding the new message
+    const cleanedMessages = messages.filter(m => !(m.role === 'assistant' && !m.content.trim()));
+    const newMessages = [...cleanedMessages, userMsg];
     setMessages(newMessages);
     setInput("");
     setIsChatLoading(true);
 
-    // Add empty assistant message stub
+    // Add empty assistant message stub for streaming
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
-    // Strip out the massive markdown blocks from the history so we don't blow up the LLM context!
-    // Replace with a placeholder so the assistant message isn't empty (which breaks Groq API)
+    // Build clean history for the API: strip markdown blocks, ensure alternating roles
     const cleanHistoryForAPI = newMessages.map(m => ({
       role: m.role,
-      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/ig, '\n[Resume updated by Copilot]\n').trim() || '[Empty Message]'
+      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/ig, '\n[Resume updated]\n').trim() || '[Message]'
     })).reduce((acc: any[], m) => {
       if (acc.length > 0 && acc[acc.length - 1].role === m.role) {
         acc[acc.length - 1].content += '\n\n' + m.content;
@@ -91,6 +132,7 @@ export default function ResumeBuilderPage() {
       return acc;
     }, []);
 
+    let success = false;
     let attempt = 0;
     while (attempt < 2) {
       try {
@@ -107,9 +149,9 @@ export default function ResumeBuilderPage() {
         if (response.status === 429) {
           const errData = await response.json().catch(() => ({}));
           let waitTime = 60;
-          const match = errData.error?.match(/(\d+(?:\.\d+)?)s/);
-          if (match) {
-            waitTime = Math.ceil(parseFloat(match[1]));
+          const retryMatch = errData.error?.match(/(\d+(?:\.\d+)?)s/);
+          if (retryMatch) {
+            waitTime = Math.ceil(parseFloat(retryMatch[1]));
           }
           
           for (let i = waitTime; i > 0; i--) {
@@ -120,13 +162,15 @@ export default function ResumeBuilderPage() {
           attempt++;
           continue;
         }
-        if (!response.ok && response.status !== 429) {
+
+        if (!response.ok) {
           const errData = await response.json().catch(() => ({ error: 'Unknown error' }));
           setMessages(prev => {
             const next = [...prev];
             next[next.length - 1].content = `⚠️ Error: ${errData.error || 'Something went wrong. Please try again.'}`;
             return next;
           });
+          success = true; // Mark as handled so we don't remove the error message
           break;
         }
 
@@ -151,9 +195,9 @@ export default function ResumeBuilderPage() {
             });
 
             // Check for markdown updates
-            const match = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
-            if (match && match[1]) {
-              setLiveMarkdown(match[1].trim());
+            const mdMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
+            if (mdMatch && mdMatch[1]) {
+              setLiveMarkdown(mdMatch[1].trim());
             }
           }
         }
@@ -164,11 +208,24 @@ export default function ResumeBuilderPage() {
           setResult(prev => prev ? { ...prev, tailoredResumeMarkdown: finalMarkdown } : null);
         }
         
-        break; // Success! Break out of retry loop
+        success = true;
+        break;
       } catch (err) {
-        console.error(err);
+        console.error("Copilot error:", err);
         break;
       }
+    }
+
+    // If the request failed entirely, remove the empty assistant stub
+    // so it doesn't poison the next request
+    if (!success) {
+      setMessages(prev => {
+        const next = [...prev];
+        if (next.length > 0 && next[next.length - 1].role === 'assistant' && !next[next.length - 1].content) {
+          next.pop();
+        }
+        return next;
+      });
     }
 
     setIsChatLoading(false);
@@ -391,22 +448,32 @@ export default function ResumeBuilderPage() {
                         <style>{`
                           .resume-preview, .resume-preview * {
                             font-family: Arial, Helvetica, sans-serif !important;
+                            font-variant: normal !important;
+                            font-feature-settings: normal !important;
+                            letter-spacing: normal !important;
+                          }
+                          .resume-preview code, .resume-preview pre {
+                            font-family: Arial, Helvetica, sans-serif !important;
+                            background: none !important;
+                            padding: 0 !important;
+                            white-space: pre-wrap;
                           }
                           .resume-preview h1 { font-size: 18pt; font-weight: bold; text-align: center; text-transform: uppercase !important; margin-bottom: 4px; }
                           .resume-preview h1 + p { text-align: center; margin-bottom: 4px; }
                           .resume-preview h1 + p + p { text-align: center; margin-bottom: 12px; }
                           .resume-preview h2 { font-size: 13pt; font-weight: bold; text-transform: uppercase !important; border-bottom: 1px solid #000; margin-top: 16px; margin-bottom: 8px; padding-bottom: 2px; }
-                          .resume-preview h3 { font-size: 11pt; font-weight: bold; margin-top: 8px; }
-                          .resume-preview p { text-align: left; margin-bottom: 4px; page-break-inside: avoid; }
+                          .resume-preview h3 { font-size: 11pt; font-weight: bold; margin-top: 8px; text-transform: none !important; }
+                          .resume-preview p { text-align: left; margin-bottom: 4px; page-break-inside: avoid; text-transform: none !important; }
                           .resume-preview ul { margin-left: 20px; margin-bottom: 8px; list-style-type: disc; }
-                          .resume-preview li { margin-bottom: 2px; text-align: left; page-break-inside: avoid; }
+                          .resume-preview li { margin-bottom: 2px; text-align: left; page-break-inside: avoid; text-transform: none !important; }
                           .resume-preview h2, .resume-preview h3, .resume-preview strong, .resume-preview div { page-break-inside: avoid; }
                           .resume-preview strong { font-weight: bold; }
+                          .resume-preview em { font-style: italic; font-family: Arial, Helvetica, sans-serif !important; }
                           .resume-preview span[style*="float:right"] { float: right; }
                         `}</style>
                         <div id="printable-resume" className="resume-preview">
                           <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                            {(displayMarkdown || "").replace(/```(?:markdown)?\n?/g, '').replace(/```/g, '')}
+                            {normalizeSmallCaps((displayMarkdown || "").replace(/```(?:markdown)?\n?/g, '').replace(/```/g, ''))}
                           </ReactMarkdown>
                         </div>
                       </div>
