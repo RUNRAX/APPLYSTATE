@@ -45,12 +45,14 @@ export async function POST(req: NextRequest) {
       
       Tasks:
       1. Tailor the original resume specifically for this job description by subtly enhancing bullet points with relevant keywords.
-      CRITICAL RULE 1: The original resume text is a raw PDF dump that lost its formatting. You MUST use the exact section headers in the text (e.g. "PROFESSIONAL EXPERIENCE" and "KEY TECHNICAL PROJECTS") as strict boundaries. Everything listed BEFORE "KEY TECHNICAL PROJECTS" is experience. Everything listed AFTER is a project.
-      CRITICAL RULE 2: DO NOT delete ANY jobs, degrees, or projects. You MUST include EVERY SINGLE project and EVERY SINGLE job from the original resume. DO NOT summarize or truncate.
-      CRITICAL RULE 3: ONLY rewrite the bullet point descriptions to better highlight skills matching the Job Description. DO NOT change company names, project names, dates, or job titles.
-      CRITICAL RULE 4: DO NOT MIX Experience and Projects. Put ONLY the items found in the original experience section under PROFESSIONAL EXPERIENCE. Put ONLY the items found in the original projects section under KEY TECHNICAL PROJECTS.
-      CRITICAL RULE 5: You MAY reorder the items within the sections so that the most relevant ones to the Job Description appear at the top.
-      CRITICAL RULE 6: You MUST put a blank line (double newline) after the bullet points of each job/project, before starting the next job/project.
+      
+      CRITICAL INSTRUCTIONS TO PREVENT HALLUCINATIONS:
+      - DO NOT DUPLICATE ENTRIES: You are strictly forbidden from listing the same experience or project twice. Each item must appear EXACTLY ONCE.
+      - STRICT CATEGORIZATION: "PROFESSIONAL EXPERIENCE" is ONLY for employment at companies (e.g., Jyesta, MindMatrix, TCS/Ediquity Exam Centers). "KEY TECHNICAL PROJECTS" is ONLY for software applications you built (e.g., TCS iON Manpower, SSCA, Synaptic Cinema).
+      - NEVER put projects under Professional Experience. If it is a software project or application, it belongs ONLY in KEY TECHNICAL PROJECTS.
+      - EXACT NAMES: DO NOT change, invent, or genericize project names. Use the exact original names (e.g. do not rename "TCS iON Manpower" to "Workforce Management Platform").
+      - NO DELETIONS: You MUST include EVERY SINGLE project and EVERY SINGLE job from the original resume. DO NOT summarize or truncate.
+      - SPACING: You MUST put a blank line (double newline) after the bullet points of each job/project, before starting the next job/project.
       
       2. Format the tailored resume strictly in standard Markdown, but use HTML spans for right-aligned dates. You MUST use the following exact structure and headers:
 
