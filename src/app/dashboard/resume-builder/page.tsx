@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { jsPDF } from "jspdf";
@@ -24,6 +24,41 @@ export default function ResumeBuilderPage() {
   const [input, setInput] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [liveMarkdown, setLiveMarkdown] = useState<string | null>(null);
+
+  // Load from local storage on mount
+  useEffect(() => {
+    try {
+      const savedJob = localStorage.getItem('resume_builder_job');
+      const savedResult = localStorage.getItem('resume_builder_result');
+      const savedMessages = localStorage.getItem('resume_builder_messages');
+      if (savedJob) setJobDescription(savedJob);
+      if (savedResult) setResult(JSON.parse(savedResult));
+      if (savedMessages) setMessages(JSON.parse(savedMessages));
+    } catch (e) {
+      console.error("Failed to load state from localStorage:", e);
+    }
+  }, []);
+
+  // Persist state to local storage when changed
+  useEffect(() => {
+    if (jobDescription) {
+      localStorage.setItem('resume_builder_job', jobDescription);
+    }
+  }, [jobDescription]);
+
+  useEffect(() => {
+    if (result) {
+      localStorage.setItem('resume_builder_result', JSON.stringify(result));
+    } else {
+      localStorage.removeItem('resume_builder_result');
+    }
+  }, [result]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('resume_builder_messages', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

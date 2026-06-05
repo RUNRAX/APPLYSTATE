@@ -99,25 +99,8 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
             <span style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Last 7 days</span>
           </div>
 
-          <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: '8px', paddingTop: '2rem', minHeight: '200px' }}>
-            {[4, 7, 3, 8, 2, 9, 5].map((val, i) => (
-              <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                <motion.div
-                  initial={{ height: 0 }}
-                  animate={{ height: `${(val / 10) * 100}%` }}
-                  transition={{ type: "spring", damping: 25, stiffness: 100, delay: 0.3 + (i * 0.08) }}
-                  style={{
-                    width: '100%',
-                    background: i === 5 ? 'var(--gradient-vivid)' : 'rgba(255,255,255,0.08)',
-                    borderRadius: '6px 6px 0 0',
-                    boxShadow: i === 5 ? 'var(--shadow-glow)' : 'none'
-                  }}
-                />
-                <span style={{ fontSize: '0.7rem', color: 'var(--muted-foreground)' }}>
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
-                </span>
-              </div>
-            ))}
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted-foreground)' }}>
+            <p>Gathering application analytics...</p>
           </div>
         </GlassCard>
 
@@ -134,7 +117,7 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
             <AnimatePresence>
               {events.length === 0 ? (
                 <div style={{ color: 'var(--muted-foreground)', fontSize: '0.9rem', textAlign: 'center', padding: '2rem 0' }}>
-                  Waiting for events...
+                  Waiting for live agent events...
                 </div>
               ) : (
                 events.map((ev, i) => (
