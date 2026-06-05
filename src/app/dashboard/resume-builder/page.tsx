@@ -74,10 +74,11 @@ export default function ResumeBuilderPage() {
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
     // Strip out the massive markdown blocks from the history so we don't blow up the LLM context!
+    // Also filter out empty messages, because the Groq API throws a 400 Bad Request if content is empty.
     const cleanHistoryForAPI = newMessages.map(m => ({
       ...m,
-      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(<\/RESUME_MARKDOWN>|$)/, '').trim()
-    }));
+      content: m.content.replace(/<RESUME_MARKDOWN>[\s\S]*?(?:<\/RESUME_MARKDOWN>|$)/, '').trim()
+    })).filter(m => m.content !== '');
 
     try {
       const response = await fetch('/api/resume-copilot', {

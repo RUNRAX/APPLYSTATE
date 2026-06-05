@@ -212,6 +212,9 @@
   mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
   pointer-events: none;
+  border-radius: var(--radius);
+  border: 1px solid rgba(120, 180, 255, 0.14);
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.45);
 }
 
 .headerLeft {

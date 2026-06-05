@@ -25,6 +25,7 @@ export async function POST(req: Request) {
       2. If you make ANY changes to the resume, you MUST output the FULL, updated resume markdown wrapped in <RESUME_MARKDOWN>...</RESUME_MARKDOWN> tags at the very end of your message.
       3. Never wrap the markdown in \`\`\` backticks inside the tags. Just put the raw markdown inside the <RESUME_MARKDOWN> tags.
       4. If the user just asks a question without needing a resume update, just answer conversationally.
+      5. NEVER use inline HTML styles, inline fonts, or font-variant tags (e.g., small-caps). Do not try to "change the font style" using CSS or HTML tags. ONLY use pure, standard Markdown formatting.
     `;
 
     const result = streamText({
