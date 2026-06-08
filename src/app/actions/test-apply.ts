@@ -11,9 +11,11 @@ export async function testAutoApply(formData: FormData) {
   const jobUrl = formData.get("jobUrl") as string;
   if (!jobUrl) throw new Error("Job URL is required");
 
-  // Create a dummy job listing to test the bot
-  const job = await prisma.jobListing.create({
-    data: {
+  // Upsert a dummy job listing to test the bot (prevents unique constraint errors on duplicate tests)
+  const job = await prisma.jobListing.upsert({
+    where: { listingUrl: jobUrl },
+    update: {}, // if it exists, just use it
+    create: {
       listingUrl: jobUrl,
       title: "Test Engineering Role",
       company: "Test Company Inc.",
