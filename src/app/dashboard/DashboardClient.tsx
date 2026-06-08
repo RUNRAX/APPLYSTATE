@@ -1,4 +1,5 @@
 "use client";
+import { useTransition } from "react";
 import { useSSE } from "@/features/dashboard/useSSE";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./dashboard.module.css";
@@ -38,9 +39,21 @@ const itemVariants = {
 };
 
 export default function DashboardClient({ stats }: DashboardClientProps) {
+  const [isPending, startTransition] = useTransition();
   const events = useSSE();
   const { data: session } = useSession();
   const firstName = session?.user?.name?.split(' ')[0] || 'there';
+
+  const handleTestApply = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    startTransition(() => {
+      testAutoApply(formData).then(() => {
+        form.reset();
+      });
+    });
+  };
 
   return (
     <motion.div
@@ -74,12 +87,16 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
           </div>
           
           <div style={{ padding: '1rem 2rem', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <form action={testAutoApply} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+            <form onSubmit={handleTestApply} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
               <div style={{ flex: 1 }}>
-                <Input name="jobUrl" placeholder="Paste a LinkedIn Job URL to test the bot..." style={{ marginBottom: 0 }} />
+                <Input name="jobUrl" placeholder="Paste a LinkedIn Job URL to test the bot..." style={{ marginBottom: 0 }} disabled={isPending} required />
               </div>
-              <Button variant="primary" type="submit" size="md">
-                <PlayCircle size={16} /> Test Auto-Apply
+              <Button variant="primary" type="submit" size="md" disabled={isPending}>
+                {isPending ? (
+                  <><span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', marginRight: '8px' }}>⏳</span> Queuing...</>
+                ) : (
+                  <><PlayCircle size={16} /> Test Auto-Apply</>
+                )}
               </Button>
             </form>
           </div>

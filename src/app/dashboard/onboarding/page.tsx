@@ -5,6 +5,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { submitOnboarding } from "@/app/actions/onboarding";
+import Link from "next/link";
 
 export default function OnboardingWizard() {
   const [step, setStep] = useState(1);
@@ -87,15 +88,21 @@ export default function OnboardingWizard() {
                 <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>Securely connect the job boards you want ApplyMate to use.</p>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <Button type="button" variant={connectedPlatforms['LinkedIn'] ? 'primary' : 'outline'} onClick={() => togglePlatform('LinkedIn')} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>LinkedIn</span> <span>{connectedPlatforms['LinkedIn'] ? 'Connected ✅' : 'Connect'}</span>
-                  </Button>
-                  <Button type="button" variant={connectedPlatforms['Indeed'] ? 'primary' : 'outline'} onClick={() => togglePlatform('Indeed')} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Indeed</span> <span>{connectedPlatforms['Indeed'] ? 'Connected ✅' : 'Connect'}</span>
-                  </Button>
-                  <Button type="button" variant={connectedPlatforms['Wellfound'] ? 'primary' : 'outline'} onClick={() => togglePlatform('Wellfound')} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Wellfound</span> <span>{connectedPlatforms['Wellfound'] ? 'Connected ✅' : 'Connect'}</span>
-                  </Button>
+                  <Link href="/dashboard/connect/linkedin" target="_blank" style={{ textDecoration: 'none' }}>
+                    <Button type="button" variant={connectedPlatforms['LinkedIn'] ? 'primary' : 'outline'} onClick={() => togglePlatform('LinkedIn')} style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                      <span>LinkedIn</span> <span>{connectedPlatforms['LinkedIn'] ? 'Connected ✅' : 'Connect'}</span>
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/connect/indeed" target="_blank" style={{ textDecoration: 'none' }}>
+                    <Button type="button" variant={connectedPlatforms['Indeed'] ? 'primary' : 'outline'} onClick={() => togglePlatform('Indeed')} style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                      <span>Indeed</span> <span>{connectedPlatforms['Indeed'] ? 'Connected ✅' : 'Connect'}</span>
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/connect/wellfound" target="_blank" style={{ textDecoration: 'none' }}>
+                    <Button type="button" variant={connectedPlatforms['Wellfound'] ? 'primary' : 'outline'} onClick={() => togglePlatform('Wellfound')} style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                      <span>Wellfound</span> <span>{connectedPlatforms['Wellfound'] ? 'Connected ✅' : 'Connect'}</span>
+                    </Button>
+                  </Link>
                 </div>
               </motion.div>
             )}
