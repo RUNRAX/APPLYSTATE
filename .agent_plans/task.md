@@ -1,6 +1,6 @@
-- [x] Install `react-markdown` and `html2canvas`
-- [x] Update `src/app/api/resume-builder/route.ts` to request markdown and dual ATS scores
-- [x] Update `src/app/dashboard/resume-builder/page.tsx` UI to display dual ATS scores
-- [x] Implement `react-markdown` preview container styled like a real resume
-- [x] Implement `html2canvas` PDF generation
-- [ ] Commit and push changes
+- `[x]` Update `schema.prisma` with `autoApply` and `atsScore` fields and push DB changes.
+- `[x]` Create `src/app/dashboard/settings/page.tsx` for JobPreference and Auto-Apply toggles.
+- `[x]` Create `src/features/automation/apply-agent.ts` with logic for Auto Apply vs Manual Verification.
+- `[x]` Create `src/app/dashboard/review/page.tsx` to handle Manual Verification approvals.
+- `[x]` Update Resume Builder UI (`src/app/(dashboard)/resume/page.tsx`) to show Old/New ATS scores dynamically.
+- `[x]` Implement `calculateAtsScore` server action for real-time Resume Builder feedback.

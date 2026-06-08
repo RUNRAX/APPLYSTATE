@@ -80,6 +80,7 @@ model Resume {
   tailoredForJobId String?
   pdfUrl          String?
   keywordDensity  Float?
+  atsScore        Float?
   isActive        Boolean  @default(true)
 }
 
@@ -101,6 +102,7 @@ model JobPreference {
   remote           Boolean  @default(true)
   salaryMin        Int?
   dailyLimit       Int      @default(10)
+  autoApply        Boolean  @default(false)
   blacklistedComps String[]
 }
 

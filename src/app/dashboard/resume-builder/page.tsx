@@ -7,6 +7,7 @@ import html2canvas from "html2canvas";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { FileText, Download, Target, Wand2, ArrowRight, MessageSquare, Loader2, Trash2 } from "lucide-react";
+import { calculateAtsScore } from "@/features/resume/actions";
 import styles from "../dashboard.module.css";
 
 export default function ResumeBuilderPage() {
@@ -235,34 +236,21 @@ export default function ResumeBuilderPage() {
         const finalMatch = fullContent.match(/<RESUME_MARKDOWN>([\s\S]*?)(?:<\/RESUME_MARKDOWN>|$)/);
         if (finalMatch && finalMatch[1]) {
           const finalMarkdown = finalMatch[1].trim();
+          
           setResult(prev => {
             if (!prev) return null;
-            
-            // Recalculate deterministic math score based on the new resume
-            let newMathScore = 0;
-            if (prev.extractedKeywords && prev.extractedKeywords.length > 0) {
-              const normalizedText = finalMarkdown.toLowerCase();
-              let matches = 0;
-              for (const kw of prev.extractedKeywords) {
-                if (normalizedText.includes(kw.toLowerCase())) {
-                  matches++;
-                }
-              }
-              newMathScore = Math.round((matches / prev.extractedKeywords.length) * 100);
-            }
-            
-            // If we have a new math score, smoothly pull the displayed ATS score towards it
-            // We use a weighted average so manual tailoring realistically moves the needle
-            const newTailoredScore = newMathScore > 0 
-              ? Math.round((prev.tailoredAtsScore + newMathScore) / 2)
-              : prev.tailoredAtsScore;
-
-            return { 
-              ...prev, 
-              tailoredResumeMarkdown: finalMarkdown,
-              tailoredAtsScore: newTailoredScore
-            };
+            return { ...prev, tailoredResumeMarkdown: finalMarkdown };
           });
+
+          // Fetch real ATS score dynamically
+          calculateAtsScore(finalMarkdown, jobDescription).then(({ score }) => {
+            if (score > 0) {
+              setResult(prev => {
+                if (!prev) return null;
+                return { ...prev, tailoredAtsScore: score };
+              });
+            }
+          }).catch(err => console.error("Score fetch failed", err));
         }
         
         success = true;
@@ -460,7 +448,7 @@ export default function ResumeBuilderPage() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--muted-foreground)' }}>Original ATS</span>
+                  <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--muted-foreground)' }}>Baseline ATS</span>
                   <span style={{ fontSize: '2rem', fontWeight: 700, color: '#ef4444' }}>{result.originalAtsScore}%</span>
                 </div>
 
@@ -469,7 +457,7 @@ export default function ResumeBuilderPage() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--muted-foreground)' }}>Improved ATS</span>
+                  <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--muted-foreground)' }}>Current ATS</span>
                   <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--success)', textShadow: '0 0 20px rgba(16, 185, 129, 0.3)' }}>{result.tailoredAtsScore}%</span>
                 </div>
 

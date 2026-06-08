@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { AutoApplyToggle } from "./AutoApplyToggle";
 import styles from "../dashboard.module.css";
 
 export default async function SettingsPage() {
@@ -12,6 +13,11 @@ export default async function SettingsPage() {
 
   // Mock API key state for now
   const apiKeyPrefix = process.env.GROQ_API_KEY ? "gsk_..." + process.env.GROQ_API_KEY.slice(-4) : "";
+
+  const preference = await prisma.jobPreference.findUnique({
+    where: { userId: session.user.id }
+  });
+  const isAutoApply = preference?.autoApply || false;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -53,6 +59,15 @@ export default async function SettingsPage() {
           <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem' }}>
             Keys are encrypted at rest using AES-256.
           </p>
+        </GlassCard>
+
+        {/* Automation Section */}
+        <GlassCard variant="strong">
+          <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>Agent Application Pipeline</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--muted-foreground)', marginBottom: '1.5rem' }}>
+            Choose whether the AI agent applies automatically on your behalf or generates a resume and waits for your manual verification.
+          </p>
+          <AutoApplyToggle initialValue={isAutoApply} />
         </GlassCard>
 
         {/* Danger Zone */}

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { LiquidGlassFilter } from "@/components/ui/LiquidGlassFilter";
+import { NotificationBell } from "./NotificationBell";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -131,9 +132,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </div>
 
               {/* Notification bell */}
-              <button className={styles.notifBtn} aria-label="Notifications">
-                <Bell style={{ width: '1rem', height: '1rem' }} />
-              </button>
+              <NotificationBell />
             </div>
           </header>
 

@@ -10,8 +10,9 @@ export default async function ReviewQueuePage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const reviewItems = await prisma.humanReviewItem.findMany({
-    where: { userId: session.user.id, status: 'PENDING' },
+  const pendingApplications = await prisma.application.findMany({
+    where: { userId: session.user.id, status: 'PENDING_REVIEW' },
+    include: { jobListing: true },
     orderBy: { id: 'desc' }
   });
 
@@ -23,25 +24,25 @@ export default async function ReviewQueuePage() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        {reviewItems.length === 0 ? (
+        {pendingApplications.length === 0 ? (
           <GlassCard variant="strong" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center', color: 'var(--muted-foreground)' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
             <h3 className="font-display" style={{ fontSize: '1.2rem', color: 'var(--foreground)', marginBottom: '0.5rem' }}>Queue is empty</h3>
             <p>Your agent is running smoothly without interruptions.</p>
           </GlassCard>
         ) : (
-          reviewItems.map((item) => (
-            <GlassCard key={item.id} variant="strong" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          pendingApplications.map((app) => (
+            <GlassCard key={app.id} variant="strong" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <StatusBadge status={item.type} />
-                <span style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Just now</span>
+                <StatusBadge status="Pending Review" />
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Waiting for you</span>
               </div>
               <div>
                 <h3 className="font-display" style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-                  {item.type === 'CAPTCHA' ? 'Verify you are human' : 'Manual Input Required'}
+                  {app.jobListing.title} at {app.jobListing.company}
                 </h3>
                 <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>
-                  The agent encountered an obstacle while applying to Job ID: {item.applicationId.slice(0, 8)}...
+                  A resume has been tailored for this job. Please review and approve to apply.
                 </p>
               </div>
               
@@ -56,8 +57,8 @@ export default async function ReviewQueuePage() {
               )}
 
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '1rem' }}>
-                <Button variant="primary" style={{ flex: 1, padding: '0.5rem', fontSize: '0.85rem' }}>Resolve</Button>
-                <Button variant="glass" style={{ flex: 1, padding: '0.5rem', fontSize: '0.85rem' }}>Skip Job</Button>
+                <Button variant="primary" style={{ flex: 1, padding: '0.5rem', fontSize: '0.85rem' }}>Review Resume</Button>
+                <Button variant="danger" style={{ flex: 1, padding: '0.5rem', fontSize: '0.85rem' }}>Reject</Button>
               </div>
             </GlassCard>
           ))
