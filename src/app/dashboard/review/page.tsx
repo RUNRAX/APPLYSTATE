@@ -46,7 +46,7 @@ export default async function ReviewQueuePage() {
                 </p>
               </div>
               
-              {item.screenshotUrl ? (
+              {app.screenshotUrl ? (
                  <div style={{ width: '100%', height: '120px', background: 'rgba(0,0,0,0.5)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                     <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)' }}>Screenshot Placeholder</span>
                  </div>
