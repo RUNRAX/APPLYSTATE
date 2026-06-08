@@ -15,22 +15,29 @@ export async function savePlatformCredential(formData: FormData) {
     throw new Error("All fields are required");
   }
 
-  // Create or update credential
-  await prisma.platformCredential.upsert({
-    where: { 
-      userId_platform: { userId: session.user.id, platform: platform }
-    },
-    update: {
-      vaultPath: password, // Simulated encryption
-      isActive: true
-    },
-    create: {
-      userId: session.user.id,
-      platform: platform,
-      vaultPath: password, // Simulated encryption
-      isActive: true
-    }
+  // Check if credential exists
+  const existing = await prisma.platformCredential.findFirst({
+    where: { userId: session.user.id, platform: platform }
   });
+
+  if (existing) {
+    await prisma.platformCredential.update({
+      where: { id: existing.id },
+      data: {
+        vaultPath: password, // Simulated encryption
+        isActive: true
+      }
+    });
+  } else {
+    await prisma.platformCredential.create({
+      data: {
+        userId: session.user.id,
+        platform: platform,
+        vaultPath: password, // Simulated encryption
+        isActive: true
+      }
+    });
+  }
 
   redirect("/dashboard");
 }
