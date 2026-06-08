@@ -9,6 +9,17 @@ import { submitOnboarding } from "@/app/actions/onboarding";
 export default function OnboardingWizard() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFileName(file.name);
+      setAnalyzing(true);
+      setTimeout(() => setAnalyzing(false), 1500); // Simulated AI parsing delay
+    }
+  };
 
   const nextStep = () => setStep(s => Math.min(s + 1, 4));
   const prevStep = () => setStep(s => Math.max(s - 1, 1));
@@ -30,9 +41,20 @@ export default function OnboardingWizard() {
                 <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>Upload your latest resume. Our AI will parse and extract your skills and experience.</p>
                 
                 <div style={{ border: '2px dashed rgba(255,255,255,0.2)', padding: '3rem', textAlign: 'center', borderRadius: '12px', cursor: 'pointer' }}>
-                  <input type="file" name="resumeFile" accept=".pdf,.doc,.docx" style={{ display: 'none' }} id="resumeUpload" />
-                  <label htmlFor="resumeUpload" style={{ cursor: 'pointer' }}>
-                    Drag and drop your PDF here, or click to browse.
+                  <input type="file" name="resumeFile" accept=".pdf,.doc,.docx" style={{ display: 'none' }} id="resumeUpload" onChange={handleFileChange} />
+                  <label htmlFor="resumeUpload" style={{ cursor: 'pointer', display: 'block', width: '100%', height: '100%' }}>
+                    {analyzing ? (
+                      <div style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
+                        <span style={{ display: 'inline-block', marginRight: '8px' }}>⏳</span> Analyzing Resume...
+                      </div>
+                    ) : fileName ? (
+                      <div style={{ color: '#4ade80', fontWeight: 'bold' }}>
+                        ✅ {fileName}
+                        <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.5rem', fontWeight: 'normal' }}>Analysis Complete. Click to change file.</div>
+                      </div>
+                    ) : (
+                      <div>Drag and drop your PDF here, or click to browse.</div>
+                    )}
                   </label>
                 </div>
               </motion.div>
@@ -92,7 +114,7 @@ export default function OnboardingWizard() {
           ) : <div />}
           
           {step < 4 && (
-            <Button type="button" variant="primary" onClick={nextStep}>Continue</Button>
+            <Button type="button" variant="primary" onClick={nextStep} disabled={step === 1 && (!fileName || analyzing)}>Continue</Button>
           )}
         </div>
       </GlassCard>
