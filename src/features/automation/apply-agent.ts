@@ -1,6 +1,14 @@
 import prisma from "@/lib/prisma";
 import { tailorResume } from "../resume/tailor";
 import { calculateAtsScore } from "../resume/actions";
+import { Queue } from 'bullmq';
+import IORedis from 'ioredis';
+
+const connection = process.env.REDIS_URL 
+  ? new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: null })
+  : new IORedis({ host: '127.0.0.1', port: 6379, maxRetriesPerRequest: null });
+
+const applicationQueue = new Queue('application-queue', { connection });
 
 export async function runAutoApplyAgent(userId: string, jobListingId: string) {
   // 1. Check user preferences
@@ -25,16 +33,21 @@ export async function runAutoApplyAgent(userId: string, jobListingId: string) {
 
   if (isAutoApply) {
     // Agent applies automatically
-    // In a real app, this would use Puppeteer/Playwright to submit the application on the remote platform
-    
-    await prisma.application.create({
+    const application = await prisma.application.create({
       data: {
         userId,
         jobListingId,
         resumeVersionId: newResume.id,
-        status: "SUBMITTED",
-        submittedAt: new Date(),
+        status: "QUEUED",
       }
+    });
+
+    // Queue the Playwright worker job
+    await applicationQueue.add('submit-application', {
+      applicationId: application.id,
+      userId,
+      jobListingId,
+      resumeId: newResume.id
     });
 
     return { applied: true, score };

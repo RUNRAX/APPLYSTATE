@@ -1,4 +1,4 @@
-- `[x]` Copy `DATABASE_URL` and `DIRECT_URL` to `.env` file.
-- `[ ]` Run `npx prisma db push` to synchronize Supabase DB.
-- `[x]` Remove the hardcoded login bypass from `src/features/auth/auth.ts`.
-- `[ ]` Verify user registration and login workflows manually.
+- `[x]` Create `src/features/automation/platforms/linkedin.ts` with Playwright navigation and form completion logic.
+- `[x]` Update `src/workers/application.worker.ts` to execute the LinkedIn script.
+- `[x]` Update `src/features/automation/apply-agent.ts` to queue the task into BullMQ instead of synchronously marking it submitted.
+- `[x]` Verify the worker functions successfully in headed mode.
