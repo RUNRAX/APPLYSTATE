@@ -11,6 +11,11 @@ export default function OnboardingWizard() {
   const [loading, setLoading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [connectedPlatforms, setConnectedPlatforms] = useState<Record<string, boolean>>({});
+
+  const togglePlatform = (platform: string) => {
+    setConnectedPlatforms(prev => ({ ...prev, [platform]: !prev[platform] }));
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -82,14 +87,14 @@ export default function OnboardingWizard() {
                 <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>Securely connect the job boards you want ApplyMate to use.</p>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <Button type="button" variant="outline" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>LinkedIn</span> <span>Connect</span>
+                  <Button type="button" variant={connectedPlatforms['LinkedIn'] ? 'primary' : 'outline'} onClick={() => togglePlatform('LinkedIn')} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>LinkedIn</span> <span>{connectedPlatforms['LinkedIn'] ? 'Connected ✅' : 'Connect'}</span>
                   </Button>
-                  <Button type="button" variant="outline" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Indeed</span> <span>Connect</span>
+                  <Button type="button" variant={connectedPlatforms['Indeed'] ? 'primary' : 'outline'} onClick={() => togglePlatform('Indeed')} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Indeed</span> <span>{connectedPlatforms['Indeed'] ? 'Connected ✅' : 'Connect'}</span>
                   </Button>
-                  <Button type="button" variant="outline" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Wellfound</span> <span>Connect</span>
+                  <Button type="button" variant={connectedPlatforms['Wellfound'] ? 'primary' : 'outline'} onClick={() => togglePlatform('Wellfound')} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Wellfound</span> <span>{connectedPlatforms['Wellfound'] ? 'Connected ✅' : 'Connect'}</span>
                   </Button>
                 </div>
               </motion.div>

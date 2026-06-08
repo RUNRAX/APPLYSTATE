@@ -106,7 +106,7 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
 
       {/* Bento Grid — Activity + Live Feed */}
       <motion.div variants={itemVariants} className={styles.bentoGrid}>
-        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>Application Activity</h3>
             <span style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Last 7 days</span>
@@ -117,7 +117,7 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
           </div>
         </GlassCard>
 
-        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>Live Event Feed</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
