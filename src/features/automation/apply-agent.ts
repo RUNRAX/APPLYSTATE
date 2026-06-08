@@ -15,15 +15,31 @@ export async function runAutoApplyAgent(userId: string, jobListingId: string) {
   const prefs = await prisma.jobPreference.findUnique({ where: { userId } });
   const isAutoApply = prefs?.autoApply || false;
 
-  // 2. Generate a tailored resume
-  const newResume = await tailorResume(userId, jobListingId);
-  if (!newResume.tailoredContent) throw new Error("Resume tailoring failed");
+  // 2. Generate a tailored resume (or fallback to original if API fails)
+  let newResume;
+  try {
+    newResume = await tailorResume(userId, jobListingId);
+    if (!newResume.tailoredContent) throw new Error("Tailored content empty");
+  } catch (err) {
+    console.error("Tailoring failed, falling back to base resume:", err);
+    newResume = await prisma.resume.findFirst({
+      where: { userId, isActive: true },
+      orderBy: { id: "desc" }
+    });
+    if (!newResume) throw new Error("No resume found");
+  }
 
   const job = await prisma.jobListing.findUnique({ where: { id: jobListingId } });
   if (!job) throw new Error("Job not found");
 
-  // 3. Calculate ATS Score
-  const { score } = await calculateAtsScore(newResume.tailoredContent, job.description);
+  // 3. Calculate ATS Score (fallback if it fails)
+  let score = 50;
+  try {
+    const scoreResult = await calculateAtsScore(newResume.tailoredContent || newResume.originalContent, job.description);
+    score = scoreResult.score;
+  } catch (e) {
+    console.error("ATS calculation failed:", e);
+  }
 
   // 4. Update the generated resume with ATS score
   await prisma.resume.update({

@@ -22,8 +22,41 @@ export async function testAutoApply(formData: FormData) {
     }
   });
 
+  // Ensure the user has a base resume for the agent to use
+  const existingResume = await prisma.resume.findFirst({
+    where: { userId: session.user.id, isActive: true }
+  });
+
+  if (!existingResume) {
+    await prisma.resume.create({
+      data: {
+        userId: session.user.id,
+        version: "Dummy Base Resume",
+        originalContent: "Jane Doe\nSoftware Engineer\nSkills: React, TypeScript, Node.js, Playwright\nExperience: 5 years building autonomous web agents.",
+        isActive: true
+      }
+    });
+  }
+
+  // Ensure the user has a profile
+  const existingProfile = await prisma.profile.findUnique({
+    where: { userId: session.user.id }
+  });
+
+  if (!existingProfile) {
+    await prisma.profile.create({
+      data: {
+        userId: session.user.id,
+        skills: ["React", "TypeScript"],
+        education: {},
+        experience: {},
+        certifications: {},
+        projects: {}
+      }
+    });
+  }
+
   // Manually invoke the Auto Apply Agent
-  // Note: we can't await this fully if it blocks, but runAutoApplyAgent queues the task in BullMQ now
   await runAutoApplyAgent(session.user.id, job.id);
 
   revalidatePath("/dashboard");
