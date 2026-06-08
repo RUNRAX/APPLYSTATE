@@ -15,11 +15,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         
-        // Bypass for testing UI while DB is down
-        if (credentials.email === 'test@example.com' && credentials.password === 'password123') {
-          return { id: 'test-user-id', email: 'test@example.com', name: 'Test User' };
-        }
-        
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string }
         });

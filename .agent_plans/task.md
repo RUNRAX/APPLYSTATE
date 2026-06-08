@@ -1,6 +1,4 @@
-- `[x]` Update `schema.prisma` with `autoApply` and `atsScore` fields and push DB changes.
-- `[x]` Create `src/app/dashboard/settings/page.tsx` for JobPreference and Auto-Apply toggles.
-- `[x]` Create `src/features/automation/apply-agent.ts` with logic for Auto Apply vs Manual Verification.
-- `[x]` Create `src/app/dashboard/review/page.tsx` to handle Manual Verification approvals.
-- `[x]` Update Resume Builder UI (`src/app/(dashboard)/resume/page.tsx`) to show Old/New ATS scores dynamically.
-- `[x]` Implement `calculateAtsScore` server action for real-time Resume Builder feedback.
+- `[x]` Copy `DATABASE_URL` and `DIRECT_URL` to `.env` file.
+- `[ ]` Run `npx prisma db push` to synchronize Supabase DB.
+- `[x]` Remove the hardcoded login bypass from `src/features/auth/auth.ts`.
+- `[ ]` Verify user registration and login workflows manually.
