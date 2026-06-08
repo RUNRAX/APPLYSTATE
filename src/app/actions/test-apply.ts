@@ -27,5 +27,4 @@ export async function testAutoApply(formData: FormData) {
   await runAutoApplyAgent(session.user.id, job.id);
 
   revalidatePath("/dashboard");
-  return { success: true };
 }
