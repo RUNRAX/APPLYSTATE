@@ -2,6 +2,7 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/features/auth/auth";
 import { redirect } from "next/navigation";
+import pdfParse from "pdf-parse";
 
 export async function submitOnboarding(formData: FormData) {
   const session = await auth();
@@ -49,6 +50,29 @@ export async function submitOnboarding(formData: FormData) {
           projects: {}
         }
       });
+    }
+
+    // Handle Resume Upload
+    const file = formData.get("resumeFile") as File;
+    if (file && file.size > 0) {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      
+      try {
+        const data = await pdfParse(buffer);
+        
+        await prisma.resume.create({
+          data: {
+            userId: session.user.id,
+            version: "Base Resume",
+            originalContent: data.text,
+            isActive: true
+          }
+        });
+      } catch (pdfErr) {
+        console.error("Failed to parse PDF:", pdfErr);
+        // Fallback or warning could go here
+      }
     }
   } catch (e) {
     console.error("Onboarding error:", e);

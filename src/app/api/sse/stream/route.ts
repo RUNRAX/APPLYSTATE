@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { auth } from '@/features/auth/auth';
+import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,17 +16,35 @@ export async function GET(req: NextRequest) {
       const encoder = new TextEncoder();
       controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'connected' })}\n\n`));
 
-      // Mock real-time updates for demonstration
-      const interval = setInterval(() => {
-        const events = [
-          { type: 'matched', title: 'New highly matched role', company: 'Netflix', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) },
-          { type: 'tailored', title: 'Resume successfully tailored', company: 'Google', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) },
-          { type: 'submitted', title: 'Application submitted', company: 'Vercel', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) },
-          { type: 'needs_review', title: 'CAPTCHA challenge detected', company: 'Stripe', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) },
-          { type: 'interview_invite', title: 'Interview Invitation Received', company: 'OpenAI', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
-        ];
-        const randomEvent = events[Math.floor(Math.random() * events.length)];
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(randomEvent)}\n\n`));
+      let lastCheck = new Date();
+
+      const interval = setInterval(async () => {
+        if (!session?.user?.id) return;
+        
+        try {
+          // Poll for recently updated applications
+          const recentApps = await prisma.application.findMany({
+            where: { 
+              userId: session.user.id,
+              updatedAt: { gt: lastCheck }
+            },
+            include: { jobListing: true }
+          });
+          
+          lastCheck = new Date();
+          
+          for (const app of recentApps) {
+            const event = {
+              type: app.status.toLowerCase(),
+              title: `Application ${app.status}`,
+              company: app.jobListing?.company || 'Unknown Company',
+              timestamp: app.updatedAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+          }
+        } catch (e) {
+          console.error("SSE Poll Error", e);
+        }
       }, 5000);
 
       req.signal.addEventListener('abort', () => {

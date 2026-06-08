@@ -6,9 +6,11 @@ import { StatCard } from "@/components/ui/StatCard";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { TrendingUp, Clock, ArrowUpRight } from "lucide-react";
+import { TrendingUp, Clock, ArrowUpRight, PlayCircle } from "lucide-react";
+import { testAutoApply } from "@/app/actions/test-apply";
 
 interface DashboardClientProps {
   stats: {
@@ -69,6 +71,17 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
                 Pause Agent
               </Button>
             </div>
+          </div>
+          
+          <div style={{ padding: '1rem 2rem', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <form action={testAutoApply} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+              <div style={{ flex: 1 }}>
+                <Input name="jobUrl" placeholder="Paste a LinkedIn Job URL to test the bot..." style={{ marginBottom: 0 }} />
+              </div>
+              <Button variant="primary" type="submit" size="md">
+                <PlayCircle size={16} /> Test Auto-Apply
+              </Button>
+            </form>
           </div>
         </GlassCard>
       </motion.div>

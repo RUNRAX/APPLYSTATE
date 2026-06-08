@@ -1,4 +1,4 @@
-- `[x]` Create `src/features/automation/platforms/linkedin.ts` with Playwright navigation and form completion logic.
-- `[x]` Update `src/workers/application.worker.ts` to execute the LinkedIn script.
-- `[x]` Update `src/features/automation/apply-agent.ts` to queue the task into BullMQ instead of synchronously marking it submitted.
-- `[x]` Verify the worker functions successfully in headed mode.
+- `[x]` Modify `src/app/actions/onboarding.ts` to process PDF uploads and save text to database.
+- `[x]` Modify `src/app/api/sse/stream/route.ts` to poll the database instead of sending mock events.
+- `[x]` Create `src/app/actions/test-apply.ts` server action to trigger manual job testing.
+- `[x]` Add the Test Auto-Apply UI to `src/app/dashboard/DashboardClient.tsx`.
