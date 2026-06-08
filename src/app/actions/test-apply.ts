@@ -19,7 +19,6 @@ export async function testAutoApply(formData: FormData) {
       company: "Test Company Inc.",
       description: "This is a dummy job description generated for testing the Playwright application bot.",
       platform: jobUrl.includes("linkedin.com") ? "LinkedIn" : "Other",
-      postedAt: new Date(),
     }
   });
 
