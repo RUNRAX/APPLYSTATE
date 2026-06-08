@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
       const encoder = new TextEncoder();
       controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'connected' })}\n\n`));
 
-      let lastCheck = new Date();
+      let previousStatuses = new Map<string, string>();
 
       const interval = setInterval(async () => {
         if (!session?.user?.id) return;
@@ -24,23 +24,24 @@ export async function GET(req: NextRequest) {
         try {
           // Poll for recently updated applications
           const recentApps = await prisma.application.findMany({
-            where: { 
-              userId: session.user.id,
-              updatedAt: { gt: lastCheck }
-            },
+            where: { userId: session.user.id },
+            orderBy: { id: 'desc' },
+            take: 10,
             include: { jobListing: true }
           });
           
-          lastCheck = new Date();
-          
           for (const app of recentApps) {
-            const event = {
-              type: app.status.toLowerCase(),
-              title: `Application ${app.status}`,
-              company: app.jobListing?.company || 'Unknown Company',
-              timestamp: app.updatedAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-            };
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+            const prevStatus = previousStatuses.get(app.id);
+            if (prevStatus !== app.status) {
+              previousStatuses.set(app.id, app.status);
+              const event = {
+                type: app.status.toLowerCase(),
+                title: `Application ${app.status}`,
+                company: app.jobListing?.company || 'Unknown Company',
+                timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+              };
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+            }
           }
         } catch (e) {
           console.error("SSE Poll Error", e);
