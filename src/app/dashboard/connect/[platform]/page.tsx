@@ -1,9 +1,7 @@
 import { auth } from "@/features/auth/auth";
 import { redirect } from "next/navigation";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { savePlatformCredential } from "@/app/actions/connect";
+import ConnectForm from "./ConnectForm";
 
 interface Props {
   params: {
@@ -31,48 +29,7 @@ export default async function ConnectPlatformPage({ params }: Props) {
           </p>
         </div>
 
-        <form action={savePlatformCredential} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <input type="hidden" name="platform" value={platformName} />
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--foreground)' }}>Login Method</label>
-            <select 
-              name="loginMethod" 
-              style={{
-                width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--foreground)', outline: 'none'
-              }}
-              defaultValue="direct"
-            >
-              <option value="direct" style={{ background: '#111' }}>Direct Login ({platformName})</option>
-              <option value="google" style={{ background: '#111' }}>Continue with Google</option>
-              <option value="github" style={{ background: '#111' }}>Continue with GitHub</option>
-            </select>
-          </div>
-
-          <Input 
-            name="username" 
-            label="Email / Username (For selected method)" 
-            placeholder="email@example.com" 
-            type="email" 
-            required 
-          />
-          
-          <Input 
-            name="password" 
-            label="Password" 
-            placeholder="••••••••" 
-            type="password" 
-            required 
-          />
-
-          <div style={{ padding: '1rem', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '8px', fontSize: '0.8rem', color: 'rgba(255,255,255,0.8)', marginBottom: '0.5rem' }}>
-            <strong>Security Notice:</strong> Credentials are encrypted at rest using AES-256 and only decrypted inside the isolated Playwright worker during an active job application.
-          </div>
-
-          <Button variant="primary" type="submit" size="lg" style={{ width: '100%' }}>
-            Securely Connect {platformName}
-          </Button>
-        </form>
+        <ConnectForm platformName={platformName} />
       </GlassCard>
     </div>
   );
