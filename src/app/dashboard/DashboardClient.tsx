@@ -129,12 +129,20 @@ export default function DashboardClient({ stats, initialResume }: DashboardClien
               <FileText size={20} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Add Base Resume</h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>The agent uses this to tailor a new resume for each job</p>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>
+                {initialResume ? "Resume Uploaded" : "Add Base Resume"}
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
+                {initialResume 
+                  ? "Your active base resume is ready for the agent to use." 
+                  : "The agent uses this to tailor a new resume for each job."}
+              </p>
             </div>
           </div>
           <div style={{ marginTop: 'auto' }}>
-            <Button variant="primary" style={{ width: '100%' }} onClick={() => setIsResumeModalOpen(true)}>Upload Resume</Button>
+            <Button variant={initialResume ? "outline" : "primary"} style={{ width: '100%' }} onClick={() => setIsResumeModalOpen(true)}>
+              {initialResume ? "Re-upload Resume" : "Upload Resume"}
+            </Button>
           </div>
         </GlassCard>
       </motion.div>

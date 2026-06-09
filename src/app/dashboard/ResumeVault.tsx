@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { uploadResumeAction } from "@/app/actions/upload-resume";
+import { useRouter } from "next/navigation";
 
 interface ResumeVaultProps {
   initialResume: {
@@ -15,6 +16,7 @@ interface ResumeVaultProps {
 }
 
 export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVaultProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [file, setFile] = useState<File | null>(null);
   
@@ -48,6 +50,7 @@ export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVa
         if (result.success) {
           setResumeText(result.resumeText);
           setSuccess(true);
+          router.refresh();
         } else {
           setError("Failed to upload resume.");
         }

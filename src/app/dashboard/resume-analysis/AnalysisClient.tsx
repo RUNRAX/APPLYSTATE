@@ -3,6 +3,7 @@ import { useState, useTransition, useEffect, useRef } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { analyzeExistingResumeAction } from "@/app/actions/analyze-existing";
+import ResumeVault from "@/app/dashboard/ResumeVault";
 
 interface AnalysisClientProps {
   initialResume: {
@@ -15,6 +16,7 @@ interface AnalysisClientProps {
 
 export default function AnalysisClient({ initialResume }: AnalysisClientProps) {
   const [isPending, startTransition] = useTransition();
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [targetRole, setTargetRole] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -81,9 +83,10 @@ export default function AnalysisClient({ initialResume }: AnalysisClientProps) {
       <GlassCard variant="strong" style={{ padding: '3rem', textAlign: 'center' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--destructive)', marginBottom: '1rem' }}>No Resume Found</h2>
         <p style={{ color: 'var(--muted-foreground)', marginBottom: '1.5rem' }}>You need to upload a base resume before you can analyze it.</p>
-        <a href="/dashboard/resume" style={{ padding: '0.75rem 1.5rem', background: 'var(--primary)', color: 'white', borderRadius: '8px', textDecoration: 'none', display: 'inline-block', fontWeight: 500 }}>
-          Go to Resume Management
-        </a>
+        <button onClick={() => setIsResumeModalOpen(true)} style={{ padding: '0.75rem 1.5rem', background: 'var(--primary)', border: 'none', color: 'white', borderRadius: '8px', cursor: 'pointer', fontWeight: 500 }}>
+          Upload Base Resume
+        </button>
+        <ResumeVault initialResume={initialResume} isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} />
       </GlassCard>
     );
   }
@@ -102,7 +105,7 @@ export default function AnalysisClient({ initialResume }: AnalysisClientProps) {
               <div style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Using Active Base Resume</div>
               <div style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--foreground)' }}>Version: {initialResume.version}</div>
             </div>
-            <a href="/dashboard/resume" style={{ fontSize: '0.85rem', color: 'var(--primary)', textDecoration: 'none' }}>Change Resume</a>
+            <button onClick={() => setIsResumeModalOpen(true)} style={{ fontSize: '0.85rem', color: 'var(--primary)', background: 'transparent', border: 'none', cursor: 'pointer' }}>Change Resume</button>
           </div>
 
           <div style={{ position: 'relative' }} ref={dropdownRef}>
@@ -230,6 +233,8 @@ export default function AnalysisClient({ initialResume }: AnalysisClientProps) {
           {initialResume.originalContent}
         </div>
       </GlassCard>
+
+      <ResumeVault initialResume={initialResume} isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} />
 
     </div>
   );
