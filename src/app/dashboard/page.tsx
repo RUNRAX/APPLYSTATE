@@ -35,9 +35,10 @@ export default async function DashboardOverview() {
   });
 
   // Check if they need onboarding
-  if (!profile) {
-    redirect("/dashboard/onboarding");
-  }
+  // We removed the forced redirect so users can explore the dashboard first.
+  // if (!profile) {
+  //   redirect("/dashboard/onboarding");
+  // }
 
   return (
     <DashboardClient 

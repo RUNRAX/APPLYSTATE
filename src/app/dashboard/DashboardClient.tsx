@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { TrendingUp, Clock, ArrowUpRight, PlayCircle } from "lucide-react";
+import { TrendingUp, Clock, ArrowUpRight, PlayCircle, FileText, Linkedin } from "lucide-react";
 import { testAutoApply } from "@/app/actions/test-apply";
 
 interface DashboardClientProps {
@@ -100,6 +100,39 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
               </Button>
             </form>
           </div>
+        </GlassCard>
+      </motion.div>
+
+      {/* Quick Setup Actions */}
+      <motion.div variants={itemVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+        <GlassCard variant="strong" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6' }}>
+              <Linkedin size={20} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Connect Platform</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Save your LinkedIn credentials securely</p>
+            </div>
+          </div>
+          <Link href="/dashboard/connect/linkedin" style={{ marginTop: 'auto' }}>
+            <Button variant="outline" style={{ width: '100%' }}>Connect LinkedIn</Button>
+          </Link>
+        </GlassCard>
+
+        <GlassCard variant="strong" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(168, 85, 247, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a855f7' }}>
+              <FileText size={20} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Add Base Resume</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>The agent uses this to tailor a new resume for each job</p>
+            </div>
+          </div>
+          <Link href="/dashboard/resume" style={{ marginTop: 'auto' }}>
+            <Button variant="primary" style={{ width: '100%' }}>Upload Resume</Button>
+          </Link>
         </GlassCard>
       </motion.div>
 
