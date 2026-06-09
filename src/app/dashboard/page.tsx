@@ -34,6 +34,11 @@ export default async function DashboardOverview() {
     where: { userId }
   });
 
+  const resume = await prisma.resume.findFirst({
+    where: { userId: session.user.id, isActive: true },
+    orderBy: { id: "desc" }
+  });
+
   // Check if they need onboarding
   // We removed the forced redirect so users can explore the dashboard first.
   // if (!profile) {
@@ -48,6 +53,7 @@ export default async function DashboardOverview() {
         matchRate: `${avgMatch}%`,
         activeBots: queuedApps > 0 ? 1 : 0
       }} 
+      initialResume={resume}
     />
   );
 }
