@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { TrendingUp, Clock, ArrowUpRight, PlayCircle, FileText, Linkedin } from "lucide-react";
+import { TrendingUp, Clock, ArrowUpRight, PlayCircle, FileText, Link as LinkIcon } from "lucide-react";
 import { testAutoApply } from "@/app/actions/test-apply";
 
 interface DashboardClientProps {
@@ -108,7 +108,7 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
         <GlassCard variant="strong" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6' }}>
-              <Linkedin size={20} />
+              <LinkIcon size={20} />
             </div>
             <div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Connect Platform</h3>
