@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import AuroraBackground from "@/components/ui/AuroraBackground";
-import NextTopLoader from 'nextjs-toploader';
+import { NavigationLoader } from "@/components/ui/NavigationLoader";
 import SessionProvider from "@/components/providers/SessionProvider";
 
 const inter = Inter({ 
@@ -33,17 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
-        <NextTopLoader
-          color="#a855f7"
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={4}
-          crawl={true}
-          showSpinner={false}
-          easing="ease"
-          speed={200}
-          shadow="0 0 10px #a855f7,0 0 5px #a855f7"
-        />
+        <NavigationLoader />
         <SessionProvider>
           <AuroraBackground />
           <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

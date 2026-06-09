@@ -1,5 +1,5 @@
 "use client";
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import { useSSE } from "@/features/dashboard/useSSE";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./dashboard.module.css";
@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { TrendingUp, Clock, ArrowUpRight, PlayCircle, FileText, Link as LinkIcon } from "lucide-react";
 import { testAutoApply } from "@/app/actions/test-apply";
+import ResumeVault from "./ResumeVault";
 
 interface DashboardClientProps {
   stats: {
@@ -20,6 +21,7 @@ interface DashboardClientProps {
     matchRate: string;
     activeBots: number;
   };
+  initialResume: any;
 }
 
 const containerVariants = {
@@ -38,8 +40,9 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } }
 };
 
-export default function DashboardClient({ stats }: DashboardClientProps) {
+export default function DashboardClient({ stats, initialResume }: DashboardClientProps) {
   const [isPending, startTransition] = useTransition();
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const events = useSSE();
   const { data: session } = useSession();
   const firstName = session?.user?.name?.split(' ')[0] || 'there';
@@ -130,11 +133,14 @@ export default function DashboardClient({ stats }: DashboardClientProps) {
               <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>The agent uses this to tailor a new resume for each job</p>
             </div>
           </div>
-          <Link href="/dashboard/resume" style={{ marginTop: 'auto' }}>
-            <Button variant="primary" style={{ width: '100%' }}>Upload Resume</Button>
-          </Link>
+          <div style={{ marginTop: 'auto' }}>
+            <Button variant="primary" style={{ width: '100%' }} onClick={() => setIsResumeModalOpen(true)}>Upload Resume</Button>
+          </div>
         </GlassCard>
       </motion.div>
+
+      {/* Resume Vault Modal */}
+      <ResumeVault initialResume={initialResume} isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} />
 
       {/* Stat Cards — 2 column layout */}
       <motion.div variants={itemVariants} className={styles.statsGrid}>

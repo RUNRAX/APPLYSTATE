@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, end: true },
     { label: 'Applications', href: '/dashboard/applications', icon: FileText },
     { label: 'Review Queue', href: '/dashboard/review', icon: Eye },
-    { label: 'Resume Vault', href: '/dashboard/resume', icon: FileEdit },
+    { label: 'Resume Builder', href: '/dashboard/resume-builder', icon: FileEdit },
     { label: 'Resume Analysis', href: '/dashboard/resume-analysis', icon: Sparkles },
     { label: 'Insights', href: '/dashboard/insights', icon: BarChart3 },
     { label: 'Preferences', href: '/dashboard/preferences', icon: SlidersHorizontal },
