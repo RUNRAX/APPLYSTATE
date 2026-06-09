@@ -1,5 +1,5 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -18,11 +18,36 @@ export default function ResumeClient({ initialResume }: ResumeClientProps) {
   const [isPending, startTransition] = useTransition();
   const [file, setFile] = useState<File | null>(null);
   const [targetRole, setTargetRole] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const POPULAR_ROLES = [
+    "Software Engineer", "Frontend Developer", "Backend Developer", "Full Stack Developer",
+    "Product Manager", "Project Manager", "Data Scientist", "Data Analyst", 
+    "Machine Learning Engineer", "DevOps Engineer", "UI/UX Designer", "Marketing Manager",
+    "Sales Executive", "Financial Analyst", "Operations Manager", "Customer Success Manager"
+  ];
+
+  const filteredRoles = POPULAR_ROLES.filter(role => 
+    role.toLowerCase().includes(targetRole.toLowerCase())
+  );
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   
   const [resumeText, setResumeText] = useState(initialResume?.originalContent || "");
   const [atsScore, setAtsScore] = useState<number | null>(initialResume?.atsScore || null);
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [missingSkills, setMissingSkills] = useState<string[]>([]);
+  const [recommendations, setRecommendations] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,6 +79,7 @@ export default function ResumeClient({ initialResume }: ResumeClientProps) {
           setAtsScore(result.score);
           setAnalysis(result.analysis);
           setMissingSkills(result.missingSkills || []);
+          setRecommendations(result.recommendations || []);
         } else {
           setError("Failed to analyze resume.");
         }
@@ -85,13 +111,51 @@ export default function ResumeClient({ initialResume }: ResumeClientProps) {
             />
           </div>
 
-          <Input 
-            name="targetRole"
-            label="Which role are you mainly targeting?"
-            placeholder="e.g. Software Developer, Product Manager"
-            value={targetRole}
-            onChange={(e) => setTargetRole(e.target.value)}
-          />
+          <div style={{ position: 'relative' }} ref={dropdownRef}>
+            <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--foreground)', display: 'block', marginBottom: '0.5rem' }}>
+              Which role are you mainly targeting?
+            </label>
+            <input 
+              type="text"
+              placeholder="e.g. Software Developer, Product Manager"
+              value={targetRole}
+              onChange={(e) => {
+                setTargetRole(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => setShowDropdown(true)}
+              style={{
+                width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--foreground)'
+              }}
+            />
+            {showDropdown && filteredRoles.length > 0 && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '0.5rem',
+                background: 'rgba(20, 20, 25, 0.8)', backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px',
+                maxHeight: '200px', overflowY: 'auto', zIndex: 50,
+                boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+              }}>
+                {filteredRoles.map(role => (
+                  <div 
+                    key={role}
+                    onClick={() => {
+                      setTargetRole(role);
+                      setShowDropdown(false);
+                    }}
+                    style={{
+                      padding: '0.75rem 1rem', cursor: 'pointer', fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)',
+                      borderBottom: '1px solid rgba(255,255,255,0.05)'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  >
+                    {role}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {error && <div style={{ color: 'var(--destructive)', fontSize: '0.9rem' }}>{error}</div>}
 
@@ -124,7 +188,7 @@ export default function ResumeClient({ initialResume }: ResumeClientProps) {
               <p style={{ fontSize: '1rem', lineHeight: 1.6, color: 'var(--foreground)', marginBottom: '1rem' }}>{analysis}</p>
               
               {missingSkills.length > 0 && (
-                <div>
+                <div style={{ marginBottom: '1.5rem' }}>
                   <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--muted-foreground)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Missing Key Skills</h4>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {missingSkills.map((skill, i) => (
@@ -133,6 +197,17 @@ export default function ResumeClient({ initialResume }: ResumeClientProps) {
                       </span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {recommendations && recommendations.length > 0 && (
+                <div>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--muted-foreground)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Recommendations</h4>
+                  <ul style={{ paddingLeft: '1.2rem', margin: 0, fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {recommendations.map((rec, i) => (
+                      <li key={i}>{rec}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>

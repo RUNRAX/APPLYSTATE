@@ -34,9 +34,24 @@ export default async function ConnectPlatformPage({ params }: Props) {
         <form action={savePlatformCredential} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <input type="hidden" name="platform" value={platformName} />
           
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--foreground)' }}>Login Method</label>
+            <select 
+              name="loginMethod" 
+              style={{
+                width: '100%', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--foreground)', outline: 'none'
+              }}
+              defaultValue="direct"
+            >
+              <option value="direct" style={{ background: '#111' }}>Direct Login ({platformName})</option>
+              <option value="google" style={{ background: '#111' }}>Continue with Google</option>
+              <option value="github" style={{ background: '#111' }}>Continue with GitHub</option>
+            </select>
+          </div>
+
           <Input 
             name="username" 
-            label="Username / Email" 
+            label="Email / Username (For selected method)" 
             placeholder="email@example.com" 
             type="email" 
             required 

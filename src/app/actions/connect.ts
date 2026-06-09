@@ -7,9 +7,14 @@ export async function savePlatformCredential(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const platform = formData.get("platform") as string;
+  let platform = formData.get("platform") as string;
   const username = formData.get("username") as string;
   const password = formData.get("password") as string; // In production, encrypt this!
+  const loginMethod = formData.get("loginMethod") as string;
+
+  if (loginMethod && loginMethod !== "direct") {
+    platform = `${platform} (${loginMethod})`;
+  }
 
   if (!platform || !username || !password) {
     throw new Error("All fields are required");
