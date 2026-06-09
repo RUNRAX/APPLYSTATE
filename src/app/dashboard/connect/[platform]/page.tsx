@@ -15,8 +15,9 @@ export default async function ConnectPlatformPage({ params }: Props) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
+  const { platform } = await params;
   // Capitalize platform name (e.g., linkedin -> LinkedIn)
-  const platformName = params.platform.charAt(0).toUpperCase() + params.platform.slice(1);
+  const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
