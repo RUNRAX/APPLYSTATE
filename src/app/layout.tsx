@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import AuroraBackground from "@/components/ui/AuroraBackground";
 import { NavigationLoader } from "@/components/ui/NavigationLoader";
@@ -33,7 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
-        <NavigationLoader />
+        <Suspense fallback={null}>
+          <NavigationLoader />
+        </Suspense>
         <SessionProvider>
           <AuroraBackground />
           <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
