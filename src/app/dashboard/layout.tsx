@@ -16,6 +16,7 @@ import {
   Bell,
   Search,
   FileEdit,
+  Sparkles,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { LiquidGlassFilter } from "@/components/ui/LiquidGlassFilter";
@@ -30,7 +31,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, end: true },
     { label: 'Applications', href: '/dashboard/applications', icon: FileText },
     { label: 'Review Queue', href: '/dashboard/review', icon: Eye },
-    { label: 'Resume Builder', href: '/dashboard/resume-builder', icon: FileEdit },
+    { label: 'Resume Vault', href: '/dashboard/resume', icon: FileEdit },
+    { label: 'Resume Analysis', href: '/dashboard/resume-analysis', icon: Sparkles },
     { label: 'Insights', href: '/dashboard/insights', icon: BarChart3 },
     { label: 'Preferences', href: '/dashboard/preferences', icon: SlidersHorizontal },
     { label: 'Settings', href: '/dashboard/settings', icon: Lock },
