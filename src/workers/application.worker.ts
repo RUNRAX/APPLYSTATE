@@ -1,4 +1,4 @@
-import { Worker, Job } from 'bullmq';
+import 'dotenv/config';
 import { chromium } from 'playwright';
 import prisma from '../lib/prisma';
 import { applyToLinkedInEasyApply } from '../features/automation/platforms/linkedin';
@@ -6,19 +6,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
 
-import IORedis from 'ioredis';
-
-const connection = process.env.REDIS_URL 
-  ? new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: null })
-  : new IORedis({
-      host: process.env.REDIS_HOST || '127.0.0.1',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      maxRetriesPerRequest: null
-    });
-
-export const applicationWorker = new Worker('application-queue', async (job: Job) => {
-  const { applicationId, userId, jobListingId, resumeId, clId } = job.data;
-  console.log(`[Application] Submitting for user ${userId}, job ${jobListingId}`);
+async function processApplication(applicationId: string, userId: string, jobListingId: string, resumeId: string) {
+  console.log(`[Application Worker] Processing Application ${applicationId} for user ${userId}, job ${jobListingId}`);
 
   // Fetch the job listing and resume
   const jobListing = await prisma.jobListing.findUnique({ where: { id: jobListingId } });
@@ -45,20 +34,15 @@ export const applicationWorker = new Worker('application-queue', async (job: Job
   await fs.writeFile(tempResumePath, resume.tailoredContent || resume.originalContent);
 
   try {
-    console.log(`[Application] Starting LinkedIn automation...`);
+    console.log(`[Application Worker] Starting LinkedIn automation...`);
     
     // Decrypt credentials in a real app; using stub here
-    // const password = await decryptVault(credential.vaultPath);
     const creds = credential ? { email: 'dummy@example.com', password: 'dummy' } : {};
     
-    // Note: If creds are empty, the script will skip login and try to apply directly
-    // which might work if session is maintained or it fails gracefully.
-
     await applyToLinkedInEasyApply(page, jobListing.listingUrl, creds, tempResumePath);
     
     // Take a screenshot of the success page
     const screenshotBuffer = await page.screenshot();
-    // Simulate uploading screenshot
     const screenshotUrl = `data:image/png;base64,${screenshotBuffer.toString('base64')}`;
 
     await prisma.application.update({
@@ -70,9 +54,9 @@ export const applicationWorker = new Worker('application-queue', async (job: Job
       }
     });
 
-    console.log(`[Application] Submitted successfully!`);
+    console.log(`[Application Worker] Submitted successfully!`);
   } catch (error) {
-    console.error(`[Application] Failed:`, error);
+    console.error(`[Application Worker] Failed:`, error);
     
     // Take a failure screenshot
     const failureBuffer = await page.screenshot();
@@ -86,9 +70,40 @@ export const applicationWorker = new Worker('application-queue', async (job: Job
         errorMessage: String(error)
       }
     });
-    throw error;
   } finally {
     await browser.close();
     await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
   }
-}, { connection });
+}
+
+async function startWorker() {
+  console.log("🚀 [Application Worker] Starting database polling...");
+  
+  // Simple infinite polling loop
+  while (true) {
+    try {
+      // Find one queued application
+      const app = await prisma.application.findFirst({
+        where: { status: 'QUEUED' }
+      });
+
+      if (app && app.resumeVersionId) {
+        // Mark as IN_PROGRESS to prevent double-processing if multiple workers run
+        await prisma.application.update({
+          where: { id: app.id },
+          data: { status: 'IN_PROGRESS' }
+        });
+
+        await processApplication(app.id, app.userId, app.jobListingId, app.resumeVersionId);
+      }
+    } catch (e) {
+      console.error("[Application Worker] Polling error:", e);
+    }
+    
+    // Wait 5 seconds before checking again
+    await new Promise(resolve => setTimeout(resolve, 5000));
+  }
+}
+
+// Start the polling
+startWorker();
