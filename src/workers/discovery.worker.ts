@@ -56,7 +56,7 @@ async function runDiscovery() {
           const page = await context.newPage();
 
           try {
-            await strategy.login(page, userId);
+            await strategy.login(page, userId, cred.vaultPath);
             const listingsGenerator = strategy.search(page, pref);
             
             for await (const rawListing of listingsGenerator) {
@@ -67,7 +67,7 @@ async function runDiscovery() {
               }
 
               const jdVector = await embedText(rawListing.description);
-              const match = matchJob(pVector, jdVector, pref.threshold || 0.5);
+              const match = matchJob(pVector, jdVector, 0.5);
 
               if (match.isMatch || true) { // For prototype, saving all found jobs
                 // Save to DB
