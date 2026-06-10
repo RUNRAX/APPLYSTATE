@@ -116,18 +116,18 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
             </div>
             <div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>
-                {connectedPlatforms.includes('LinkedIn') ? "LinkedIn Connected" : "Connect Platform"}
+                {connectedPlatforms.some(p => p.toLowerCase() === 'linkedin') ? "LinkedIn Connected" : "Connect Platform"}
               </h3>
               <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
-                {connectedPlatforms.includes('LinkedIn') 
+                {connectedPlatforms.some(p => p.toLowerCase() === 'linkedin') 
                   ? "Your LinkedIn credentials are secure and active."
                   : "Save your LinkedIn credentials securely"}
               </p>
             </div>
           </div>
           <Link href="/dashboard/connect/linkedin" style={{ marginTop: 'auto' }}>
-            <Button variant={connectedPlatforms.includes('LinkedIn') ? "outline" : "primary"} style={{ width: '100%' }}>
-              {connectedPlatforms.includes('LinkedIn') ? "Update Credentials" : "Connect LinkedIn"}
+            <Button variant={connectedPlatforms.some(p => p.toLowerCase() === 'linkedin') ? "outline" : "primary"} style={{ width: '100%' }}>
+              {connectedPlatforms.some(p => p.toLowerCase() === 'linkedin') ? "Update Credentials" : "Connect LinkedIn"}
             </Button>
           </Link>
         </GlassCard>
