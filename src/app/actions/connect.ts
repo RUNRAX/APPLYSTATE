@@ -2,6 +2,7 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/features/auth/auth";
 import { redirect } from "next/navigation";
+import { encryptCredential } from "@/lib/vault";
 
 export async function savePlatformCredential(formData: FormData) {
   const session = await auth();
@@ -9,7 +10,7 @@ export async function savePlatformCredential(formData: FormData) {
 
   let platform = formData.get("platform") as string;
   const username = formData.get("username") as string;
-  const password = formData.get("password") as string; // In production, encrypt this!
+  const password = formData.get("password") as string;
   const loginMethod = formData.get("loginMethod") as string;
 
   if (loginMethod && loginMethod !== "direct") {
@@ -20,6 +21,9 @@ export async function savePlatformCredential(formData: FormData) {
     throw new Error("All fields are required");
   }
 
+  // Encrypt both email and password
+  const encryptedPayload = encryptCredential({ email: username, password });
+
   // Check if credential exists
   const existing = await prisma.platformCredential.findFirst({
     where: { userId: session.user.id, platform: platform }
@@ -29,7 +33,7 @@ export async function savePlatformCredential(formData: FormData) {
     await prisma.platformCredential.update({
       where: { id: existing.id },
       data: {
-        vaultPath: password, // Simulated encryption
+        vaultPath: encryptedPayload,
         isActive: true
       }
     });
@@ -38,7 +42,7 @@ export async function savePlatformCredential(formData: FormData) {
       data: {
         userId: session.user.id,
         platform: platform,
-        vaultPath: password, // Simulated encryption
+        vaultPath: encryptedPayload,
         isActive: true
       }
     });

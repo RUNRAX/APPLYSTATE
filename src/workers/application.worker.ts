@@ -5,6 +5,7 @@ import { applyToLinkedInEasyApply } from '../features/automation/platforms/linke
 import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
+import { getCredential } from '../lib/vault';
 
 async function processApplication(applicationId: string, userId: string, jobListingId: string, resumeId: string) {
   console.log(`[Application Worker] Processing Application ${applicationId} for user ${userId}, job ${jobListingId}`);
@@ -36,8 +37,21 @@ async function processApplication(applicationId: string, userId: string, jobList
   try {
     console.log(`[Application Worker] Starting LinkedIn automation...`);
     
-    // Decrypt credentials in a real app; using stub here
-    const creds = credential ? { email: 'dummy@example.com', password: 'dummy' } : {};
+    // Fetch and decrypt real credentials from the Vault service
+    let creds: { email?: string; password?: string } = {};
+    if (credential && credential.vaultPath) {
+      try {
+        const decrypted = await getCredential(userId, credential.vaultPath);
+        if (decrypted && typeof decrypted === 'object') {
+          creds = decrypted;
+        }
+      } catch (err) {
+        console.error("[Application Worker] Failed to decrypt credentials:", err);
+        throw new Error("Could not decrypt platform credentials");
+      }
+    } else {
+      throw new Error("No connected credentials found for this platform.");
+    }
     
     await applyToLinkedInEasyApply(page, jobListing.listingUrl, creds, tempResumePath);
     
