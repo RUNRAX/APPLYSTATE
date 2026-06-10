@@ -32,17 +32,30 @@ export class LinkedinStrategy {
       throw new Error("Invalid or missing credentials from Vault.");
     }
 
-    await page.goto('https://www.linkedin.com/login', { waitUntil: 'domcontentloaded' });
-    await page.fill('#username', creds.email);
-    await page.fill('#password', creds.password);
-    await page.click('[type="submit"]');
+    try {
+      await page.goto('https://www.linkedin.com/login', { timeout: 60000 });
+      
+      // Try to find the username field (handles different A/B tested LinkedIn login forms)
+      const usernameLocator = page.locator('#username, #session_key').first();
+      await usernameLocator.waitFor({ state: 'visible', timeout: 10000 });
+      
+      await usernameLocator.fill(creds.email);
+      await page.locator('#password, #session_password').first().fill(creds.password);
+      await page.click('[type="submit"]');
+    } catch (e) {
+      console.warn("[LinkedinStrategy] Automated login struggled to find fields. Please login manually in the browser window within 60 seconds if needed!");
+    }
     
     // Wait for the feed or security challenge
-    await page.waitForTimeout(3000);
-    const isChallenge = await page.locator('.challenge-dialog').isVisible().catch(() => false);
-    if (isChallenge) {
-      console.log('[LinkedIn] Security challenge detected. Awaiting manual resolution...');
-      await page.waitForTimeout(15000); // Wait for user to pass it manually since headless: false
+    console.log('[LinkedinStrategy] Waiting for successful login...');
+    try {
+      // Wait for any indicator of successful login (feed url or search bar)
+      await page.waitForFunction(() => {
+        return window.location.href.includes('feed') || document.querySelector('.global-nav');
+      }, { timeout: 60000 });
+    } catch (e) {
+      console.log('[LinkedIn] Security challenge or manual login timeout detected. Please pass it manually!');
+      await page.waitForTimeout(15000); // extra wait for user
     }
     
     console.log(`[LinkedinStrategy] Authenticated successfully.`);
