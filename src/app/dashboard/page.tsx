@@ -39,6 +39,12 @@ export default async function DashboardOverview() {
     orderBy: { id: "desc" }
   });
 
+  const platforms = await prisma.platformCredential.findMany({
+    where: { userId },
+    select: { platform: true }
+  });
+  const connectedPlatforms = platforms.map(p => p.platform);
+
   // Check if they need onboarding
   // We removed the forced redirect so users can explore the dashboard first.
   // if (!profile) {
@@ -54,6 +60,7 @@ export default async function DashboardOverview() {
         activeBots: queuedApps > 0 ? 1 : 0
       }} 
       initialResume={resume}
+      connectedPlatforms={connectedPlatforms}
     />
   );
 }

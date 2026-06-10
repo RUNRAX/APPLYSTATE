@@ -22,6 +22,7 @@ interface DashboardClientProps {
     activeBots: number;
   };
   initialResume: any;
+  connectedPlatforms?: string[];
 }
 
 const containerVariants = {
@@ -40,7 +41,7 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } }
 };
 
-export default function DashboardClient({ stats, initialResume }: DashboardClientProps) {
+export default function DashboardClient({ stats, initialResume, connectedPlatforms = [] }: DashboardClientProps) {
   const [isPending, startTransition] = useTransition();
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const events = useSSE();
@@ -114,12 +115,20 @@ export default function DashboardClient({ stats, initialResume }: DashboardClien
               <LinkIcon size={20} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Connect Platform</h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Save your LinkedIn credentials securely</p>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>
+                {connectedPlatforms.includes('LinkedIn') ? "LinkedIn Connected" : "Connect Platform"}
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
+                {connectedPlatforms.includes('LinkedIn') 
+                  ? "Your LinkedIn credentials are secure and active."
+                  : "Save your LinkedIn credentials securely"}
+              </p>
             </div>
           </div>
           <Link href="/dashboard/connect/linkedin" style={{ marginTop: 'auto' }}>
-            <Button variant="outline" style={{ width: '100%' }}>Connect LinkedIn</Button>
+            <Button variant={connectedPlatforms.includes('LinkedIn') ? "outline" : "primary"} style={{ width: '100%' }}>
+              {connectedPlatforms.includes('LinkedIn') ? "Update Credentials" : "Connect LinkedIn"}
+            </Button>
           </Link>
         </GlassCard>
 

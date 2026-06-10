@@ -1,14 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { savePlatformCredential } from "@/app/actions/connect";
 
 export default function ConnectForm({ platformName }: { platformName: string }) {
   const [loginMethod, setLoginMethod] = useState("direct");
+  const [isPending, startTransition] = useTransition();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    startTransition(() => {
+      savePlatformCredential(formData);
+    });
+  };
 
   return (
-    <form action={savePlatformCredential} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <input type="hidden" name="platform" value={platformName} />
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -77,8 +86,12 @@ export default function ConnectForm({ platformName }: { platformName: string }) 
             <strong>Security Notice:</strong> Credentials are encrypted at rest using AES-256 and only decrypted inside the isolated Playwright worker during an active job application.
           </div>
 
-          <Button variant="primary" type="submit" size="lg" style={{ width: '100%' }}>
-            Securely Connect {platformName}
+          <Button variant="primary" type="submit" size="lg" style={{ width: '100%' }} disabled={isPending}>
+            {isPending ? (
+              <><span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', marginRight: '8px' }}>⏳</span> Connecting...</>
+            ) : (
+              `Securely Connect ${platformName}`
+            )}
           </Button>
         </>
       ) : (
