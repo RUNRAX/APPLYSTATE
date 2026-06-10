@@ -155,6 +155,7 @@ async function runDiscovery() {
                 const tailoredResume = await prisma.resume.create({
                   data: {
                     userId,
+                    version: `tailored-${rawListing.externalId || savedJob.id}`,
                     originalContent: baseResume.originalContent,
                     tailoredContent,
                     atsScore,
