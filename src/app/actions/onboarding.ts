@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/features/auth/auth";
 import { redirect } from "next/navigation";
 import pdfParse from "pdf-parse";
+import { updateProfileVector } from "@/features/matching/embeddings";
 
 export async function submitOnboarding(formData: FormData) {
   const session = await auth();
@@ -69,6 +70,13 @@ export async function submitOnboarding(formData: FormData) {
             isActive: true
           }
         });
+        
+        // Also update the profile vector with the resume contents
+        try {
+          await updateProfileVector(session.user.id, data.text);
+        } catch (embedErr) {
+          console.error("Failed to generate profile vector:", embedErr);
+        }
       } catch (pdfErr) {
         console.error("Failed to parse PDF:", pdfErr);
         // Fallback or warning could go here
