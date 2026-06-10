@@ -6,6 +6,12 @@ import { Bot, RefreshCcw, Search, Zap, UserX, AlertCircle } from "lucide-react";
 
 export function AgentStatusIndicator() {
   const [status, setStatus] = useState<any>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2000);
+  };
 
   useEffect(() => {
     // Initial fetch
@@ -86,16 +92,20 @@ export function AgentStatusIndicator() {
         </p>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', position: 'relative' }}>
         <button 
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
           onClick={async () => {
             const { stopAgent, startAgent } = await import("@/app/actions/agent");
             if (s === "PAUSED") {
               await startAgent();
               setStatus({ ...status, status: "IDLE", message: "Agent started, waiting for next cycle" });
+              showToast("Agent started successfully!");
             } else {
               await stopAgent();
               setStatus({ ...status, status: "PAUSED", message: "Agent stopped by user" });
+              showToast("Agent stopped and paused.");
             }
           }}
           style={{
@@ -106,14 +116,20 @@ export function AgentStatusIndicator() {
             color: 'white',
             cursor: 'pointer',
             fontSize: '0.8rem',
-            fontWeight: 500
+            fontWeight: 500,
+            transition: 'all 0.2s ease',
+            position: 'relative',
+            overflow: 'hidden'
           }}
         >
           {s === "PAUSED" ? "Start Agent" : "Stop Agent"}
         </button>
         <button 
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
           onClick={() => {
             getAgentStatus().then(setStatus);
+            showToast("Agent status refreshed!");
           }}
           style={{
             padding: '0.5rem',
@@ -124,17 +140,43 @@ export function AgentStatusIndicator() {
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            transition: 'all 0.2s ease',
           }}
         >
           <RefreshCcw size={16} />
         </button>
+
+        {toastMessage && (
+          <div style={{
+            position: 'absolute',
+            bottom: '-40px',
+            right: 0,
+            background: '#10b981',
+            color: 'white',
+            padding: '0.4rem 0.8rem',
+            borderRadius: '6px',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            animation: 'fadeInOut 2s forwards'
+          }}>
+            {toastMessage}
+          </div>
+        )}
       </div>
 
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: .5; }
+        }
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: translateY(-5px); }
+          15% { opacity: 1; transform: translateY(0); }
+          85% { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-5px); }
         }
       `}} />
     </div>

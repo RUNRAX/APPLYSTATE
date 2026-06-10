@@ -25,7 +25,7 @@
       "value": "\"v=2&ac2c6c58-cbfe-4579-85db-8ecce34381eb\"",
       "domain": ".linkedin.com",
       "path": "/",
-      "expires": 1812667732.291956,
+      "expires": 1812668125.797228,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -35,7 +35,7 @@
       "value": "\"v=1&20260610211730e93b8858-aa8c-45ab-8108-79d5f25b686eAQEU-JVXclh6Vprn-X1o2crgSg_5qYLM\"",
       "domain": ".www.linkedin.com",
       "path": "/",
-      "expires": 1812667732.035555,
+      "expires": 1812668125.41342,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
@@ -45,7 +45,7 @@
       "value": "Asia/Calcutta",
       "domain": ".www.linkedin.com",
       "path": "/",
-      "expires": 1782341329,
+      "expires": 1782341722,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -127,7 +127,7 @@
       "value": "a643ac72-edb7-4dcf-9bc8-42db4ac8f763",
       "domain": ".linkedin.com",
       "path": "/",
-      "expires": 1788907732.291827,
+      "expires": 1788908125.797058,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -273,7 +273,7 @@
       "value": "sdui-flagship:0.1.42733+SduiFlagship0",
       "domain": ".linkedin.com",
       "path": "/",
-      "expires": 1812667732.035202,
+      "expires": 1812668125.413277,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -289,31 +289,11 @@
       "sameSite": "None"
     },
     {
-      "name": "UserMatchHistory",
-      "value": "AQLh7Sgz979T3wAAAZ6zuV3cGLihQiwHCQX955xjKbkBHpEKU14ZSlvfSykVOOXH3vpPZ_lHKNRL7kb8VyhOzd1sIHIbsKWZY_8wBVkFbEZcIU9b4AgX0azwCV5XW0Nv1ffGq8SGW5c-LH9Pze2y7ul4jjMjVDxniKGpZipNxGN7NMDt2KGN-rofBnHo6g1xcBjyCHG_JNke6D3K7ZMmqpb7Y6DWzIDVCJi0_EWV14rgaeNklAl73Bx5fAxAeU_6t0uBXCg7-_0eV5MGuLX6WfnrxjtQBsDefU838SwlWI-FvCYOkmJLROU8Px4pjBo59k1wD3vp7QF14bodmMdHk4KVC3M0BtK620NY-xnwvt8GQ11rIA",
-      "domain": ".linkedin.com",
-      "path": "/",
-      "expires": 1783723731.95174,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "lidc",
-      "value": "\"b=OB38:s=O:r=O:a=O:p=O:g=4908:u=209:x=1:i=1781131733:t=1781180279:v=2:sig=AQFJr45Q2VJ15pcuXIJUzvCWcw16B-VX\"",
-      "domain": ".linkedin.com",
-      "path": "/",
-      "expires": 1781180278.652116,
-      "httpOnly": false,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
       "name": "demdex",
       "value": "15148742323192636383380499162873675683",
       "domain": ".demdex.net",
       "path": "/",
-      "expires": 1796683738.937684,
+      "expires": 1796684131.930848,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -343,7 +323,7 @@
       "value": "15148742323192636383380499162873675683",
       "domain": ".linkedin.com",
       "path": "/",
-      "expires": 1783723738,
+      "expires": 1783724131,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -374,6 +354,26 @@
       "domain": ".dpm.demdex.net",
       "path": "/",
       "expires": 1796683738.93783,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "UserMatchHistory",
+      "value": "AQLjkcsuy0XsiwAAAZ6zv16o38J0aj71i9yZpSslQWdoUTpwlvwv_faGDpCTXFP1HcxjcCFOVSl8PhjSYEnRFJKkVICU9NLPTT9QHxnh0oZv-OuOEw-kWiB8SLmfEp-h7ldU4Rg6iH1tQnbl43MuPjDGSZh5EO88_4VoDn-KlpFlvN6uv0Vb70rYO5J6cul8PxzkVCqcswsC8SU_xmCO2BwbU9WWQ0uuL_yrdx8CSE85-oDDuw-6cwLbC03e36dWL4kU3m1V31QBFj9FsaGBWDYFtWIcOSyBXVTUdkA_FGEYBSZ2zaYbynPq2MKCnnWrt816buuEzzH3AqCDh5V-vRZeXv_zXai1MnjlSb_Knyms-EDrTA",
+      "domain": ".linkedin.com",
+      "path": "/",
+      "expires": 1783724125.413136,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "lidc",
+      "value": "\"b=OB38:s=O:r=O:a=O:p=O:g=4908:u=209:x=1:i=1781132127:t=1781180279:v=2:sig=AQFNgjkE7G3lDUMQU5Fej2zBL4I4k5PJ\"",
+      "domain": ".linkedin.com",
+      "path": "/",
+      "expires": 1781180279.187268,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
