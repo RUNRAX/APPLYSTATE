@@ -2,6 +2,12 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/features/auth/auth";
 import { revalidatePath } from "next/cache";
+import OpenAI from 'openai';
+
+const ai = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY || "dummy_key_for_build",
+  baseURL: 'https://api.groq.com/openai/v1',
+});
 
 export async function approveApplication(applicationId: string) {
   const session = await auth();
@@ -41,6 +47,66 @@ export async function rejectApplication(applicationId: string) {
   });
 
   revalidatePath("/dashboard/review");
+  revalidatePath("/dashboard/review");
   revalidatePath("/dashboard");
   return { success: true };
+}
+
+export async function tweakTailoredResume(applicationId: string, instruction: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const app = await prisma.application.findUnique({
+    where: { id: applicationId, userId: session.user.id },
+    include: { jobListing: true }
+  });
+
+  if (!app || !app.resumeVersionId) throw new Error("Application or resume not found");
+
+  const resume = await prisma.resume.findUnique({
+    where: { id: app.resumeVersionId }
+  });
+
+  if (!resume) throw new Error("Resume not found");
+
+  const currentContent = resume.tailoredContent || resume.originalContent;
+  const jobDescription = app.jobListing.description;
+
+  const prompt = `
+    You are an expert ATS resume writer. I need you to edit the following resume based on specific instructions.
+    
+    Job Description context:
+    ${jobDescription}
+
+    Current Tailored Resume:
+    ${currentContent}
+
+    USER INSTRUCTION:
+    "${instruction}"
+
+    Rewrite the resume applying the user's instruction. 
+    Maintain professional ATS formatting in plain text.
+    Do not add extra conversational text or preambles. Output ONLY the updated resume content.
+  `;
+
+  try {
+    const response = await ai.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const newContent = response.choices[0]?.message?.content || "";
+    if (newContent) {
+      await prisma.resume.update({
+        where: { id: resume.id },
+        data: { tailoredContent: newContent }
+      });
+      revalidatePath("/dashboard/review");
+      return { success: true, newContent };
+    }
+    return { success: false, error: "Failed to generate content" };
+  } catch (error) {
+    console.error("Failed to tweak resume", error);
+    return { success: false, error: "AI error" };
+  }
 }
