@@ -88,7 +88,7 @@ export default function ConnectForm({ platformName }: { platformName: string }) 
 
           <Button variant="primary" type="submit" size="lg" style={{ width: '100%' }} disabled={isPending}>
             {isPending ? (
-              <><span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', marginRight: '8px' }}>⏳</span> Connecting...</>
+              <><span className="spinner"></span> Connecting...</>
             ) : (
               `Securely Connect ${platformName}`
             )}

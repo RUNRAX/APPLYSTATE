@@ -158,7 +158,7 @@ export default function AnalysisClient({ initialResume }: AnalysisClientProps) {
 
           <Button variant="primary" onClick={handleAnalyze} disabled={isPending || !targetRole}>
             {isPending ? (
-              <><span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', marginRight: '8px' }}>⏳</span> Simulating ATS Score...</>
+              <><span className="spinner"></span> Simulating ATS Score...</>
             ) : "Analyze Resume"}
           </Button>
         </div>

@@ -51,7 +51,7 @@ export default function OnboardingWizard() {
                   <label htmlFor="resumeUpload" style={{ cursor: 'pointer', display: 'block', width: '100%', height: '100%' }}>
                     {analyzing ? (
                       <div style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
-                        <span style={{ display: 'inline-block', marginRight: '8px' }}>⏳</span> Analyzing Resume...
+                        <span className="spinner"></span> Analyzing Resume...
                       </div>
                     ) : fileName ? (
                       <div style={{ color: '#4ade80', fontWeight: 'bold' }}>

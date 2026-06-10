@@ -217,7 +217,7 @@ export default function ResumeBuilderPage() {
             setRateLimitWait(i);
             setMessages(prev => {
               const next = [...prev];
-              next[next.length - 1].content = `⏳ AI is temporarily busy. Auto-retrying in ${i}s...`;
+              next[next.length - 1].content = `System is temporarily busy. Auto-retrying in ${i}s...`;
               return next;
             });
             await new Promise(r => setTimeout(r, 1000));

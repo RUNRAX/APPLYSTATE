@@ -97,7 +97,7 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
               </div>
               <Button variant="primary" type="submit" size="md" disabled={isPending}>
                 {isPending ? (
-                  <><span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', marginRight: '8px' }}>⏳</span> Queuing...</>
+                  <><span className="spinner"></span> Queuing...</>
                 ) : (
                   <><PlayCircle size={16} /> Test Auto-Apply</>
                 )}

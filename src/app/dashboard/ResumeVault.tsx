@@ -102,7 +102,7 @@ export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVa
 
           <Button variant="primary" onClick={handleUpload} disabled={isPending || !file}>
             {isPending ? (
-              <><span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', marginRight: '8px' }}>⏳</span> Uploading...</>
+              <><span className="spinner"></span> Uploading...</>
             ) : "Upload Resume"}
           </Button>
         </div>
