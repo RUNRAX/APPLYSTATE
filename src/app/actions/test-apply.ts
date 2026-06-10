@@ -20,11 +20,11 @@ async function scrapeLinkedInGuest(jobUrl: string) {
     if (!res.ok) return null;
     const text = await res.text();
     
-    const title = text.match(/<h2[^>]*top-card-layout__title[^>]*>(.*?)<\/h2>/is)?.[1]?.trim();
-    const company = text.match(/<a[^>]*topcard__org-name-link[^>]*>(.*?)<\/a>/is)?.[1]?.trim();
+    const title = text.match(/<h2[^>]*top-card-layout__title[^>]*>([\s\S]*?)<\/h2>/i)?.[1]?.trim();
+    const company = text.match(/<a[^>]*topcard__org-name-link[^>]*>([\s\S]*?)<\/a>/i)?.[1]?.trim();
     
     // Attempt to strip basic HTML tags from description for ATS readability
-    const rawDesc = text.match(/<div[^>]*show-more-less-html__markup[^>]*>(.*?)<\/div>/is)?.[1]?.trim();
+    const rawDesc = text.match(/<div[^>]*show-more-less-html__markup[^>]*>([\s\S]*?)<\/div>/i)?.[1]?.trim();
     const desc = rawDesc ? rawDesc.replace(/<[^>]+>/g, '\n').replace(/\n\s*\n/g, '\n').trim() : null;
 
     if (title && company && desc) {
