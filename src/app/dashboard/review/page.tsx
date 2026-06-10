@@ -1,10 +1,8 @@
 import { auth } from "@/features/auth/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
-import styles from "../dashboard.module.css";
+import ReviewQueueClient from "./ReviewQueueClient";
 
 export default async function ReviewQueuePage() {
   const session = await auth();
@@ -12,7 +10,7 @@ export default async function ReviewQueuePage() {
 
   const pendingApplications = await prisma.application.findMany({
     where: { userId: session.user.id, status: 'PENDING_REVIEW' },
-    include: { jobListing: true },
+    include: { jobListing: true, resumeVersion: true },
     orderBy: { id: 'desc' }
   });
 
@@ -23,47 +21,7 @@ export default async function ReviewQueuePage() {
         <p style={{ color: 'var(--muted-foreground)' }}>Tasks requiring your manual attention to unblock the agent.</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        {pendingApplications.length === 0 ? (
-          <GlassCard variant="strong" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center', color: 'var(--muted-foreground)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
-            <h3 className="font-display" style={{ fontSize: '1.2rem', color: 'var(--foreground)', marginBottom: '0.5rem' }}>Queue is empty</h3>
-            <p>Your agent is running smoothly without interruptions.</p>
-          </GlassCard>
-        ) : (
-          pendingApplications.map((app) => (
-            <GlassCard key={app.id} variant="strong" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <StatusBadge status="Pending Review" />
-                <span style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Waiting for you</span>
-              </div>
-              <div>
-                <h3 className="font-display" style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-                  {app.jobListing.title} at {app.jobListing.company}
-                </h3>
-                <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>
-                  A resume has been tailored for this job. Please review and approve to apply.
-                </p>
-              </div>
-              
-              {app.screenshotUrl ? (
-                 <div style={{ width: '100%', height: '120px', background: 'rgba(0,0,0,0.5)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                    <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)' }}>Screenshot Placeholder</span>
-                 </div>
-              ) : (
-                 <div style={{ width: '100%', height: '120px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px dashed rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)' }}>No screenshot available</span>
-                 </div>
-              )}
-
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '1rem' }}>
-                <Button variant="primary" style={{ flex: 1, padding: '0.5rem', fontSize: '0.85rem' }}>Review Resume</Button>
-                <Button variant="danger" style={{ flex: 1, padding: '0.5rem', fontSize: '0.85rem' }}>Reject</Button>
-              </div>
-            </GlassCard>
-          ))
-        )}
-      </div>
+      <ReviewQueueClient applications={pendingApplications} />
     </div>
   );
 }

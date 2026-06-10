@@ -88,7 +88,7 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
                   Review Queue <ArrowUpRight size={16} />
                 </Button>
               </Link>
-              <Button variant="glass" size="md">
+              <Button variant="glass" size="md" onClick={() => alert("Feature coming soon! (Agent Pause/Resume functionality)")}>
                 Pause Agent
               </Button>
             </div>
