@@ -4,6 +4,38 @@ import { auth } from "@/features/auth/auth";
 import { runAutoApplyAgent } from "@/features/automation/apply-agent";
 import { revalidatePath } from "next/cache";
 
+async function scrapeLinkedInGuest(jobUrl: string) {
+  // Extract job ID from URL formats like view/1234 or currentJobId=1234
+  const jobIdMatch = jobUrl.match(/currentJobId=(\d+)/) || jobUrl.match(/view\/(\d+)/);
+  if (!jobIdMatch) return null;
+
+  const jobId = jobIdMatch[1];
+  try {
+    const res = await fetch(`https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/${jobId}`, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9"
+      }
+    });
+    if (!res.ok) return null;
+    const text = await res.text();
+    
+    const title = text.match(/<h2[^>]*top-card-layout__title[^>]*>(.*?)<\/h2>/is)?.[1]?.trim();
+    const company = text.match(/<a[^>]*topcard__org-name-link[^>]*>(.*?)<\/a>/is)?.[1]?.trim();
+    
+    // Attempt to strip basic HTML tags from description for ATS readability
+    const rawDesc = text.match(/<div[^>]*show-more-less-html__markup[^>]*>(.*?)<\/div>/is)?.[1]?.trim();
+    const desc = rawDesc ? rawDesc.replace(/<[^>]+>/g, '\n').replace(/\n\s*\n/g, '\n').trim() : null;
+
+    if (title && company && desc) {
+      return { title, company, description: desc };
+    }
+  } catch (e) {
+    console.error("Failed to scrape LinkedIn guest API", e);
+  }
+  return null;
+}
+
 export async function testAutoApply(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
@@ -11,15 +43,26 @@ export async function testAutoApply(formData: FormData) {
   const jobUrl = formData.get("jobUrl") as string;
   if (!jobUrl) throw new Error("Job URL is required");
 
-  // Upsert a dummy job listing to test the bot (prevents unique constraint errors on duplicate tests)
+  // Attempt to fetch real data
+  const scrapedData = await scrapeLinkedInGuest(jobUrl);
+
+  const title = scrapedData?.title || "Test Engineering Role";
+  const company = scrapedData?.company || "Test Company Inc.";
+  const description = scrapedData?.description || "This is a dummy job description generated for testing the Playwright application bot.";
+
+  // Upsert a job listing to test the bot (prevents unique constraint errors on duplicate tests)
   const job = await prisma.jobListing.upsert({
     where: { listingUrl: jobUrl },
-    update: {}, // if it exists, just use it
+    update: {
+      title,
+      company,
+      description
+    },
     create: {
       listingUrl: jobUrl,
-      title: "Test Engineering Role",
-      company: "Test Company Inc.",
-      description: "This is a dummy job description generated for testing the Playwright application bot.",
+      title,
+      company,
+      description,
       platform: jobUrl.includes("linkedin.com") ? "LinkedIn" : "Other",
     }
   });
