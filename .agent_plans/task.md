@@ -1,4 +1,6 @@
-- `[x]` Modify `src/app/actions/onboarding.ts` to process PDF uploads and save text to database.
-- `[x]` Modify `src/app/api/sse/stream/route.ts` to poll the database instead of sending mock events.
-- `[x]` Create `src/app/actions/test-apply.ts` server action to trigger manual job testing.
-- `[x]` Add the Test Auto-Apply UI to `src/app/dashboard/DashboardClient.tsx`.
+- [x] Add AgentStatus model to schema.prisma
+- [x] Generate Prisma Client
+- [x] Add updateAgentStatus helper to discovery.worker.ts and call it
+- [x] Pass status updates from linkedin.strategy.ts
+- [x] Create server action getAgentStatus in agent.ts
+- [x] Create AgentStatusIndicator.tsx and embed in ReviewQueueClient.tsx

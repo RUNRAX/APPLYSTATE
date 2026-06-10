@@ -1,14 +1,6 @@
 import prisma from "@/lib/prisma";
 import { tailorResume } from "../resume/tailor";
 import { calculateAtsScore } from "../resume/actions";
-import { Queue } from 'bullmq';
-import IORedis from 'ioredis';
-
-const connection = process.env.REDIS_URL 
-  ? new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: null })
-  : new IORedis({ host: '127.0.0.1', port: 6379, maxRetriesPerRequest: null });
-
-const applicationQueue = new Queue('application-queue', { connection });
 
 export async function runAutoApplyAgent(userId: string, jobListingId: string) {
   // 1. Check user preferences
@@ -58,13 +50,9 @@ export async function runAutoApplyAgent(userId: string, jobListingId: string) {
       }
     });
 
-    // Queue the Playwright worker job
-    await applicationQueue.add('submit-application', {
-      applicationId: application.id,
-      userId,
-      jobListingId,
-      resumeId: newResume.id
-    });
+    // Since we removed Redis for Vercel compatibility, the background worker 
+    // will now simply poll the Postgres database for applications with status = "QUEUED".
+    // We don't need to push anything to a message queue.
 
     return { applied: true, score };
   } else {

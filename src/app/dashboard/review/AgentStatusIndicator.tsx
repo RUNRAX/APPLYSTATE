@@ -77,13 +77,58 @@ export function AgentStatusIndicator() {
         {icon}
       </div>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
         <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           Discovery Agent: <span style={{ color }}>{status.status}</span>
         </h4>
         <p style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)' }}>
           {status.message}
         </p>
+      </div>
+
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <button 
+          onClick={async () => {
+            const { stopAgent, startAgent } = await import("@/app/actions/agent");
+            if (s === "PAUSED") {
+              await startAgent();
+              setStatus({ ...status, status: "IDLE", message: "Agent started, waiting for next cycle" });
+            } else {
+              await stopAgent();
+              setStatus({ ...status, status: "PAUSED", message: "Agent stopped by user" });
+            }
+          }}
+          style={{
+            padding: '0.5rem 1rem',
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '6px',
+            color: 'white',
+            cursor: 'pointer',
+            fontSize: '0.8rem',
+            fontWeight: 500
+          }}
+        >
+          {s === "PAUSED" ? "Start Agent" : "Stop Agent"}
+        </button>
+        <button 
+          onClick={() => {
+            getAgentStatus().then(setStatus);
+          }}
+          style={{
+            padding: '0.5rem',
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '6px',
+            color: 'white',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <RefreshCcw size={16} />
+        </button>
       </div>
 
       <style dangerouslySetInnerHTML={{__html: `

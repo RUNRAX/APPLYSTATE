@@ -52,15 +52,25 @@ export class LinkedinStrategy {
     }
     
     // Wait for the feed or security challenge
-    report('[LinkedinStrategy] Waiting for successful login...');
-    try {
-      // Wait for any indicator of successful login (feed url or search bar)
-      await page.waitForFunction(() => {
-        return window.location.href.includes('feed') || document.querySelector('.global-nav');
-      }, { timeout: 60000 });
-    } catch (e) {
-      report('[LinkedIn] Security challenge or manual login timeout detected. Please pass it manually!');
-      await page.waitForTimeout(15000); // extra wait for user
+    report('Waiting for successful login...');
+    
+    // Check for captcha explicitly
+    const hasCaptcha = await page.evaluate(() => {
+      return document.body.innerHTML.includes('captcha') || document.body.innerHTML.includes('challenge');
+    }).catch(() => false);
+
+    if (hasCaptcha) {
+      report('Stuck on captcha! Please solve the puzzle in the Chromium window. You have 90 seconds!');
+      await page.waitForTimeout(90000);
+    } else {
+      try {
+        await page.waitForFunction(() => {
+          return window.location.href.includes('feed') || document.querySelector('.feed-identity-module') || document.querySelector('.jobs-home-recent-searches');
+        }, { timeout: 30000 });
+      } catch (e) {
+        report('Login took too long or hidden captcha. Waiting 60s for manual resolution...');
+        await page.waitForTimeout(60000);
+      }
     }
     
     report(`[LinkedinStrategy] Authenticated successfully.`);
@@ -108,14 +118,17 @@ export class LinkedinStrategy {
 
     for (let i = 0; i < count && i < 10; i++) { // Limit to top 10 for safety
       try {
+        if (i === 0) report(`Finding the first job...`);
+        else report(`Extracting job ${i+1} of ${count}...`);
+        
         const card = jobCardsLocator.nth(i);
         await card.scrollIntoViewIfNeeded().catch(() => {});
         await card.click({ force: true }).catch(() => {});
         await page.waitForTimeout(1500); // Wait for description pane to load
 
-        const title = await card.locator('.job-card-list__title, .job-card-container__title').innerText().catch(() => 'Unknown Title');
-        const company = await card.locator('.job-card-container__company-name').innerText().catch(() => 'Unknown Company');
-        const loc = await card.locator('.job-card-container__metadata-item').first().innerText().catch(() => 'Unknown Location');
+        const title = await card.locator('.job-card-list__title, .job-card-container__title, [data-test-job-card-title] > * > *, .artdeco-entity-lockup__title, strong, h3').first().innerText().catch(() => 'Unknown Title');
+        const company = await card.locator('.job-card-container__company-name, .job-card-container__primary-description, .artdeco-entity-lockup__subtitle, [data-test-job-card-company-name]').first().innerText().catch(() => 'Unknown Company');
+        const loc = await card.locator('.job-card-container__metadata-item, .job-card-container__metadata-wrapper, .artdeco-entity-lockup__caption').first().innerText().catch(() => 'Unknown Location');
         
         let href = await card.locator('a').first().getAttribute('href').catch(() => null);
         if (href && href.startsWith('/')) {
@@ -124,8 +137,6 @@ export class LinkedinStrategy {
         const listingUrl = href ? href.split('?')[0] : `https://www.linkedin.com/jobs/view/${Date.now()}`;
 
         const description = await page.locator('.jobs-description__content').innerText().catch(() => 'Description unavailable');
-
-        report(`Extracting job ${i+1}/${count}: ${title} at ${company}`);
 
         yield {
           platform: 'linkedin',

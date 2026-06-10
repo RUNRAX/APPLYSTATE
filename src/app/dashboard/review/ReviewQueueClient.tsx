@@ -135,7 +135,11 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
                           <h4 style={{ color: '#4ade80', fontSize: '1rem', fontWeight: 600, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <Sparkles size={16} /> ATS Match Score
                           </h4>
-                          <span style={{ fontSize: '2rem', fontWeight: 700, color: '#fff' }}>{app.resumeVersion?.atsScore || "92"} <span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.5)' }}>/ 100</span></span>
+                          {app.resumeVersion?.atsScore ? (
+                            <span style={{ fontSize: '2rem', fontWeight: 700, color: '#fff' }}>{app.resumeVersion.atsScore} <span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.5)' }}>/ 100</span></span>
+                          ) : (
+                            <span style={{ fontSize: '1.2rem', fontWeight: 500, color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Pending Tailoring</span>
+                          )}
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
