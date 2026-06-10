@@ -20,6 +20,10 @@ export default async function DashboardOverview() {
   const queuedApps = await prisma.application.count({
     where: { userId, status: "QUEUED" }
   });
+
+  const pendingReviews = await prisma.application.count({
+    where: { userId, status: "PENDING_REVIEW" }
+  });
   
   const allApps = await prisma.application.findMany({
     where: { userId },
@@ -56,6 +60,7 @@ export default async function DashboardOverview() {
       stats={{
         totalApplied,
         queuedApps,
+        pendingReviews,
         matchRate: `${avgMatch}%`,
         activeBots: queuedApps > 0 ? 1 : 0
       }} 

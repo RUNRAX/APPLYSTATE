@@ -18,6 +18,7 @@ interface DashboardClientProps {
   stats: {
     totalApplied: number;
     queuedApps: number;
+    pendingReviews: number;
     matchRate: string;
     activeBots: number;
   };
@@ -43,6 +44,7 @@ const itemVariants = {
 
 export default function DashboardClient({ stats, initialResume, connectedPlatforms = [] }: DashboardClientProps) {
   const [isPending, startTransition] = useTransition();
+  const [testMessage, setTestMessage] = useState("");
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const events = useSSE();
   const { data: session } = useSession();
@@ -55,6 +57,8 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
     startTransition(() => {
       testAutoApply(formData).then(() => {
         form.reset();
+        setTestMessage("Successfully sent to Review Queue!");
+        setTimeout(() => setTestMessage(""), 5000);
       });
     });
   };
@@ -76,7 +80,7 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
             </h1>
             <p className={styles.heroSubtitle}>
               Your autonomous agent is scanning <strong>{stats.activeBots > 0 ? '42 boards' : '0 boards'}</strong> right now.
-              {stats.queuedApps > 0 ? ` ${stats.queuedApps} high-fit roles need your review.` : ' No pending reviews.'}
+              {stats.pendingReviews > 0 ? ` ${stats.pendingReviews} high-fit roles need your review.` : ' No pending reviews.'}
             </p>
             <div className={styles.heroActions}>
               <Link href="/dashboard/review">
@@ -103,6 +107,15 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
                 )}
               </Button>
             </form>
+            {testMessage && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                style={{ color: '#4ade80', fontSize: '0.85rem', marginTop: '0.75rem', fontWeight: 500 }}
+              >
+                ✓ {testMessage}
+              </motion.div>
+            )}
           </div>
         </GlassCard>
       </motion.div>
