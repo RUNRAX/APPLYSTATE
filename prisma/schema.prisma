@@ -21,6 +21,7 @@ model User {
   preferences   JobPreference?
   credentials   PlatformCredential[]
   auditLogs     AuditLog[]
+  agentStatus   AgentStatus?
 }
 
 model Profile {
@@ -136,4 +137,13 @@ model HumanReviewItem {
   screenshotUrl   String?
   status          String   @default("PENDING")
   resolvedAt      DateTime?
+}
+
+model AgentStatus {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String   // e.g., "IDLE", "AUTHENTICATING", "SEARCHING", "EXTRACTING", "WAITING_FOR_LOGIN"
+  message   String   // e.g., "Navigating to LinkedIn job search feed..."
+  updatedAt DateTime @default(now())
 }

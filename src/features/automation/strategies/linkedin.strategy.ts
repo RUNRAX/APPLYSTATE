@@ -20,8 +20,13 @@ export interface RawListing {
 }
 
 export class LinkedinStrategy {
-  async login(page: Page, userId: string, vaultPath: string) {
-    console.log(`[LinkedinStrategy] Authenticating for user ${userId}...`);
+  async login(page: Page, userId: string, vaultPath: string, statusCallback?: (msg: string) => void) {
+    const report = (msg: string) => {
+      console.log(msg);
+      if (statusCallback) statusCallback(msg.replace('[LinkedinStrategy] ', ''));
+    };
+
+    report(`[LinkedinStrategy] Authenticating for user ${userId}...`);
     
     if (!vaultPath) {
       throw new Error("No connected LinkedIn credentials found.");
@@ -43,26 +48,31 @@ export class LinkedinStrategy {
       await page.locator('#password, #session_password').first().fill(creds.password);
       await page.click('[type="submit"]');
     } catch (e) {
-      console.warn("[LinkedinStrategy] Automated login struggled to find fields. Please login manually in the browser window within 60 seconds if needed!");
+      report("[LinkedinStrategy] Automated login struggled to find fields. Please login manually in the browser window within 60 seconds if needed!");
     }
     
     // Wait for the feed or security challenge
-    console.log('[LinkedinStrategy] Waiting for successful login...');
+    report('[LinkedinStrategy] Waiting for successful login...');
     try {
       // Wait for any indicator of successful login (feed url or search bar)
       await page.waitForFunction(() => {
         return window.location.href.includes('feed') || document.querySelector('.global-nav');
       }, { timeout: 60000 });
     } catch (e) {
-      console.log('[LinkedIn] Security challenge or manual login timeout detected. Please pass it manually!');
+      report('[LinkedIn] Security challenge or manual login timeout detected. Please pass it manually!');
       await page.waitForTimeout(15000); // extra wait for user
     }
     
-    console.log(`[LinkedinStrategy] Authenticated successfully.`);
+    report(`[LinkedinStrategy] Authenticated successfully.`);
   }
 
-  async *search(page: Page, params: SearchParams): AsyncGenerator<RawListing> {
-    console.log(`[LinkedinStrategy] Searching for roles: ${params.targetRoles.join(', ')}`);
+  async *search(page: Page, params: SearchParams, statusCallback?: (msg: string) => void): AsyncGenerator<RawListing> {
+    const report = (msg: string) => {
+      console.log(msg);
+      if (statusCallback) statusCallback(msg.replace('[LinkedinStrategy] ', ''));
+    };
+
+    report(`[LinkedinStrategy] Searching for roles: ${params.targetRoles.join(', ')}`);
     
     const role = encodeURIComponent(params.targetRoles[0] || 'Software Engineer');
     let location = encodeURIComponent(params.locations[0] || 'Worldwide');
@@ -72,23 +82,37 @@ export class LinkedinStrategy {
     
     // f_AL=true ensures Easy Apply only
     const searchUrl = `https://www.linkedin.com/jobs/search/?keywords=${role}&location=${location}&f_AL=true`;
-    console.log(`[LinkedinStrategy] Navigating to: ${searchUrl}`);
+    report(`Navigating to: ${searchUrl}`);
     
-    await page.goto(searchUrl, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(3000);
+    try {
+      await page.goto(searchUrl, { timeout: 45000, waitUntil: 'domcontentloaded' });
+    } catch (e) {
+      report(`Warning: Navigation to search timed out, proceeding anyway...`);
+    }
 
-    const jobCardsLocator = page.locator('.jobs-search-results__list-item');
-    const count = await jobCardsLocator.count();
+    const jobCardsLocator = page.locator('.job-card-container, .jobs-search-results__list-item');
+    report(`Waiting for job cards to render...`);
+    await jobCardsLocator.first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {
+      report(`Timeout waiting for job cards. They might not exist or the page is stuck.`);
+    });
     
-    console.log(`[LinkedinStrategy] Found ${count} job cards on the first page.`);
+    const count = await jobCardsLocator.count();
+    if (count === 0) {
+      try {
+        const fs = require('fs');
+        fs.writeFileSync('scratch/linkedin_dump.html', await page.content());
+        report(`Saved page dump to scratch/linkedin_dump.html for debugging`);
+      } catch (err) {}
+    }
+    report(`Found ${count} job cards on the first page.`);
 
     for (let i = 0; i < count && i < 10; i++) { // Limit to top 10 for safety
-      const card = jobCardsLocator.nth(i);
-      await card.scrollIntoViewIfNeeded();
-      await card.click();
-      await page.waitForTimeout(1500); // Wait for description pane to load
-
       try {
+        const card = jobCardsLocator.nth(i);
+        await card.scrollIntoViewIfNeeded().catch(() => {});
+        await card.click({ force: true }).catch(() => {});
+        await page.waitForTimeout(1500); // Wait for description pane to load
+
         const title = await card.locator('.job-card-list__title, .job-card-container__title').innerText().catch(() => 'Unknown Title');
         const company = await card.locator('.job-card-container__company-name').innerText().catch(() => 'Unknown Company');
         const loc = await card.locator('.job-card-container__metadata-item').first().innerText().catch(() => 'Unknown Location');
@@ -100,6 +124,8 @@ export class LinkedinStrategy {
         const listingUrl = href ? href.split('?')[0] : `https://www.linkedin.com/jobs/view/${Date.now()}`;
 
         const description = await page.locator('.jobs-description__content').innerText().catch(() => 'Description unavailable');
+
+        report(`Extracting job ${i+1}/${count}: ${title} at ${company}`);
 
         yield {
           platform: 'linkedin',

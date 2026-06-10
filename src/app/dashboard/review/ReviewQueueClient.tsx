@@ -8,6 +8,8 @@ import { approveApplication, rejectApplication, tweakTailoredResume } from "@/ap
 import { generateResumeAnalysis } from "@/app/actions/analysis";
 import { Send, ChevronDown, ChevronUp, Bot, Sparkles, AlertTriangle } from "lucide-react";
 
+import { AgentStatusIndicator } from "./AgentStatusIndicator";
+
 interface ReviewQueueClientProps {
   applications: any[];
 }
@@ -74,6 +76,8 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', maxWidth: '1200px' }}>
+      <AgentStatusIndicator />
+      
       {applications.length === 0 ? (
         <GlassCard variant="strong" style={{ padding: '4rem 2rem', textAlign: 'center', color: 'var(--muted-foreground)' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>

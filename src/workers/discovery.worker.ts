@@ -3,6 +3,18 @@ import prisma from '../lib/prisma';
 import { embedText, matchJob, getProfileVector } from '../features/matching/embeddings';
 import { LinkedinStrategy } from '../features/automation/strategies/linkedin.strategy';
 
+async function updateAgentStatus(userId: string, status: string, message: string) {
+  try {
+    await prisma.agentStatus.upsert({
+      where: { userId },
+      update: { status, message, updatedAt: new Date() },
+      create: { userId, status, message }
+    });
+  } catch (e) {
+    console.error(`[AgentStatus Error]`, e);
+  }
+}
+
 const POLLING_INTERVAL = 1000 * 60 * 60; // 1 hour
 
 async function runDiscovery() {
@@ -32,6 +44,13 @@ async function runDiscovery() {
           }
 
           console.log(`[Discovery] Starting harvest for user ${userId} on ${platform}`);
+          await updateAgentStatus(userId, "INITIALIZING", `Starting discovery on ${platform}...`);
+          
+          if (!pref || pref.targetRoles.length === 0) {
+            console.log(`[Discovery] User ${userId} has no target roles set. Skipping.`);
+            await updateAgentStatus(userId, "IDLE", `Skipping: No target roles configured.`);
+            continue;
+          }
 
           const pVector = await getProfileVector(userId);
           if (!pVector) {
@@ -52,13 +71,23 @@ async function runDiscovery() {
 
           // Launch browser visible for testing/local
           const browser = await chromium.launch({ headless: false });
-          const context = await browser.newContext();
+          let context;
+          try {
+            context = await browser.newContext({ storageState: 'scratch/state.json' });
+          } catch (e) {
+            context = await browser.newContext();
+          }
           const page = await context.newPage();
 
           try {
-            await strategy.login(page, userId, cred.vaultPath);
-            const listingsGenerator = strategy.search(page, pref);
+            await updateAgentStatus(userId, "AUTHENTICATING", `Logging into ${platform}...`);
+            await strategy.login(page, userId, cred.vaultPath, (msg: string) => updateAgentStatus(userId, "AUTHENTICATING", msg));
+            await context.storageState({ path: 'scratch/state.json' }).catch(() => {});
             
+            await updateAgentStatus(userId, "SEARCHING", `Searching for roles: ${pref.targetRoles.join(', ')}...`);
+            const listingsGenerator = strategy.search(page, pref, (msg: string) => updateAgentStatus(userId, "SEARCHING", msg));
+            
+            let count = 0;
             for await (const rawListing of listingsGenerator) {
               const existing = await prisma.jobListing.findUnique({ where: { listingUrl: rawListing.listingUrl } });
               if (existing) {
@@ -88,14 +117,18 @@ async function runDiscovery() {
                   }
                 });
 
+                count++;
                 console.log(`[Discovery] Match found! Queued job ${savedJob.id} (${(match.score * 100).toFixed(1)}%)`);
               }
               
               await new Promise(r => setTimeout(r, 2000));
             }
-
+            
+            await updateAgentStatus(userId, "IDLE", `Finished search. Found ${count} matches. Sleeping...`);
+            
           } catch (error) {
             console.error(`[Discovery Error]`, error);
+            await updateAgentStatus(userId, "ERROR", `Error during discovery: ${error}`);
           } finally {
             await browser.close();
           }
