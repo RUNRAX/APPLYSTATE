@@ -20,18 +20,14 @@ export interface RawListing {
 }
 
 export class LinkedinStrategy {
-  async login(page: Page, userId: string) {
+  async login(page: Page, userId: string, vaultPath: string) {
     console.log(`[LinkedinStrategy] Authenticating for user ${userId}...`);
     
-    const credRow = await prisma.platformCredential.findFirst({
-      where: { userId, platform: 'linkedin', isActive: true }
-    });
-    
-    if (!credRow || !credRow.vaultPath) {
+    if (!vaultPath) {
       throw new Error("No connected LinkedIn credentials found.");
     }
     
-    const creds = await getCredential(userId, credRow.vaultPath);
+    const creds = await getCredential(userId, vaultPath);
     if (!creds || !creds.email || !creds.password) {
       throw new Error("Invalid or missing credentials from Vault.");
     }
