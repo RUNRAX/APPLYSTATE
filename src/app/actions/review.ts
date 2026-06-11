@@ -85,24 +85,35 @@ export async function tweakTailoredResume(applicationId: string, instruction: st
     "${instruction}"
 
     Rewrite the resume applying the user's instruction. 
-    Maintain professional ATS formatting in plain text.
-    Do not add extra conversational text or preambles. Output ONLY the updated resume content.
+    Maintain professional ATS formatting using clear bullet points and section headings.
+    Do not add extra conversational text or preambles. 
+
+    Output ONLY a valid JSON object with:
+    1. "newContent": The fully updated resume text.
+    2. "newAtsScore": A number from 1 to 100 representing how well the new tailored resume matches the job description after your edits.
   `;
 
   try {
     const response = await ai.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [{ role: 'user', content: prompt }],
+      response_format: { type: "json_object" }
     });
 
-    const newContent = response.choices[0]?.message?.content || "";
+    const parsed = JSON.parse(response.choices[0]?.message?.content || "{}");
+    const newContent = parsed.newContent || "";
+    const newAtsScore = parsed.newAtsScore ? parseInt(parsed.newAtsScore) : resume.atsScore;
+
     if (newContent) {
       await prisma.resume.update({
         where: { id: resume.id },
-        data: { tailoredContent: newContent }
+        data: { 
+          tailoredContent: newContent,
+          atsScore: newAtsScore 
+        }
       });
       revalidatePath("/dashboard/review");
-      return { success: true, newContent };
+      return { success: true, newContent, newAtsScore };
     }
     return { success: false, error: "Failed to generate content" };
   } catch (error) {

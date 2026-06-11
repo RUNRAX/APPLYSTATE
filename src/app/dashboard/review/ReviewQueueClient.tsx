@@ -232,13 +232,31 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
                     </div>
 
                     {/* Bottom Action Bar */}
-                    <div style={{ padding: '1rem 1.5rem', background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                      <Button variant="danger" onClick={() => handleReject(app.id)} disabled={isPending || chatLoading}>
-                        {isPending ? <span className="spinner"></span> : "Reject"}
+                    <div style={{ padding: '1rem 1.5rem', background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Button 
+                        variant="ghost" 
+                        onClick={() => {
+                          const content = app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "";
+                          const element = document.createElement("a");
+                          const file = new Blob([content], {type: 'text/plain'});
+                          element.href = URL.createObjectURL(file);
+                          element.download = `${app.jobListing.company.replace(/\s+/g, '_')}_Resume.txt`;
+                          document.body.appendChild(element);
+                          element.click();
+                          document.body.removeChild(element);
+                        }}
+                      >
+                        Download Text (.txt)
                       </Button>
-                      <Button variant="primary" onClick={() => handleApprove(app.id)} disabled={isPending || chatLoading}>
-                        {isPending ? <><span className="spinner"></span> Approving...</> : "Approve & Queue Agent"}
-                      </Button>
+
+                      <div style={{ display: 'flex', gap: '1rem' }}>
+                        <Button variant="danger" onClick={() => handleReject(app.id)} disabled={isPending || chatLoading}>
+                          {isPending ? <span className="spinner"></span> : "Reject"}
+                        </Button>
+                        <Button variant="primary" onClick={() => handleApprove(app.id)} disabled={isPending || chatLoading}>
+                          {isPending ? <><span className="spinner"></span> Approving...</> : "Approve & Queue Agent"}
+                        </Button>
+                      </div>
                     </div>
                   </motion.div>
                 )}

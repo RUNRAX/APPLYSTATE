@@ -127,7 +127,7 @@ async function runDiscovery() {
                     ${baseResume.originalContent}
 
                     Output ONLY a valid JSON object with:
-                    1. "tailoredContent": The new resume text (plain text formatting).
+                    1. "tailoredContent": The new resume text. Ensure it is highly structured using clear bullet points, section headings (e.g., PROFESSIONAL SUMMARY, TECHNICAL SKILLS, PROFESSIONAL EXPERIENCE), and concise lines. DO NOT write long paragraphs. Format it nicely as plain text.
                     2. "atsScore": A number from 1 to 100 representing how well this new tailored resume matches the job description. Be realistic, aim for high 80s or 90s.
                   `;
 
