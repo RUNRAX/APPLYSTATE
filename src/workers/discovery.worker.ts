@@ -196,6 +196,14 @@ async function runDiscovery() {
       console.error("[Discovery Worker] Error in polling loop:", err);
     }
     
+    // Reset status to SLEEPING when done with all users/strategies
+    try {
+      await prisma.agentStatus.updateMany({
+        where: { type: 'DISCOVERY' },
+        data: { status: 'SLEEPING', lastMessage: 'Waiting for next harvest cycle...' }
+      });
+    } catch(e) {}
+
     console.log(`[Discovery Worker] Sleeping for 60s...`);
     await new Promise(resolve => setTimeout(resolve, 60000));
   }

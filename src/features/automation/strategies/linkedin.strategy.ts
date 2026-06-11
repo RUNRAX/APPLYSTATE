@@ -100,7 +100,7 @@ export class LinkedinStrategy {
       report(`Warning: Navigation to search timed out, proceeding anyway...`);
     }
 
-    const jobCardsLocator = page.locator('.job-card-container, .jobs-search-results__list-item');
+    const jobCardsLocator = page.locator('.job-card-container, .jobs-search-results__list-item, .base-search-card, .base-card');
     report(`Waiting for job cards to render...`);
     await jobCardsLocator.first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {
       report(`Timeout waiting for job cards. They might not exist or the page is stuck.`);
