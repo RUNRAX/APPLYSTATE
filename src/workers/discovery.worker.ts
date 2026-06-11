@@ -199,8 +199,7 @@ async function runDiscovery() {
     // Reset status to SLEEPING when done with all users/strategies
     try {
       await prisma.agentStatus.updateMany({
-        where: { type: 'DISCOVERY' },
-        data: { status: 'SLEEPING', lastMessage: 'Waiting for next harvest cycle...' }
+        data: { status: 'SLEEPING', message: 'Waiting for next harvest cycle...' }
       });
     } catch(e) {}
 
