@@ -9,7 +9,10 @@ export default async function ReviewQueuePage() {
   if (!session?.user?.id) redirect("/login");
 
   const rawApplications = await prisma.application.findMany({
-    where: { userId: session.user.id, status: 'PENDING_REVIEW' },
+    where: { 
+      userId: session.user.id, 
+      status: { in: ['PENDING_REVIEW', 'QUEUED', 'APPLIED'] } 
+    },
     include: { jobListing: true },
     orderBy: { id: 'desc' }
   });

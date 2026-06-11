@@ -91,177 +91,180 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
           const isLoadingAnalysis = analysisLoading[app.id];
 
           return (
-            <GlassCard key={app.id} variant="strong" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
-              {/* Header / Summary Card (Always Visible) */}
-              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', cursor: 'pointer' }} onClick={() => handleToggleExpand(app)}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, paddingRight: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <StatusBadge status="Pending Review" />
-                      <span style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Waiting for you</span>
+            <motion.div key={app.id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3, ease: "easeOut" }}>
+              <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
+                {/* Header / Summary Card (Always Visible) */}
+                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', cursor: 'pointer' }} onClick={() => handleToggleExpand(app)}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, paddingRight: '1rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        {app.status === 'PENDING_REVIEW' && <><StatusBadge status="Pending Review" /><span style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Waiting for you</span></>}
+                        {app.status === 'QUEUED' && <><StatusBadge status="Queued" /><span style={{ fontSize: '0.8rem', color: '#60a5fa' }}>Agent will apply soon</span></>}
+                        {app.status === 'APPLIED' && <><StatusBadge status="Applied" /><span style={{ fontSize: '0.8rem', color: '#4ade80' }}>Application successful</span></>}
+                      </div>
+                      <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 600, wordBreak: 'break-word', whiteSpace: 'normal', lineHeight: 1.4 }}>
+                        {app.jobListing.title} <span style={{ color: 'var(--muted-foreground)' }}>at</span> {app.jobListing.company}
+                      </h3>
                     </div>
-                    {/* Fixed Text Overflow here */}
-                    <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 600, wordBreak: 'break-word', whiteSpace: 'normal', lineHeight: 1.4 }}>
-                      {app.jobListing.title} <span style={{ color: 'var(--muted-foreground)' }}>at</span> {app.jobListing.company}
-                    </h3>
+                    <Button variant="ghost" style={{ padding: '0.5rem' }}>
+                      {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                    </Button>
                   </div>
-                  <Button variant="ghost" style={{ padding: '0.5rem' }}>
-                    {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                  </Button>
+                  
+                  {!isExpanded && app.status === 'PENDING_REVIEW' && (
+                    <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>
+                      A resume has been tailored for this job. Click to review, edit, or approve.
+                    </p>
+                  )}
                 </div>
-                
-                {!isExpanded && (
-                  <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>
-                    A resume has been tailored for this job. Click to review, edit, or approve.
-                  </p>
-                )}
-              </div>
 
-              {/* Inline Expanded View */}
-              <AnimatePresence>
-                {isExpanded && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    style={{ borderTop: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}
-                  >
-                    <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '2rem', alignItems: 'start' }}>
-                      
-                      {/* Left Column: AI Analysis */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {/* Inline Expanded View */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      style={{ borderTop: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}
+                    >
+                      <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '2rem', alignItems: 'start' }}>
                         
-                        <div style={{ padding: '1rem', background: 'rgba(74, 222, 128, 0.05)', border: '1px solid rgba(74, 222, 128, 0.2)', borderRadius: '12px' }}>
-                          <h4 style={{ color: '#4ade80', fontSize: '1rem', fontWeight: 600, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <Sparkles size={16} /> ATS Match Score
-                          </h4>
-                          {app.resumeVersion?.atsScore ? (
-                            <span style={{ fontSize: '2rem', fontWeight: 700, color: '#fff' }}>{app.resumeVersion.atsScore} <span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.5)' }}>/ 100</span></span>
-                          ) : (
-                            <span style={{ fontSize: '1.2rem', fontWeight: 500, color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Pending Tailoring</span>
-                          )}
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                          <h4 style={{ fontSize: '1.1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <Bot size={18} color="var(--primary)" /> AI Analysis
-                          </h4>
+                        {/* Left Column: AI Analysis */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                           
-                          {isLoadingAnalysis ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--muted-foreground)', fontSize: '0.9rem' }}>
-                              <span className="spinner" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></span> Analyzing changes...
-                            </div>
-                          ) : (
-                            <>
-                              {/* Changes Made */}
-                              <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                <h5 style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', marginBottom: '0.75rem', fontWeight: 600 }}>What was tailored:</h5>
-                                <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.85rem', color: 'var(--muted-foreground)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                  {currentAnalysis?.changesMade?.length > 0 ? currentAnalysis.changesMade.map((change: string, i: number) => (
-                                    <li key={i}>{change}</li>
-                                  )) : <li>No significant structural changes made.</li>}
-                                </ul>
-                              </div>
+                          <div style={{ padding: '1rem', background: 'rgba(74, 222, 128, 0.05)', border: '1px solid rgba(74, 222, 128, 0.2)', borderRadius: '12px' }}>
+                            <h4 style={{ color: '#4ade80', fontSize: '1rem', fontWeight: 600, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <Sparkles size={16} /> ATS Match Score
+                            </h4>
+                            {app.resumeVersion?.atsScore ? (
+                              <span style={{ fontSize: '2rem', fontWeight: 700, color: '#fff' }}>{app.resumeVersion.atsScore} <span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.5)' }}>/ 100</span></span>
+                            ) : (
+                              <span style={{ fontSize: '1.2rem', fontWeight: 500, color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Pending Tailoring</span>
+                            )}
+                          </div>
 
-                              {/* Missing Skills */}
-                              <div style={{ background: 'rgba(239, 68, 68, 0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                                <h5 style={{ fontSize: '0.9rem', color: '#f87171', marginBottom: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                  <AlertTriangle size={14} /> Missing Requirements:
-                                </h5>
-                                <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.85rem', color: '#fca5a5', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                  {currentAnalysis?.missingSkills?.length > 0 ? currentAnalysis.missingSkills.map((skill: string, i: number) => (
-                                    <li key={i}>{skill}</li>
-                                  )) : <li style={{ color: '#4ade80', listStyle: 'none', marginLeft: '-1.2rem' }}>✨ You meet all requested qualifications!</li>}
-                                </ul>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <h4 style={{ fontSize: '1.1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <Bot size={18} color="var(--primary)" /> AI Analysis
+                            </h4>
+                            
+                            {isLoadingAnalysis ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--muted-foreground)', fontSize: '0.9rem' }}>
+                                <span className="spinner" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></span> Analyzing changes...
                               </div>
-                            </>
-                          )}
+                            ) : (
+                              <>
+                                {/* Changes Made */}
+                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                  <h5 style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', marginBottom: '0.75rem', fontWeight: 600 }}>What was tailored:</h5>
+                                  <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.85rem', color: 'var(--muted-foreground)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    {currentAnalysis?.changesMade?.length > 0 ? currentAnalysis.changesMade.map((change: string, i: number) => (
+                                      <li key={i}>{change}</li>
+                                    )) : <li>No significant structural changes made.</li>}
+                                  </ul>
+                                </div>
+
+                                {/* Missing Skills */}
+                                <div style={{ background: 'rgba(239, 68, 68, 0.05)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                                  <h5 style={{ fontSize: '0.9rem', color: '#f87171', marginBottom: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <AlertTriangle size={14} /> Missing Requirements:
+                                  </h5>
+                                  <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.85rem', color: '#fca5a5', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    {currentAnalysis?.missingSkills?.length > 0 ? currentAnalysis.missingSkills.map((skill: string, i: number) => (
+                                      <li key={i}>{skill}</li>
+                                    )) : <li style={{ color: '#4ade80', listStyle: 'none', marginLeft: '-1.2rem' }}>✨ You meet all requested qualifications!</li>}
+                                  </ul>
+                                </div>
+                              </>
+                            )}
+                          </div>
                         </div>
+
+                        {/* Right Column: The Resume & Chat */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
+                          <div style={{ 
+                            flex: 1, 
+                            background: '#0a0a0a', 
+                            border: '1px solid rgba(255,255,255,0.1)', 
+                            borderRadius: '12px', 
+                            padding: '1.5rem',
+                            maxHeight: '500px',
+                            overflowY: 'auto',
+                            whiteSpace: 'pre-wrap', 
+                            fontFamily: 'var(--font-sans)', 
+                            fontSize: '0.9rem', 
+                            lineHeight: 1.6, 
+                            color: 'rgba(255,255,255,0.9)' 
+                          }}>
+                            {app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "No resume content available."}
+                          </div>
+
+                          {/* AI Editor Chat Input */}
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <input 
+                              type="text" 
+                              placeholder={app.status === 'PENDING_REVIEW' ? "Ask AI to change something (e.g. 'Make the summary shorter')" : "Resume locked (already queued/applied)"}
+                              value={chatInput}
+                              onChange={(e) => setChatInput(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && app.status === 'PENDING_REVIEW' && handleTweak(app.id)}
+                              disabled={chatLoading || app.status !== 'PENDING_REVIEW'}
+                              style={{
+                                flex: 1,
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '8px',
+                                padding: '0.75rem 1rem',
+                                color: 'white',
+                                fontSize: '0.9rem',
+                                outline: 'none',
+                                opacity: app.status !== 'PENDING_REVIEW' ? 0.5 : 1
+                              }}
+                            />
+                            <Button 
+                              variant="primary" 
+                              style={{ padding: '0 1.25rem' }}
+                              onClick={() => handleTweak(app.id)}
+                              disabled={chatLoading || !chatInput.trim() || app.status !== 'PENDING_REVIEW'}
+                            >
+                              {chatLoading ? <span className="spinner" style={{ width: '18px', height: '18px' }}></span> : <Send size={18} />}
+                            </Button>
+                          </div>
+                        </div>
+
                       </div>
 
-                      {/* Right Column: The Resume & Chat */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
-                        <div style={{ 
-                          flex: 1, 
-                          background: '#0a0a0a', 
-                          border: '1px solid rgba(255,255,255,0.1)', 
-                          borderRadius: '12px', 
-                          padding: '1.5rem',
-                          maxHeight: '500px',
-                          overflowY: 'auto',
-                          whiteSpace: 'pre-wrap', 
-                          fontFamily: 'var(--font-sans)', 
-                          fontSize: '0.9rem', 
-                          lineHeight: 1.6, 
-                          color: 'rgba(255,255,255,0.9)' 
-                        }}>
-                          {app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "No resume content available."}
-                        </div>
+                      {/* Bottom Action Bar */}
+                      <div style={{ padding: '1rem 1.5rem', background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Button 
+                          variant="ghost" 
+                          onClick={() => {
+                            const content = app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "";
+                            const element = document.createElement("a");
+                            const file = new Blob([content], {type: 'text/plain'});
+                            element.href = URL.createObjectURL(file);
+                            element.download = `${app.jobListing.company.replace(/\s+/g, '_')}_Resume.txt`;
+                            document.body.appendChild(element);
+                            element.click();
+                            document.body.removeChild(element);
+                          }}
+                        >
+                          Download Text (.txt)
+                        </Button>
 
-                        {/* AI Editor Chat Input */}
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <input 
-                            type="text" 
-                            placeholder="Ask AI to change something (e.g. 'Make the summary shorter')"
-                            value={chatInput}
-                            onChange={(e) => setChatInput(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleTweak(app.id)}
-                            disabled={chatLoading}
-                            style={{
-                              flex: 1,
-                              background: 'rgba(255,255,255,0.05)',
-                              border: '1px solid rgba(255,255,255,0.1)',
-                              borderRadius: '8px',
-                              padding: '0.75rem 1rem',
-                              color: 'white',
-                              fontSize: '0.9rem',
-                              outline: 'none'
-                            }}
-                          />
-                          <Button 
-                            variant="primary" 
-                            style={{ padding: '0 1.25rem' }}
-                            onClick={() => handleTweak(app.id)}
-                            disabled={chatLoading || !chatInput.trim()}
-                          >
-                            {chatLoading ? <span className="spinner" style={{ width: '18px', height: '18px' }}></span> : <Send size={18} />}
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                          <Button variant="danger" onClick={() => handleReject(app.id)} disabled={isPending || chatLoading || app.status !== 'PENDING_REVIEW'}>
+                            {isPending ? <span className="spinner"></span> : "Reject"}
+                          </Button>
+                          <Button variant="primary" onClick={() => handleApprove(app.id)} disabled={isPending || chatLoading || app.status !== 'PENDING_REVIEW'}>
+                            {isPending ? <><span className="spinner"></span> Approving...</> : (app.status === 'PENDING_REVIEW' ? "Approve & Queue Agent" : "Approved ✔")}
                           </Button>
                         </div>
                       </div>
-
-                    </div>
-
-                    {/* Bottom Action Bar */}
-                    <div style={{ padding: '1rem 1.5rem', background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Button 
-                        variant="ghost" 
-                        onClick={() => {
-                          const content = app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "";
-                          const element = document.createElement("a");
-                          const file = new Blob([content], {type: 'text/plain'});
-                          element.href = URL.createObjectURL(file);
-                          element.download = `${app.jobListing.company.replace(/\s+/g, '_')}_Resume.txt`;
-                          document.body.appendChild(element);
-                          element.click();
-                          document.body.removeChild(element);
-                        }}
-                      >
-                        Download Text (.txt)
-                      </Button>
-
-                      <div style={{ display: 'flex', gap: '1rem' }}>
-                        <Button variant="danger" onClick={() => handleReject(app.id)} disabled={isPending || chatLoading}>
-                          {isPending ? <span className="spinner"></span> : "Reject"}
-                        </Button>
-                        <Button variant="primary" onClick={() => handleApprove(app.id)} disabled={isPending || chatLoading}>
-                          {isPending ? <><span className="spinner"></span> Approving...</> : "Approve & Queue Agent"}
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </GlassCard>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </GlassCard>
+            </motion.div>
           );
         })
       )}
