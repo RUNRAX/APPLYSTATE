@@ -10,6 +10,43 @@ import { Send, ChevronDown, ChevronUp, Bot, Sparkles, AlertTriangle } from "luci
 
 import { AgentStatusIndicator } from "./AgentStatusIndicator";
 
+function formatResumeText(text: string) {
+  if (!text) return "";
+  
+  // Clean up hard line breaks inside paragraphs (AI sometimes hard-wraps)
+  // If a line doesn't end with a punctuation mark, and the next line doesn't start with a bullet or capital, we could unwrap it.
+  // But safely, let's at least ensure double newlines around section headings.
+  const headings = [
+    "PROFESSIONAL SUMMARY", 
+    "SUMMARY",
+    "TECHNICAL SKILLS", 
+    "SKILLS",
+    "EXPERIENCE", 
+    "PROFESSIONAL EXPERIENCE", 
+    "WORK EXPERIENCE",
+    "EDUCATION", 
+    "PROJECTS", 
+    "CERTIFICATIONS"
+  ];
+  
+  let formatted = text;
+  
+  // Ensure double newlines before headings
+  headings.forEach(heading => {
+    // Match the heading even if it's not perfectly capitalized, but it usually is.
+    const regex = new RegExp(`([^\\n])\\n(${heading}\\s*\\n)`, 'g');
+    formatted = formatted.replace(regex, '$1\n\n$2');
+  });
+  
+  // Ensure double newlines after headings
+  headings.forEach(heading => {
+    const regex = new RegExp(`(\\n${heading})\\n([^\\n])`, 'g');
+    formatted = formatted.replace(regex, '$1\n\n$2');
+  });
+
+  return formatted;
+}
+
 interface ReviewQueueClientProps {
   applications: any[];
 }
@@ -196,7 +233,7 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
                             lineHeight: 1.6, 
                             color: 'rgba(255,255,255,0.9)' 
                           }}>
-                            {app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "No resume content available."}
+                            {formatResumeText(app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "No resume content available.")}
                           </div>
 
                           {/* AI Editor Chat Input */}
@@ -237,18 +274,45 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
                       <div style={{ padding: '1rem 1.5rem', background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Button 
                           variant="ghost" 
-                          onClick={() => {
-                            const content = app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "";
-                            const element = document.createElement("a");
-                            const file = new Blob([content], {type: 'text/plain'});
-                            element.href = URL.createObjectURL(file);
-                            element.download = `${app.jobListing.company.replace(/\s+/g, '_')}_Resume.txt`;
-                            document.body.appendChild(element);
-                            element.click();
-                            document.body.removeChild(element);
+                          onClick={async () => {
+                            const rawContent = app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "";
+                            const content = formatResumeText(rawContent);
+                            const filename = `${app.jobListing.company.replace(/[^a-zA-Z0-9]/g, '_')}_Resume.pdf`;
+                            
+                            // Dynamically import to avoid SSR issues
+                            const html2pdf = (await import("html2pdf.js")).default;
+                            
+                            const lines = content.split('\n');
+                            let html = '<div style="font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #000; padding: 20px;">';
+                            
+                            lines.forEach(line => {
+                              const trimmed = line.trim();
+                              if (trimmed === '') {
+                                html += '<div style="height: 12px;"></div>';
+                              } else if (/^[A-Z][A-Z\s]+$/.test(trimmed) && trimmed.length > 4) { 
+                                // ALL CAPS Heading
+                                html += `<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 12pt; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 4px; text-transform: uppercase;">${trimmed}</h3>`;
+                              } else if (trimmed.startsWith('-') || trimmed.startsWith('•') || trimmed.startsWith('*')) {
+                                html += `<div style="margin-left: 20px; text-indent: -10px; margin-bottom: 4px;">&#8226; ${trimmed.substring(1).trim()}</div>`;
+                              } else {
+                                html += `<div style="margin-bottom: 4px;">${trimmed}</div>`;
+                              }
+                            });
+                            html += '</div>';
+
+                            const element = document.createElement('div');
+                            element.innerHTML = html;
+
+                            html2pdf().set({
+                              margin: 15,
+                              filename: filename,
+                              image: { type: 'jpeg', quality: 0.98 },
+                              html2canvas: { scale: 2 },
+                              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                            }).from(element).save();
                           }}
                         >
-                          Download Text (.txt)
+                          Download PDF
                         </Button>
 
                         <div style={{ display: 'flex', gap: '1rem' }}>
