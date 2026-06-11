@@ -23,8 +23,10 @@ async function processApplication(applicationId: string, userId: string, jobList
     where: { userId, platform: 'LinkedIn', isActive: true }
   });
 
+  const statePath = path.join(process.cwd(), 'scratch', 'state.json');
   const browser = await chromium.launch({ headless: false }); // Headless false to avoid immediate bot detection
   const context = await browser.newContext({
+    storageState: require('fs').existsSync(statePath) ? statePath : undefined,
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   });
   const page = await context.newPage();
@@ -47,10 +49,9 @@ async function processApplication(applicationId: string, userId: string, jobList
         }
       } catch (err) {
         console.error("[Application Worker] Failed to decrypt credentials:", err);
-        throw new Error("Could not decrypt platform credentials");
       }
     } else {
-      throw new Error("No connected credentials found for this platform.");
+      console.log("[Application Worker] No Vault credentials found. Proceeding with saved session state...");
     }
     
     await applyToLinkedInEasyApply(page, jobListing.listingUrl, creds, tempResumePath);

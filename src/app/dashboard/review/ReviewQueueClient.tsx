@@ -13,35 +13,42 @@ import { AgentStatusIndicator } from "./AgentStatusIndicator";
 function parseResumeToHtml(text: string) {
   if (!text) return "";
   
-  const lines = text.split('\n').map(l => l.trim());
+  // Pre-process text to ensure inline bullets start on a new line
+  // If we see " • " or " - " not at the start of a line, we can break it.
+  // Actually, standardizing bullets:
+  let cleanedText = text.replace(/(\w|\.|,)\s*([•>-])\s+/g, '$1\n• ');
+  
+  const lines = cleanedText.split('\n').map(l => l.trim());
   while (lines.length > 0 && lines[0] === '') lines.shift();
   
-  // Find where the header ends (first ALL CAPS heading)
-  let headerEndIndex = lines.findIndex(l => /^[A-Z][A-Z\s]+$/.test(l) && l.length > 3);
+  // Find where the header ends (first ALL CAPS heading after line 1)
+  let headerEndIndex = lines.findIndex((l, i) => i > 0 && /^[A-Z][A-Z\s]+$/.test(l) && l.length > 3 && !l.includes('@'));
   if (headerEndIndex === -1) headerEndIndex = Math.min(3, lines.length);
   
   const headerLines = lines.slice(0, headerEndIndex).filter(l => l !== '');
   const bodyLines = lines.slice(headerEndIndex);
 
-  let html = `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.5; color: #111; max-width: 800px; margin: 0 auto; padding: 20px; background: white;">`;
+  // Using standard web-safe fonts to avoid html2pdf/html2canvas letter spacing bugs
+  let html = `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 11pt; line-height: 1.5; color: #000; width: 100%; max-width: 800px; margin: 0 auto; padding: 10px 20px; background: white; text-align: left; letter-spacing: normal; word-spacing: normal;">`;
   
   if (headerLines.length > 0) {
     const name = headerLines[0];
-    const title = headerLines.length > 1 ? headerLines[1] : '';
-    const contact = headerLines.length > 2 ? headerLines.slice(2).join(' | ') : '';
+    const title = headerLines.length > 1 && !headerLines[1].includes('@') ? headerLines[1] : '';
+    const contactIdx = headerLines.length > 1 && headerLines[1].includes('@') ? 1 : 2;
+    const contact = headerLines.length > contactIdx ? headerLines.slice(contactIdx).join(' | ') : '';
 
     html += `
       <div style="text-align: center; margin-bottom: 16px;">
-        <h1 style="font-size: 22pt; font-weight: 700; margin: 0 0 4px 0; color: #000; letter-spacing: 0px;">${name}</h1>
-        ${title ? `<div style="font-size: 11pt; color: #333; margin-bottom: 6px;">${title}</div>` : ''}
-        ${contact ? `<div style="font-size: 9.5pt; color: #555;">
+        <h1 style="font-size: 22pt; font-weight: bold; margin: 0 0 4px 0; color: #000; letter-spacing: normal;">${name}</h1>
+        ${title ? `<div style="font-size: 12pt; color: #333; margin-bottom: 6px; letter-spacing: normal;">${title}</div>` : ''}
+        ${contact ? `<div style="font-size: 10pt; color: #555; letter-spacing: normal;">
           ${contact.split('|').map(c => {
             const trimmed = c.trim();
             if (trimmed.includes('@') || trimmed.includes('.com') || trimmed.includes('linkedin') || trimmed.includes('github')) {
-              return `<span style="color: #2563eb;">${trimmed}</span>`;
+              return `<span style="color: #2563eb; text-decoration: none;">${trimmed}</span>`;
             }
             return trimmed;
-          }).join(' <span style="margin: 0 4px; color: #ccc;">|</span> ')}
+          }).join(' <span style="margin: 0 6px; color: #ccc;">|</span> ')}
         </div>` : ''}
       </div>
     `;
@@ -54,29 +61,29 @@ function parseResumeToHtml(text: string) {
     if (buffer.length === 0) return;
     const isBullet = buffer[0].startsWith('-') || buffer[0].startsWith('•') || buffer[0].startsWith('*');
     if (isBullet) {
-      const joined = buffer.join(' ').substring(1).trim();
+      const joined = buffer.join(' ').replace(/^[-•*]\s*/, '').trim();
       htmlBody += `
-        <div style="display: flex; margin-bottom: 5px; padding-left: 4px;">
-          <span style="margin-right: 8px; font-size: 10pt;">•</span>
-          <span style="flex: 1;">${joined}</span>
+        <div style="display: flex; align-items: flex-start; margin-bottom: 4px; padding-left: 8px;">
+          <span style="margin-right: 8px; font-size: 11pt; line-height: 1.5;">•</span>
+          <span style="flex: 1; line-height: 1.5; letter-spacing: normal;">${joined}</span>
         </div>
       `;
     } else {
-      const text = buffer.join(' ');
+      let text = buffer.join(' ');
       
-      // Look for right-aligned dates separated by 3+ spaces
-      const parts = text.split(/\s{3,}/);
-      if (parts.length >= 2 && text.length < 120 && !text.endsWith('.')) {
+      // Attempt to format "Title   Date" layout if there are 2+ spaces
+      const parts = text.split(/\s{2,}/);
+      if (parts.length >= 2 && text.length < 150 && !text.endsWith('.')) {
         htmlBody += `
-          <div style="display: flex; justify-content: space-between; align-items: baseline; font-weight: 600; margin-top: 12px; margin-bottom: 4px; color: #000;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; font-weight: bold; margin-top: 12px; margin-bottom: 4px; color: #000; letter-spacing: normal;">
             <span>${parts[0]}</span>
-            <span style="font-weight: 400; font-size: 9pt; color: #555;">${parts.slice(1).join(' ')}</span>
+            <span style="font-weight: normal; font-size: 10pt; color: #333;">${parts.slice(1).join(' ')}</span>
           </div>
         `;
-      } else if ((text.includes(' | ') || text.includes(' — ') || text.includes(' - ')) && text.length < 120 && !text.endsWith('.')) {
-        htmlBody += `<div style="font-weight: 600; margin-top: 12px; margin-bottom: 4px; color: #000;">${text}</div>`;
+      } else if ((text.includes(' | ') || text.includes(' — ') || text.includes(' - ')) && text.length < 150 && !text.endsWith('.')) {
+        htmlBody += `<div style="font-weight: bold; margin-top: 12px; margin-bottom: 4px; color: #000; letter-spacing: normal;">${text}</div>`;
       } else {
-        htmlBody += `<div style="margin-bottom: 6px;">${text}</div>`;
+        htmlBody += `<div style="margin-bottom: 6px; letter-spacing: normal;">${text}</div>`;
       }
     }
     buffer = [];
@@ -85,14 +92,18 @@ function parseResumeToHtml(text: string) {
   bodyLines.forEach(line => {
     if (line === '') {
       flushBuffer();
-    } else if (/^[A-Z][A-Z\s]+$/.test(line) && line.length > 3) {
+    } else if (/^[A-Z][A-Z\s]+$/.test(line) && line.length > 3 && !line.includes('|')) {
       flushBuffer();
       htmlBody += `
-        <h3 style="font-size: 11pt; font-weight: 700; color: #000; border-bottom: 1.5px solid #000; padding-bottom: 4px; margin-top: 18px; margin-bottom: 10px; text-transform: uppercase;">
+        <h3 style="font-size: 12pt; font-weight: bold; color: #000; border-bottom: 2px solid #000; padding-bottom: 4px; margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: normal;">
           ${line}
         </h3>
       `;
     } else {
+      // If a line starts with a bullet unexpectedly, flush the previous buffer
+      if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+        flushBuffer();
+      }
       buffer.push(line);
     }
   });
