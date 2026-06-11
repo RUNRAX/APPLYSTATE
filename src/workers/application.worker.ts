@@ -37,24 +37,36 @@ async function processApplication(applicationId: string, userId: string, jobList
   await fs.writeFile(tempResumePath, resume.tailoredContent || resume.originalContent);
 
   try {
-    console.log(`[Application Worker] Starting LinkedIn automation...`);
-    
-    // Fetch and decrypt real credentials from the Vault service
-    let creds: { email?: string; password?: string } = {};
-    if (credential && credential.vaultPath) {
-      try {
-        const decrypted = await getCredential(userId, credential.vaultPath);
-        if (decrypted && typeof decrypted === 'object') {
-          creds = decrypted;
-        }
-      } catch (err) {
-        console.error("[Application Worker] Failed to decrypt credentials:", err);
-      }
+    const isGreenhouse = jobListing.listingUrl.includes('boards.greenhouse.io');
+
+    if (isGreenhouse) {
+      console.log(`[Application Worker] Starting Greenhouse automation...`);
+      // Extract contact info using AI
+      console.log(`[Application Worker] Extracting contact info from resume...`);
+      const { applyToGreenhouse, extractContactInfo } = await import('../features/automation/platforms/greenhouse');
+      const candidateData = await extractContactInfo(resume.originalContent);
+      
+      await applyToGreenhouse(page, jobListing.listingUrl, candidateData, tempResumePath);
     } else {
-      console.log("[Application Worker] No Vault credentials found. Proceeding with saved session state...");
+      console.log(`[Application Worker] Starting LinkedIn automation...`);
+      
+      // Fetch and decrypt real credentials from the Vault service
+      let creds: { email?: string; password?: string } = {};
+      if (credential && credential.vaultPath) {
+        try {
+          const decrypted = await getCredential(userId, credential.vaultPath);
+          if (decrypted && typeof decrypted === 'object') {
+            creds = decrypted;
+          }
+        } catch (err) {
+          console.error("[Application Worker] Failed to decrypt credentials:", err);
+        }
+      } else {
+        console.log("[Application Worker] No Vault credentials found. Proceeding with saved session state...");
+      }
+      
+      await applyToLinkedInEasyApply(page, jobListing.listingUrl, creds, tempResumePath);
     }
-    
-    await applyToLinkedInEasyApply(page, jobListing.listingUrl, creds, tempResumePath);
     
     // Take a screenshot of the success page
     const screenshotBuffer = await page.screenshot();
