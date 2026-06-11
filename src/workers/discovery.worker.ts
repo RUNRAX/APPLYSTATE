@@ -140,8 +140,10 @@ async function runDiscovery() {
                   const content = JSON.parse(response.choices[0]?.message?.content || "{}");
                   if (content.tailoredContent) tailoredContent = content.tailoredContent;
                   if (content.atsScore) atsScore = parseInt(content.atsScore);
-                } catch (e) {
+                } catch (e: any) {
                   console.error("AI tailoring failed", e);
+                  await updateAgentStatus(userId, "ERROR", `AI tailoring failed: Please check your GROQ_API_KEY. Details: ${e.message}`);
+                  // Keep going, but the user will see the error in the UI
                 }
 
                 // Save to DB
@@ -194,8 +196,8 @@ async function runDiscovery() {
       console.error("[Discovery Worker] Error in polling loop:", err);
     }
     
-    console.log(`[Discovery Worker] Sleeping for ${POLLING_INTERVAL / 1000}s...`);
-    await new Promise(resolve => setTimeout(resolve, POLLING_INTERVAL));
+    console.log(`[Discovery Worker] Sleeping for 60s...`);
+    await new Promise(resolve => setTimeout(resolve, 60000));
   }
 }
 
