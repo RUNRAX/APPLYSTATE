@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "worker:discovery": "tsx --env-file=.env.local src/workers/discovery.worker.ts",
+    "worker:application": "tsx --env-file=.env.local src/workers/application.worker.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
