@@ -24,10 +24,11 @@ export async function tailorResume(userId: string, jobListingId: string) {
     
     Task: Rewrite the resume to maximize ATS matching for the given Job Description.
     Constraints:
+    - CRITICAL: DO NOT remove any projects, internships, or education from the original resume. You MUST include ALL of them.
+    - Just rewrite the bullet points of those experiences to highlight skills relevant to the Job Description using strong action verbs and quantified metrics.
     - Never add new skills, tools, companies, or degrees that are not in the original resume.
-    - Rewrite bullet points using strong action verbs and quantified metrics from the original.
     - Include a targeted summary.
-    - Output in plain text standard ATS format.
+    - DO NOT output any conversational text like "Here is your resume". Output ONLY the plain text ATS format resume.
   `;
 
   const response = await ai.chat.completions.create({

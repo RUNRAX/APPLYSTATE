@@ -29,7 +29,7 @@ function parseResumeToHtml(text: string) {
   const bodyLines = lines.slice(headerEndIndex);
 
   // Using standard web-safe fonts to avoid html2pdf/html2canvas letter spacing bugs
-  let html = `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 11pt; line-height: 1.5; color: #000; width: 100%; max-width: 800px; margin: 0 auto; padding: 10px 20px; background: white; text-align: left; letter-spacing: normal; word-spacing: normal;">`;
+  let html = `<div style="font-family: Arial, Helvetica, sans-serif !important; font-size: 11pt; line-height: 1.5; color: #000; width: 100%; max-width: 800px; margin: 0 auto; padding: 10px 20px; background: white; text-align: left; letter-spacing: normal !important; word-spacing: normal !important; font-variant: normal !important; text-transform: none !important;">`;
   
   if (headerLines.length > 0) {
     const name = headerLines[0];
