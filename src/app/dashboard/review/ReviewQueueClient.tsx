@@ -10,41 +10,96 @@ import { Send, ChevronDown, ChevronUp, Bot, Sparkles, AlertTriangle } from "luci
 
 import { AgentStatusIndicator } from "./AgentStatusIndicator";
 
-function formatResumeText(text: string) {
+function parseResumeToHtml(text: string) {
   if (!text) return "";
   
-  // Clean up hard line breaks inside paragraphs (AI sometimes hard-wraps)
-  // If a line doesn't end with a punctuation mark, and the next line doesn't start with a bullet or capital, we could unwrap it.
-  // But safely, let's at least ensure double newlines around section headings.
-  const headings = [
-    "PROFESSIONAL SUMMARY", 
-    "SUMMARY",
-    "TECHNICAL SKILLS", 
-    "SKILLS",
-    "EXPERIENCE", 
-    "PROFESSIONAL EXPERIENCE", 
-    "WORK EXPERIENCE",
-    "EDUCATION", 
-    "PROJECTS", 
-    "CERTIFICATIONS"
-  ];
+  const lines = text.split('\n').map(l => l.trim());
+  while (lines.length > 0 && lines[0] === '') lines.shift();
   
-  let formatted = text;
+  // Find where the header ends (first ALL CAPS heading)
+  let headerEndIndex = lines.findIndex(l => /^[A-Z][A-Z\s]+$/.test(l) && l.length > 3);
+  if (headerEndIndex === -1) headerEndIndex = Math.min(3, lines.length);
   
-  // Ensure double newlines before headings
-  headings.forEach(heading => {
-    // Match the heading even if it's not perfectly capitalized, but it usually is.
-    const regex = new RegExp(`([^\\n])\\n(${heading}\\s*\\n)`, 'g');
-    formatted = formatted.replace(regex, '$1\n\n$2');
-  });
-  
-  // Ensure double newlines after headings
-  headings.forEach(heading => {
-    const regex = new RegExp(`(\\n${heading})\\n([^\\n])`, 'g');
-    formatted = formatted.replace(regex, '$1\n\n$2');
-  });
+  const headerLines = lines.slice(0, headerEndIndex).filter(l => l !== '');
+  const bodyLines = lines.slice(headerEndIndex);
 
-  return formatted;
+  let html = `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.5; color: #111; max-width: 800px; margin: 0 auto; padding: 20px; background: white;">`;
+  
+  if (headerLines.length > 0) {
+    const name = headerLines[0];
+    const title = headerLines.length > 1 ? headerLines[1] : '';
+    const contact = headerLines.length > 2 ? headerLines.slice(2).join(' | ') : '';
+
+    html += `
+      <div style="text-align: center; margin-bottom: 16px;">
+        <h1 style="font-size: 22pt; font-weight: 700; margin: 0 0 4px 0; color: #000; letter-spacing: 0px;">${name}</h1>
+        ${title ? `<div style="font-size: 11pt; color: #333; margin-bottom: 6px;">${title}</div>` : ''}
+        ${contact ? `<div style="font-size: 9.5pt; color: #555;">
+          ${contact.split('|').map(c => {
+            const trimmed = c.trim();
+            if (trimmed.includes('@') || trimmed.includes('.com') || trimmed.includes('linkedin') || trimmed.includes('github')) {
+              return `<span style="color: #2563eb;">${trimmed}</span>`;
+            }
+            return trimmed;
+          }).join(' <span style="margin: 0 4px; color: #ccc;">|</span> ')}
+        </div>` : ''}
+      </div>
+    `;
+  }
+
+  let htmlBody = '';
+  let buffer: string[] = [];
+
+  const flushBuffer = () => {
+    if (buffer.length === 0) return;
+    const isBullet = buffer[0].startsWith('-') || buffer[0].startsWith('•') || buffer[0].startsWith('*');
+    if (isBullet) {
+      const joined = buffer.join(' ').substring(1).trim();
+      htmlBody += `
+        <div style="display: flex; margin-bottom: 5px; padding-left: 4px;">
+          <span style="margin-right: 8px; font-size: 10pt;">•</span>
+          <span style="flex: 1;">${joined}</span>
+        </div>
+      `;
+    } else {
+      const text = buffer.join(' ');
+      
+      // Look for right-aligned dates separated by 3+ spaces
+      const parts = text.split(/\s{3,}/);
+      if (parts.length >= 2 && text.length < 120 && !text.endsWith('.')) {
+        htmlBody += `
+          <div style="display: flex; justify-content: space-between; align-items: baseline; font-weight: 600; margin-top: 12px; margin-bottom: 4px; color: #000;">
+            <span>${parts[0]}</span>
+            <span style="font-weight: 400; font-size: 9pt; color: #555;">${parts.slice(1).join(' ')}</span>
+          </div>
+        `;
+      } else if ((text.includes(' | ') || text.includes(' — ') || text.includes(' - ')) && text.length < 120 && !text.endsWith('.')) {
+        htmlBody += `<div style="font-weight: 600; margin-top: 12px; margin-bottom: 4px; color: #000;">${text}</div>`;
+      } else {
+        htmlBody += `<div style="margin-bottom: 6px;">${text}</div>`;
+      }
+    }
+    buffer = [];
+  };
+
+  bodyLines.forEach(line => {
+    if (line === '') {
+      flushBuffer();
+    } else if (/^[A-Z][A-Z\s]+$/.test(line) && line.length > 3) {
+      flushBuffer();
+      htmlBody += `
+        <h3 style="font-size: 11pt; font-weight: 700; color: #000; border-bottom: 1.5px solid #000; padding-bottom: 4px; margin-top: 18px; margin-bottom: 10px; text-transform: uppercase;">
+          ${line}
+        </h3>
+      `;
+    } else {
+      buffer.push(line);
+    }
+  });
+  flushBuffer();
+
+  html += htmlBody + '</div>';
+  return html;
 }
 
 interface ReviewQueueClientProps {
@@ -219,22 +274,19 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
 
                         {/* Right Column: The Resume & Chat */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
-                          <div style={{ 
-                            flex: 1, 
-                            background: '#0a0a0a', 
-                            border: '1px solid rgba(255,255,255,0.1)', 
-                            borderRadius: '12px', 
-                            padding: '1.5rem',
-                            maxHeight: '500px',
-                            overflowY: 'auto',
-                            whiteSpace: 'pre-wrap', 
-                            fontFamily: 'var(--font-sans)', 
-                            fontSize: '0.9rem', 
-                            lineHeight: 1.6, 
-                            color: 'rgba(255,255,255,0.9)' 
-                          }}>
-                            {formatResumeText(app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "No resume content available.")}
-                          </div>
+                          <div 
+                            style={{ 
+                              flex: 1, 
+                              background: 'white', 
+                              border: '1px solid rgba(255,255,255,0.1)', 
+                              borderRadius: '12px', 
+                              maxHeight: '500px',
+                              overflowY: 'auto'
+                            }}
+                            dangerouslySetInnerHTML={{ 
+                              __html: parseResumeToHtml(app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "") 
+                            }}
+                          />
 
                           {/* AI Editor Chat Input */}
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -276,30 +328,12 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
                           variant="ghost" 
                           onClick={async () => {
                             const rawContent = app.resumeVersion?.tailoredContent || app.resumeVersion?.originalContent || "";
-                            const content = formatResumeText(rawContent);
+                            const html = parseResumeToHtml(rawContent);
                             const filename = `${app.jobListing.company.replace(/[^a-zA-Z0-9]/g, '_')}_Resume.pdf`;
                             
                             // Dynamically import to avoid SSR issues
                             const html2pdf = (await import("html2pdf.js")).default;
                             
-                            const lines = content.split('\n');
-                            let html = '<div style="font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #000; padding: 20px;">';
-                            
-                            lines.forEach(line => {
-                              const trimmed = line.trim();
-                              if (trimmed === '') {
-                                html += '<div style="height: 12px;"></div>';
-                              } else if (/^[A-Z][A-Z\s]+$/.test(trimmed) && trimmed.length > 4) { 
-                                // ALL CAPS Heading
-                                html += `<h3 style="margin-top: 16px; margin-bottom: 8px; font-size: 12pt; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 4px; text-transform: uppercase;">${trimmed}</h3>`;
-                              } else if (trimmed.startsWith('-') || trimmed.startsWith('•') || trimmed.startsWith('*')) {
-                                html += `<div style="margin-left: 20px; text-indent: -10px; margin-bottom: 4px;">&#8226; ${trimmed.substring(1).trim()}</div>`;
-                              } else {
-                                html += `<div style="margin-bottom: 4px;">${trimmed}</div>`;
-                              }
-                            });
-                            html += '</div>';
-
                             const element = document.createElement('div');
                             element.innerHTML = html;
 
