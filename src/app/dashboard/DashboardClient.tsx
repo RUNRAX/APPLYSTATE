@@ -39,7 +39,7 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 400, damping: 30, mass: 0.8 } }
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 400, damping: 30, mass: 0.8 } }
 };
 
 export default function DashboardClient({ stats, initialResume, connectedPlatforms = [] }: DashboardClientProps) {
