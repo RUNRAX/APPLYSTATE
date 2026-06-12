@@ -24,9 +24,10 @@ export async function tailorResume(userId: string, jobListingId: string) {
     
     Task: Rewrite the resume to maximize ATS matching for the given Job Description.
     Constraints:
-    - CRITICAL: DO NOT remove any projects, internships, or education from the original resume. You MUST include ALL of them.
+    - CRITICAL: DO NOT remove any sections, projects, internships, or education from the original resume. You MUST include ALL of them to output a complete resume.
+    - CRITICAL: You MUST extract the candidate's real LinkedIn and GitHub links from the original resume and embed them directly under their name at the very top.
     - CRITICAL FORMATTING: You MUST preserve all original section headings (e.g. "PROFESSIONAL EXPERIENCE", "PROJECTS"). 
-    - CRITICAL FORMATTING: You MUST keep every job title, company name, and date on its own separate line. NEVER merge a project title into a bullet point.
+    - CRITICAL FORMATTING: You MUST keep every job title, company name, and date on its own separate line. NEVER merge a project title into a bullet point. Maintain exact base resume alignment.
     - Just rewrite the bullet points of those experiences to highlight skills relevant to the Job Description using strong action verbs and quantified metrics.
     - Never add new skills, tools, companies, or degrees that are not in the original resume.
     - Include a targeted summary.

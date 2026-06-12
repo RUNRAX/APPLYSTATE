@@ -85,8 +85,13 @@ export async function tweakTailoredResume(applicationId: string, instruction: st
     "${instruction}"
 
     Rewrite the resume applying the user's instruction. 
-    Maintain professional ATS formatting using clear bullet points and section headings.
-    Do not add extra conversational text or preambles. 
+    
+    CRITICAL INSTRUCTIONS (MUST FOLLOW STRICTLY):
+    1. NEVER omit any sections from the Original Resume. You MUST include the full PROFESSIONAL EXPERIENCE, PROJECTS, EDUCATION, etc. Do not stop at the summary. The output must be a full, complete resume.
+    2. Maintain the exact base resume structure and layout alignment. 
+    3. You MUST ensure the candidate's real LinkedIn and GitHub links from the Original Resume are embedded directly under their name at the very top of the resume.
+    4. Ensure clear bullet points and section headings (e.g., PROFESSIONAL SUMMARY, TECHNICAL SKILLS, PROFESSIONAL EXPERIENCE). DO NOT write long paragraphs.
+    5. Do not add extra conversational text or preambles.
 
     Output ONLY a valid JSON object with:
     1. "newContent": The fully updated resume text.

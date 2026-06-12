@@ -122,6 +122,12 @@ async function runDiscovery() {
                   const prompt = `
                     You are an expert ATS resume writer. Tailor the following Original Resume to fit the Job Description perfectly.
                     
+                    CRITICAL INSTRUCTIONS (MUST FOLLOW STRICTLY):
+                    1. NEVER omit any sections from the Original Resume. You MUST include the full PROFESSIONAL EXPERIENCE, PROJECTS, EDUCATION, etc. Do not stop at the summary. The output must be a full, complete resume.
+                    2. Maintain the exact base resume structure and layout alignment. 
+                    3. You MUST extract the candidate's real LinkedIn and GitHub links from the Original Resume and embed them directly under their name at the very top of the resume.
+                    4. Ensure clear bullet points and section headings (e.g., PROFESSIONAL SUMMARY, TECHNICAL SKILLS, PROFESSIONAL EXPERIENCE). DO NOT write long paragraphs.
+
                     Job Description:
                     ${rawListing.description}
 
@@ -129,7 +135,7 @@ async function runDiscovery() {
                     ${baseResume.originalContent}
 
                     Output ONLY a valid JSON object with:
-                    1. "tailoredContent": The new resume text. Ensure it is highly structured using clear bullet points, section headings (e.g., PROFESSIONAL SUMMARY, TECHNICAL SKILLS, PROFESSIONAL EXPERIENCE), and concise lines. DO NOT write long paragraphs. Format it nicely as plain text.
+                    1. "tailoredContent": The new full resume text as a plain text string formatted nicely.
                     2. "atsScore": A number from 1 to 100 representing how well this new tailored resume matches the job description. Be realistic, aim for high 80s or 90s.
                   `;
 
