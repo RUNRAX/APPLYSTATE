@@ -97,7 +97,8 @@ export async function tweakTailoredResume(applicationId: string, instruction: st
     const response = await ai.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [{ role: 'user', content: prompt }],
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
+      max_tokens: 6000
     });
 
     const parsed = JSON.parse(response.choices[0]?.message?.content || "{}");

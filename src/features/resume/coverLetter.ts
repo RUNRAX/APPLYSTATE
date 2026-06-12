@@ -26,6 +26,7 @@ export async function generateCoverLetter(userId: string, jobListingId: string) 
   const response = await ai.chat.completions.create({
     model: 'llama-3.3-70b-versatile',
     messages: [{ role: 'user', content: prompt }],
+    max_tokens: 3000
   });
 
   const content = response.choices[0]?.message?.content || "";
