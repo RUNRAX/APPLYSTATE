@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-const smoothSpring = { type: "spring" as const, damping: 30, stiffness: 200, mass: 0.8 };
+const smoothSpring = { type: "spring" as const, stiffness: 400, damping: 30, mass: 0.8 };
 
 interface StatCardProps {
   label: string;

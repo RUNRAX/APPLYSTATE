@@ -50,9 +50,9 @@ export default async function PreferencesPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
             <Input 
               name="salaryMin" 
-              label="Minimum Salary (USD)" 
+              label="Minimum Salary (₹)" 
               type="number"
-              placeholder="e.g. 120000" 
+              placeholder="e.g. 1200000" 
               defaultValue={prefs?.salaryMin || ""}
             />
             <Input 

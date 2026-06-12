@@ -6,7 +6,7 @@
 .dashboardOuter {
   position: relative;
   display: flex;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   width: 100%;
   padding: 1.25rem;
@@ -322,6 +322,10 @@
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+  will-change: scroll-position;
 }
 
 .scrollArea::-webkit-scrollbar {

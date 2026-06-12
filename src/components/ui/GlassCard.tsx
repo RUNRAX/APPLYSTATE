@@ -3,7 +3,7 @@ import { motion, HTMLMotionProps } from "framer-motion";
 import React, { useId } from "react";
 import { LiquidGlassFilter } from "./LiquidGlassFilter";
 
-export const springPhysics = { type: "spring" as const, damping: 30, stiffness: 200, mass: 0.8 };
+export const springPhysics = { type: "spring" as const, stiffness: 400, damping: 30, mass: 0.8 };
 
 interface GlassCardProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
@@ -25,7 +25,7 @@ export function GlassCard({ children, className = "", interactive = false, varia
         id={`glass-filter-${filterId}`}
         className={`${baseClass} ${glowClass} ${interactiveClass} ${className}`}
         transition={springPhysics}
-        whileHover={interactive ? { y: -4, boxShadow: "var(--shadow-elev), 0 0 30px rgba(80, 140, 255, 0.4)" } : undefined}
+        whileHover={interactive ? { y: -4, scale: 1.01 } : undefined}
         whileTap={interactive ? { scale: 0.98 } : undefined}
         {...props}
         style={{ 

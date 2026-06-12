@@ -101,6 +101,7 @@ a {
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   transform: translateZ(0);
+  will-change: transform, box-shadow;
   border-radius: var(--radius);
   position: relative;
 }
@@ -123,6 +124,7 @@ a {
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   transform: translateZ(0);
+  will-change: transform, box-shadow;
   border-radius: var(--radius);
   position: relative;
 }
@@ -145,6 +147,7 @@ a {
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   transform: translateZ(0);
+  will-change: transform, box-shadow;
   border-radius: 9999px;
   position: relative;
 }

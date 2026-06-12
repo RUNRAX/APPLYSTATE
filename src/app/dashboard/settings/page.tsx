@@ -101,6 +101,49 @@ export default async function SettingsPage() {
               </div>
             </div>
 
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <Input 
+                name="salaryMin" 
+                label="Minimum Salary (₹)" 
+                type="number"
+                placeholder="e.g. 1200000" 
+                defaultValue={preference?.salaryMin || ""}
+              />
+              <Input 
+                name="dailyLimit" 
+                label="Daily Application Limit" 
+                type="number"
+                placeholder="e.g. 10" 
+                defaultValue={preference?.dailyLimit || 10}
+              />
+            </div>
+
+            <Input 
+              name="blacklistedComps" 
+              label="Blacklisted Companies (comma separated)" 
+              placeholder="e.g. Acme Corp, Evil Corp" 
+              defaultValue={preference?.blacklistedComps.join(", ") || ""}
+            />
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <div style={{ 
+                width: '40px', height: '24px', background: preference?.remote ? 'var(--gradient-vivid)' : 'rgba(255,255,255,0.1)', 
+                borderRadius: '12px', position: 'relative', cursor: 'pointer', transition: 'background 0.2s'
+              }}>
+                <input 
+                  type="checkbox" 
+                  name="remoteOnly" 
+                  defaultChecked={preference?.remote} 
+                  style={{ opacity: 0, width: '100%', height: '100%', position: 'absolute', cursor: 'pointer', zIndex: 2 }} 
+                />
+                <div style={{ 
+                  width: '18px', height: '18px', background: '#fff', borderRadius: '50%', position: 'absolute', 
+                  top: '3px', left: preference?.remote ? '19px' : '3px', transition: 'left 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                }} />
+              </div>
+              <span style={{ fontWeight: 500, fontSize: '0.9rem' }}>Only apply to Remote roles</span>
+            </div>
+
             <div>
               <Button type="submit" variant="primary">Save Preferences</Button>
             </div>
