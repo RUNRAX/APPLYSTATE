@@ -122,7 +122,7 @@ export default async function SettingsPage() {
               name="blacklistedComps" 
               label="Blacklisted Companies (comma separated)" 
               placeholder="e.g. Acme Corp, Evil Corp" 
-              defaultValue={preference?.blacklistedComps.join(", ") || ""}
+              defaultValue={preference?.blacklistedComps?.join(", ") || ""}
             />
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>

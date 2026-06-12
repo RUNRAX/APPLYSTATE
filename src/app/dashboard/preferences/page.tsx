@@ -36,14 +36,14 @@ export default async function PreferencesPage() {
               name="targetRoles" 
               label="Target Roles" 
               placeholder="e.g. Frontend Engineer, React Developer" 
-              defaultValue={prefs?.targetRoles.join(", ")}
+              defaultValue={prefs?.targetRoles?.join(", ") || ""}
               required 
             />
             <Input 
               name="locations" 
               label="Locations" 
               placeholder="e.g. San Francisco, New York, Remote" 
-              defaultValue={prefs?.locations.join(", ")}
+              defaultValue={prefs?.locations?.join(", ") || ""}
             />
           </div>
 
@@ -68,7 +68,7 @@ export default async function PreferencesPage() {
             name="blacklistedComps" 
             label="Blacklisted Companies (comma separated)" 
             placeholder="e.g. Acme Corp, Evil Corp" 
-            defaultValue={prefs?.blacklistedComps.join(", ")}
+            defaultValue={prefs?.blacklistedComps?.join(", ") || ""}
           />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>
