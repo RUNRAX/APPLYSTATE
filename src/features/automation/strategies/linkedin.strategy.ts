@@ -83,11 +83,15 @@ export class LinkedinStrategy {
     if (hasCaptcha) {
       report('Security Challenge Detected! Please solve the puzzle in the Chromium window. You have 3 minutes!');
       await page.waitForTimeout(180000);
+    } else {
+      // It might be an OTP screen or manual login required
+      report('Waiting up to 3 minutes for you to complete any OTP or manual login in the Chromium window...');
     }
     
     // Verify login success before proceeding
     try {
-      await page.waitForSelector('.global-nav__me-photo', { timeout: 30000 });
+      // Wait up to 3 minutes for the photo to appear (indicating successful login)
+      await page.waitForSelector('.global-nav__me-photo', { timeout: 180000 });
       report(`[LinkedinStrategy] Authenticated successfully.`);
     } catch (e) {
       throw new Error("Failed to authenticate or solve captcha in time.");
