@@ -1,4 +1,6 @@
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-extra';
+import stealth from 'puppeteer-extra-plugin-stealth';
+chromium.use(stealth());
 import prisma from '../lib/prisma';
 import { embedText, matchJob, getProfileVector } from '../features/matching/embeddings';
 import { LinkedinStrategy } from '../features/automation/strategies/linkedin.strategy';

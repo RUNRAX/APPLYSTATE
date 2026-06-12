@@ -38,42 +38,60 @@ export class LinkedinStrategy {
     }
 
     try {
-      await page.goto('https://www.linkedin.com/login', { timeout: 60000 });
+      // First, try going directly to feed to see if state.json cookie is valid
+      await page.goto('https://www.linkedin.com/feed/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+      
+      let isLoggedIn = false;
+      try {
+        await page.waitForSelector('.global-nav__me-photo', { timeout: 15000 });
+        isLoggedIn = true;
+      } catch (e) {
+        isLoggedIn = false;
+      }
+      
+      if (isLoggedIn) {
+        report(`[LinkedinStrategy] Authenticated successfully.`);
+        return;
+      }
+      
+      // If not logged in, proceed to login page
+      await page.goto('https://www.linkedin.com/login', { waitUntil: 'domcontentloaded', timeout: 60000 });
       
       // Try to find the username field (handles different A/B tested LinkedIn login forms)
       const usernameLocator = page.locator('#username, #session_key').first();
-      await usernameLocator.waitFor({ state: 'visible', timeout: 10000 });
+      await usernameLocator.waitFor({ state: 'visible', timeout: 15000 });
       
       await usernameLocator.fill(creds.email);
       await page.locator('#password, #session_password').first().fill(creds.password);
       await page.click('[type="submit"]');
     } catch (e) {
-      report("[LinkedinStrategy] Automated login struggled to find fields. Please login manually in the browser window within 60 seconds if needed!");
+      report("[LinkedinStrategy] Automated login struggled or timed out. Please check the browser window.");
     }
     
     // Wait for the feed or security challenge
-    report('Waiting for successful login...');
+    report('Waiting for successful login or security challenge...');
+    
+    // Give the page a moment to process the login or load the challenge
+    await page.waitForTimeout(5000);
     
     // Check for captcha explicitly
-    const hasCaptcha = await page.evaluate(() => {
-      return document.body.innerHTML.includes('captcha') || document.body.innerHTML.includes('challenge');
+    let hasCaptcha = await page.evaluate(() => {
+      return !!document.querySelector('iframe[src*="captcha"]') || !!document.querySelector('iframe[src*="challenge"]') || !!document.querySelector('#captcha-internal') || window.location.href.includes('checkpoint');
     }).catch(() => false);
 
+
     if (hasCaptcha) {
-      report('Stuck on captcha! Please solve the puzzle in the Chromium window. You have 90 seconds!');
-      await page.waitForTimeout(90000);
-    } else {
-      try {
-        await page.waitForFunction(() => {
-          return window.location.href.includes('feed') || document.querySelector('.feed-identity-module') || document.querySelector('.jobs-home-recent-searches');
-        }, { timeout: 30000 });
-      } catch (e) {
-        report('Login took too long or hidden captcha. Waiting 60s for manual resolution...');
-        await page.waitForTimeout(60000);
-      }
+      report('Security Challenge Detected! Please solve the puzzle in the Chromium window. You have 3 minutes!');
+      await page.waitForTimeout(180000);
     }
     
-    report(`[LinkedinStrategy] Authenticated successfully.`);
+    // Verify login success before proceeding
+    try {
+      await page.waitForSelector('.global-nav__me-photo', { timeout: 30000 });
+      report(`[LinkedinStrategy] Authenticated successfully.`);
+    } catch (e) {
+      throw new Error("Failed to authenticate or solve captcha in time.");
+    }
   }
 
   async *search(page: Page, params: SearchParams, statusCallback?: (msg: string) => void): AsyncGenerator<RawListing> {
@@ -85,21 +103,36 @@ export class LinkedinStrategy {
     report(`[LinkedinStrategy] Searching for roles: ${params.targetRoles.join(', ')}`);
     
     const role = encodeURIComponent(params.targetRoles[0] || 'Software Engineer');
-    let location = encodeURIComponent(params.locations[0] || 'Worldwide');
+    const roles = params.targetRoles;
+    const locations = params.locations;
+
     if (params.remote) {
-      location = encodeURIComponent('Remote'); // Just forcing remote search
+      params.locations = ['Remote']; // Just forcing remote search
     }
     
-    // f_AL=true ensures Easy Apply only
-    const searchUrl = `https://www.linkedin.com/jobs/search/?keywords=${role}&location=${location}&f_AL=true`;
+    const randomRole = roles[Math.floor(Math.random() * roles.length)];
+    const searchUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(randomRole)}&location=${encodeURIComponent(locations[0] || 'Worldwide')}&f_AL=true`;
     report(`Navigating to: ${searchUrl}`);
     
     try {
-      await page.goto(searchUrl, { timeout: 45000, waitUntil: 'domcontentloaded' });
+      await page.evaluate((url) => { window.location.href = url; }, searchUrl);
     } catch (e) {
-      report(`Warning: Navigation to search timed out, proceeding anyway...`);
+      report(`Warning: Navigation failed to evaluate, proceeding anyway...`);
     }
-
+    
+    // Wait for at least one job card to appear
+    try {
+      await page.waitForSelector('.job-card-container, .scaffold-layout__list-item, .base-card, .base-search-card', { timeout: 15000 });
+    } catch (e) {
+      report(`Stuck on loading screen or 0 jobs. Reloading page to bypass SPA loader...`);
+      try {
+        await page.evaluate(() => { window.location.reload(); });
+        await page.waitForSelector('.job-card-container, .scaffold-layout__list-item, .base-card, .base-search-card', { timeout: 15000 });
+      } catch (err) {
+        report(`Warning: Reload timed out.`);
+      }
+    }
+    
     const jobCardsLocator = page.locator('.job-card-container, .jobs-search-results__list-item, .base-search-card, .base-card');
     report(`Waiting for job cards to render...`);
     await jobCardsLocator.first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {
@@ -108,11 +141,14 @@ export class LinkedinStrategy {
     
     const count = await jobCardsLocator.count();
     if (count === 0) {
+      report(`Found 0 job cards on the first page.`);
+      await page.screenshot({ path: 'scratch/linkedin_dump.png', fullPage: true });
       try {
         const fs = require('fs');
         fs.writeFileSync('scratch/linkedin_dump.html', await page.content());
         report(`Saved page dump to scratch/linkedin_dump.html for debugging`);
       } catch (err) {}
+      return; // yield nothing
     }
     report(`Found ${count} job cards on the first page.`);
 
