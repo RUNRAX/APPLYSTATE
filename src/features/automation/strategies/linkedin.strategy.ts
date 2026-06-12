@@ -148,7 +148,7 @@ export class LinkedinStrategy {
         fs.writeFileSync('scratch/linkedin_dump.html', await page.content());
         report(`Saved page dump to scratch/linkedin_dump.html for debugging`);
       } catch (err) {
-        report(`Failed to save debugging dump: ${err.message}`);
+        report(`Failed to save debugging dump: ${err instanceof Error ? err.message : String(err)}`);
       }
       return; // yield nothing
     }
