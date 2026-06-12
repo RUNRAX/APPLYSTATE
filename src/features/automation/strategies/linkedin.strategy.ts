@@ -43,10 +43,13 @@ export class LinkedinStrategy {
       
       let isLoggedIn = false;
       try {
-        await page.waitForFunction(() => {
-          return document.querySelector('.global-nav') !== null || window.location.href.includes('feed');
-        }, { timeout: 15000 });
-        isLoggedIn = true;
+        for (let i = 0; i < 60; i++) {
+          if (page.url().includes('feed')) {
+            isLoggedIn = true;
+            break;
+          }
+          await page.waitForTimeout(1000);
+        }
       } catch (e) {
         isLoggedIn = false;
       }
@@ -91,11 +94,17 @@ export class LinkedinStrategy {
     }
     
     // Verify login success before proceeding
+    let loginSuccess = false;
     try {
       // Wait up to 3 minutes for the global nav to appear (indicating successful login)
-      await page.waitForFunction(() => {
-        return document.querySelector('.global-nav') !== null || window.location.href.includes('feed');
-      }, { timeout: 180000 });
+      for (let i = 0; i < 180; i++) {
+        if (page.url().includes('feed')) {
+          loginSuccess = true;
+          break;
+        }
+        await page.waitForTimeout(1000);
+      }
+      if (!loginSuccess) throw new Error("URL never reached /feed");
       report(`[LinkedinStrategy] Authenticated successfully.`);
     } catch (e) {
       throw new Error("Failed to authenticate or solve captcha in time.");
