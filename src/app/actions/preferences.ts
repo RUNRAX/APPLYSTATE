@@ -45,5 +45,5 @@ export async function updateJobPreferences(formData: FormData) {
     }
   });
 
-  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard/preferences");
 }
