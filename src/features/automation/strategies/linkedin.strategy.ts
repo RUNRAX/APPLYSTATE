@@ -115,39 +115,41 @@ export class LinkedinStrategy {
     report(`Navigating to: ${searchUrl}`);
     
     try {
-      await page.evaluate((url) => { window.location.href = url; }, searchUrl);
+      await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     } catch (e) {
-      report(`Warning: Navigation failed to evaluate, proceeding anyway...`);
+      report(`Warning: Navigation to search timed out, proceeding anyway...`);
     }
     
     // Wait for at least one job card to appear
     try {
-      await page.waitForSelector('.job-card-container, .scaffold-layout__list-item, .base-card, .base-search-card', { timeout: 15000 });
+      await page.waitForSelector('.job-card-container, .scaffold-layout__list-item, .base-card, .base-search-card', { timeout: 60000 });
     } catch (e) {
-      report(`Stuck on loading screen or 0 jobs. Reloading page to bypass SPA loader...`);
+      report(`Still loading or 0 jobs. Reloading page to bypass SPA loader...`);
       try {
-        await page.evaluate(() => { window.location.reload(); });
-        await page.waitForSelector('.job-card-container, .scaffold-layout__list-item, .base-card, .base-search-card', { timeout: 15000 });
+        await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+        await page.waitForSelector('.job-card-container, .scaffold-layout__list-item, .base-card, .base-search-card', { timeout: 45000 });
       } catch (err) {
-        report(`Warning: Reload timed out.`);
+        report(`Warning: Reload timed out or cards still not visible.`);
       }
     }
     
     const jobCardsLocator = page.locator('.job-card-container, .jobs-search-results__list-item, .base-search-card, .base-card');
-    report(`Waiting for job cards to render...`);
-    await jobCardsLocator.first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {
+    report(`Waiting for job cards to fully render...`);
+    await jobCardsLocator.first().waitFor({ state: 'visible', timeout: 30000 }).catch(() => {
       report(`Timeout waiting for job cards. They might not exist or the page is stuck.`);
     });
     
     const count = await jobCardsLocator.count();
     if (count === 0) {
       report(`Found 0 job cards on the first page.`);
-      await page.screenshot({ path: 'scratch/linkedin_dump.png', fullPage: true });
       try {
+        await page.screenshot({ path: 'scratch/linkedin_dump.png', fullPage: true, timeout: 15000 });
         const fs = require('fs');
         fs.writeFileSync('scratch/linkedin_dump.html', await page.content());
         report(`Saved page dump to scratch/linkedin_dump.html for debugging`);
-      } catch (err) {}
+      } catch (err) {
+        report(`Failed to save debugging dump: ${err.message}`);
+      }
       return; // yield nothing
     }
     report(`Found ${count} job cards on the first page.`);
