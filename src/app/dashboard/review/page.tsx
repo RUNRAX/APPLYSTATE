@@ -4,9 +4,23 @@ import { redirect } from "next/navigation";
 import { GlassCard } from "@/components/ui/GlassCard";
 import ReviewQueueClient from "./ReviewQueueClient";
 
-export default async function ReviewQueuePage() {
+export default async function ReviewQueuePage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
+
+  const page = parseInt(searchParams.page || "1", 10);
+  const itemsPerPage = 10;
+
+  const totalApplications = await prisma.application.count({
+    where: { 
+      userId: session.user.id, 
+      status: { in: ['PENDING_REVIEW', 'QUEUED', 'APPLIED'] } 
+    }
+  });
 
   const rawApplications = await prisma.application.findMany({
     where: { 
@@ -14,7 +28,9 @@ export default async function ReviewQueuePage() {
       status: { in: ['PENDING_REVIEW', 'QUEUED', 'APPLIED'] } 
     },
     include: { jobListing: true },
-    orderBy: { id: 'desc' }
+    orderBy: { id: 'desc' },
+    skip: (page - 1) * itemsPerPage,
+    take: itemsPerPage
   });
 
   const pendingApplications = await Promise.all(
@@ -36,7 +52,11 @@ export default async function ReviewQueuePage() {
         <p style={{ color: 'var(--muted-foreground)' }}>Tasks requiring your manual attention to unblock the agent.</p>
       </div>
 
-      <ReviewQueueClient applications={pendingApplications} />
+      <ReviewQueueClient 
+        applications={pendingApplications} 
+        currentPage={page}
+        totalApplications={totalApplications}
+      />
     </div>
   );
 }

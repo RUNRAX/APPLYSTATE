@@ -115,23 +115,23 @@ function parseResumeToHtml(text: string) {
 
 interface ReviewQueueClientProps {
   applications: any[];
+  initialSelectedAppId?: string;
+  currentPage: number;
+  totalApplications: number;
 }
 
 import { useRouter } from "next/navigation";
 
-export default function ReviewQueueClient({ applications }: ReviewQueueClientProps) {
+export default function ReviewQueueClient({ applications, initialSelectedAppId, currentPage, totalApplications }: ReviewQueueClientProps) {
   const router = useRouter();
-  const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
+  const [selectedAppId, setSelectedAppId] = useState<string | null>(initialSelectedAppId || null);
   const [isPending, startTransition] = useTransition();
   const [analysisData, setAnalysisData] = useState<Record<string, any>>({});
   const [analysisLoading, setAnalysisLoading] = useState<Record<string, boolean>>({});
   
-  // Pagination & Refresh
-  const [currentPage, setCurrentPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const itemsPerPage = 10;
-  const totalPages = Math.max(1, Math.ceil(applications.length / itemsPerPage));
-  const currentApplications = applications.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(totalApplications / itemsPerPage));
 
   // Chat state
   const [chatInput, setChatInput] = useState("");
@@ -211,7 +211,7 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
         </GlassCard>
       ) : (
         <>
-          {currentApplications.map((app) => {
+          {applications.map((app) => {
           const isExpanded = selectedAppId === app.id;
           const currentAnalysis = analysisData[app.id];
           const isLoadingAnalysis = analysisLoading[app.id];
@@ -405,7 +405,7 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
               <Button 
                 variant="ghost" 
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                onClick={() => router.push(`/dashboard/review?page=${currentPage - 1}`)}
                 disabled={currentPage === 1}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               >
@@ -416,7 +416,7 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
               </div>
               <Button 
                 variant="ghost" 
-                onClick={() => setCurrentPage(p => Math.max(1, p + 1))}
+                onClick={() => router.push(`/dashboard/review?page=${currentPage + 1}`)}
                 disabled={currentPage === totalPages}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               >
