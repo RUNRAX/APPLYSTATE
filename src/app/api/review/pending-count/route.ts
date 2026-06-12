@@ -9,14 +9,21 @@ export async function GET() {
   }
 
   try {
-    const count = await prisma.application.count({
+    const pendingReviewCount = await prisma.application.count({
       where: {
         userId: session.user.id,
         status: "PENDING_REVIEW"
       }
     });
-    return NextResponse.json({ count });
+
+    const newJobsCount = await prisma.jobListing.count({
+      where: {
+        status: "NEW"
+      }
+    });
+
+    return NextResponse.json({ pendingCount: pendingReviewCount, newJobsCount: newJobsCount });
   } catch (error) {
-    return NextResponse.json({ count: 0 }, { status: 500 });
+    return NextResponse.json({ pendingCount: 0, newJobsCount: 0 }, { status: 500 });
   }
 }

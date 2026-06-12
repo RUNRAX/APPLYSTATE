@@ -38,6 +38,75 @@ export default async function SettingsPage() {
           <Button variant="glass" style={{ fontSize: '0.9rem' }}>Edit Profile</Button>
         </GlassCard>
 
+        {/* Job Preferences Section */}
+        <GlassCard variant="strong">
+          <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>Job Search Preferences</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--muted-foreground)', marginBottom: '1.5rem' }}>
+            Configure how the ApplyMate agent discovers jobs on LinkedIn for you.
+          </p>
+          
+          <form action={async (formData) => {
+            "use server";
+            const { updateJobPreferences } = await import("@/app/actions/preferences");
+            await updateJobPreferences(formData);
+          }} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <Input 
+                label="Target Roles (comma separated)" 
+                name="targetRoles"
+                defaultValue={preference?.targetRoles?.join(", ") || "Software Engineer"} 
+              />
+              <Input 
+                label="Locations (comma separated)" 
+                name="locations"
+                defaultValue={preference?.locations?.join(", ") || "Worldwide"} 
+              />
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem' }}>Experience Level</label>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
+                    <input type="checkbox" name="experienceLevel" value="1" defaultChecked={preference?.experienceLevel?.includes("1")} /> Internship
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
+                    <input type="checkbox" name="experienceLevel" value="2" defaultChecked={preference?.experienceLevel?.includes("2")} /> Entry level
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
+                    <input type="checkbox" name="experienceLevel" value="3" defaultChecked={preference?.experienceLevel?.includes("3")} /> Associate
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
+                    <input type="checkbox" name="experienceLevel" value="4" defaultChecked={preference?.experienceLevel?.includes("4")} /> Mid-Senior
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem' }}>Date Posted</label>
+                <select 
+                  name="datePosted" 
+                  defaultValue={preference?.datePosted || ""}
+                  style={{ 
+                    width: '100%', padding: '0.75rem', borderRadius: '8px', 
+                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
+                    color: 'white', outline: 'none' 
+                  }}
+                >
+                  <option value="" style={{ color: 'black' }}>Any Time</option>
+                  <option value="r86400" style={{ color: 'black' }}>Past 24 hours</option>
+                  <option value="r604800" style={{ color: 'black' }}>Past Week</option>
+                  <option value="r2592000" style={{ color: 'black' }}>Past Month</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <Button type="submit" variant="primary">Save Preferences</Button>
+            </div>
+          </form>
+        </GlassCard>
+
         {/* AI Integration Section */}
         <GlassCard variant="strong">
           <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>AI Integration</h3>

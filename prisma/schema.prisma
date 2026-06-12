@@ -105,6 +105,8 @@ model JobPreference {
   dailyLimit       Int      @default(10)
   autoApply        Boolean  @default(false)
   blacklistedComps String[]
+  experienceLevel  String[] @default([])
+  datePosted       String?
 }
 
 model PlatformCredential {

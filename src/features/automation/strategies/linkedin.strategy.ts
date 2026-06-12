@@ -7,6 +7,8 @@ export interface SearchParams {
   locations: string[];
   remote: boolean;
   threshold?: number;
+  experienceLevel?: string[];
+  datePosted?: string | null;
 }
 
 export interface RawListing {
@@ -128,7 +130,18 @@ export class LinkedinStrategy {
     }
     
     const randomRole = roles[Math.floor(Math.random() * roles.length)];
-    const searchUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(randomRole)}&location=${encodeURIComponent(locations[0] || 'Worldwide')}&f_AL=true`;
+    
+    // f_AL=true means Easy Apply
+    let searchUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(randomRole)}&location=${encodeURIComponent(locations[0] || 'Worldwide')}&f_AL=true`;
+    
+    if (params.experienceLevel && params.experienceLevel.length > 0) {
+      searchUrl += `&f_E=${params.experienceLevel.join(',')}`;
+    }
+    
+    if (params.datePosted) {
+      searchUrl += `&f_TPR=${params.datePosted}`;
+    }
+
     report(`Navigating to: ${searchUrl}`);
     
     try {

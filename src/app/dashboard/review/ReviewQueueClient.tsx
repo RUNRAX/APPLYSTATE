@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { approveApplication, rejectApplication, tweakTailoredResume } from "@/app/actions/review";
 import { generateResumeAnalysis } from "@/app/actions/analysis";
-import { Send, ChevronDown, ChevronUp, Bot, Sparkles, AlertTriangle } from "lucide-react";
+import { Send, ChevronDown, ChevronUp, Bot, Sparkles, AlertTriangle, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { AgentStatusIndicator } from "./AgentStatusIndicator";
 
@@ -117,15 +117,31 @@ interface ReviewQueueClientProps {
   applications: any[];
 }
 
+import { useRouter } from "next/navigation";
+
 export default function ReviewQueueClient({ applications }: ReviewQueueClientProps) {
+  const router = useRouter();
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [analysisData, setAnalysisData] = useState<Record<string, any>>({});
   const [analysisLoading, setAnalysisLoading] = useState<Record<string, boolean>>({});
   
+  // Pagination & Refresh
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const itemsPerPage = 10;
+  const totalPages = Math.max(1, Math.ceil(applications.length / itemsPerPage));
+  const currentApplications = applications.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   // Chat state
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    router.refresh();
+    setTimeout(() => setIsRefreshing(false), 1000);
+  };
 
   const handleApprove = (appId: string) => {
     startTransition(() => {
@@ -179,7 +195,13 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', maxWidth: '1200px' }}>
-      <AgentStatusIndicator />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <AgentStatusIndicator />
+        <Button variant="ghost" onClick={handleRefresh} disabled={isRefreshing} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <RefreshCw size={16} className={isRefreshing ? "spin-animation" : ""} />
+          {isRefreshing ? "Refreshing..." : "Refresh Queue"}
+        </Button>
+      </div>
       
       {applications.length === 0 ? (
         <GlassCard variant="strong" style={{ padding: '4rem 2rem', textAlign: 'center', color: 'var(--muted-foreground)' }}>
@@ -188,7 +210,8 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
           <p>Your agent is running smoothly without interruptions.</p>
         </GlassCard>
       ) : (
-        applications.map((app) => {
+        <>
+          {currentApplications.map((app) => {
           const isExpanded = selectedAppId === app.id;
           const currentAnalysis = analysisData[app.id];
           const isLoadingAnalysis = analysisLoading[app.id];
@@ -375,7 +398,33 @@ export default function ReviewQueueClient({ applications }: ReviewQueueClientPro
               </GlassCard>
             </motion.div>
           );
-        })
+        })}
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <Button 
+                variant="ghost" 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                <ChevronLeft size={16} /> Previous
+              </Button>
+              <div style={{ color: 'var(--muted-foreground)', fontSize: '0.9rem' }}>
+                Page {currentPage} of {totalPages}
+              </div>
+              <Button 
+                variant="ghost" 
+                onClick={() => setCurrentPage(p => Math.max(1, p + 1))}
+                disabled={currentPage === totalPages}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                Next <ChevronRight size={16} />
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

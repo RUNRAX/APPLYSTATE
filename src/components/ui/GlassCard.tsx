@@ -29,8 +29,8 @@ export function GlassCard({ children, className = "", interactive = false, varia
         whileTap={interactive ? { scale: 0.98 } : undefined}
         {...props}
         style={{ 
-          backdropFilter: `url(#glass-filter-${filterId})`, 
-          WebkitBackdropFilter: `url(#glass-filter-${filterId})`,
+          backdropFilter: `blur(16px) url(#glass-filter-${filterId})`, 
+          WebkitBackdropFilter: `blur(16px) url(#glass-filter-${filterId})`,
           padding: '1.5rem', 
           ...props.style 
         }}
