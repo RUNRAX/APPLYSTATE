@@ -12,42 +12,30 @@ export default async function DashboardOverview() {
 
   const userId = session.user.id;
 
-  // Fetch real stats
-  const totalApplied = await prisma.application.count({
-    where: { userId, status: "SUBMITTED" }
-  });
+  let totalApplied = 0;
+  let queuedApps = 0;
+  let pendingReviews = 0;
+  let avgMatch = 0;
+  let resume = null;
+  let connectedPlatforms: string[] = [];
 
-  const queuedApps = await prisma.application.count({
-    where: { userId, status: "QUEUED" }
-  });
+  try {
+    totalApplied = await prisma.application.count({ where: { userId, status: "SUBMITTED" } });
+    queuedApps = await prisma.application.count({ where: { userId, status: "QUEUED" } });
+    pendingReviews = await prisma.application.count({ where: { userId, status: "PENDING_REVIEW" } });
+    
+    const allApps = await prisma.application.findMany({ where: { userId }, include: { jobListing: true } });
+    avgMatch = allApps.length > 0 
+      ? Math.round(allApps.reduce((acc, app) => acc + (app.jobListing.matchScore || 0), 0) / allApps.length) 
+      : 0;
 
-  const pendingReviews = await prisma.application.count({
-    where: { userId, status: "PENDING_REVIEW" }
-  });
-  
-  const allApps = await prisma.application.findMany({
-    where: { userId },
-    include: { jobListing: true }
-  });
-  
-  const avgMatch = allApps.length > 0 
-    ? Math.round(allApps.reduce((acc, app) => acc + (app.jobListing.matchScore || 0), 0) / allApps.length) 
-    : 0;
+    resume = await prisma.resume.findFirst({ where: { userId, isActive: true }, orderBy: { id: "desc" } });
 
-  const profile = await prisma.profile.findUnique({
-    where: { userId }
-  });
-
-  const resume = await prisma.resume.findFirst({
-    where: { userId: session.user.id, isActive: true },
-    orderBy: { id: "desc" }
-  });
-
-  const platforms = await prisma.platformCredential.findMany({
-    where: { userId },
-    select: { platform: true }
-  });
-  const connectedPlatforms = platforms.map(p => p.platform);
+    const platforms = await prisma.platformCredential.findMany({ where: { userId }, select: { platform: true } });
+    connectedPlatforms = platforms.map(p => p.platform);
+  } catch (error) {
+    console.error("Database connection failed on dashboard:", error);
+  }
 
   // Check if they need onboarding
   // We removed the forced redirect so users can explore the dashboard first.

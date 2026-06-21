@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { TrendingUp, Clock, ArrowUpRight, PlayCircle, FileText, Link as LinkIcon } from "lucide-react";
+import { TrendingUp, Clock, ArrowUpRight, PlayCircle, FileText, Link as LinkIcon, Play } from "lucide-react";
 import { testAutoApply } from "@/app/actions/test-apply";
 import ResumeVault from "./ResumeVault";
 
@@ -46,6 +46,10 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
   const [isPending, startTransition] = useTransition();
   const [testMessage, setTestMessage] = useState("");
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [isAgentModalOpen, setIsAgentModalOpen] = useState(false);
+  const [agentEmail, setAgentEmail] = useState("");
+  const [agentPassword, setAgentPassword] = useState("");
+  const [agentStatus, setAgentStatus] = useState("");
   const events = useSSE();
   const { data: session } = useSession();
   const firstName = session?.user?.name?.split(' ')[0] || 'there';
@@ -125,24 +129,18 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
         <GlassCard variant="strong" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6' }}>
-              <LinkIcon size={20} />
+              <Play size={20} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>
-                {connectedPlatforms.some(p => p.toLowerCase() === 'linkedin') ? "LinkedIn Connected" : "Connect Platform"}
-              </h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
-                {connectedPlatforms.some(p => p.toLowerCase() === 'linkedin') 
-                  ? "Your LinkedIn credentials are secure and active."
-                  : "Save your LinkedIn credentials securely"}
-              </p>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Launch Cloud Agent</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Provide session credentials to start job discovery.</p>
             </div>
           </div>
-          <Link href="/dashboard/connect/linkedin" style={{ marginTop: 'auto' }}>
-            <Button variant={connectedPlatforms.some(p => p.toLowerCase() === 'linkedin') ? "outline" : "primary"} style={{ width: '100%' }}>
-              {connectedPlatforms.some(p => p.toLowerCase() === 'linkedin') ? "Update Credentials" : "Connect LinkedIn"}
+          <div style={{ marginTop: 'auto' }}>
+            <Button variant="primary" style={{ width: '100%' }} onClick={() => setIsAgentModalOpen(true)}>
+              Start Agent Session
             </Button>
-          </Link>
+          </div>
         </GlassCard>
 
         <GlassCard variant="strong" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -171,6 +169,60 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
 
       {/* Resume Vault Modal */}
       <ResumeVault initialResume={initialResume} isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} />
+
+      {/* Start Agent Modal */}
+      <AnimatePresence>
+        {isAgentModalOpen && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} style={{ width: '100%', maxWidth: '400px' }}>
+              <GlassCard variant="strong" style={{ padding: '2rem' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>Start Agent Session</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', marginBottom: '1.5rem' }}>
+                  Provide your Google credentials for this session only. They will not be saved.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <Input 
+                    name="email" label="Google Email" 
+                    value={agentEmail} onChange={e => setAgentEmail(e.target.value)} 
+                    placeholder="email@gmail.com" type="email" 
+                  />
+                  <Input 
+                    name="password" label="Password" 
+                    value={agentPassword} onChange={e => setAgentPassword(e.target.value)} 
+                    placeholder="••••••••" type="password" 
+                  />
+                  {agentStatus && (
+                    <div style={{ fontSize: '0.8rem', color: agentStatus.includes('Error') ? '#ef4444' : '#4ade80' }}>
+                      {agentStatus}
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                    <Button variant="outline" style={{ flex: 1 }} onClick={() => setIsAgentModalOpen(false)}>Cancel</Button>
+                    <Button variant="primary" style={{ flex: 1 }} onClick={async () => {
+                      setAgentStatus("Starting cloud browser...");
+                      try {
+                        const res = await fetch('/api/agent/start', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ email: agentEmail, password: agentPassword })
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || "Failed to start agent");
+                        setAgentStatus("Agent started successfully!");
+                        setTimeout(() => setIsAgentModalOpen(false), 2000);
+                      } catch (err: any) {
+                        setAgentStatus(`Error: ${err.message}`);
+                      }
+                    }}>
+                      Launch
+                    </Button>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Stat Cards — 2 column layout */}
       <motion.div variants={itemVariants} className={styles.statsGrid}>

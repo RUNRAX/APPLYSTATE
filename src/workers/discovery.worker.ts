@@ -3,7 +3,7 @@ import stealth from 'puppeteer-extra-plugin-stealth';
 chromium.use(stealth());
 import prisma from '../lib/prisma';
 import { embedText, matchJob, getProfileVector } from '../features/matching/embeddings';
-import { LinkedinStrategy } from '../features/automation/strategies/linkedin.strategy';
+import { CompanyPortalsStrategy } from '../features/automation/strategies/company-portals.strategy';
 
 async function updateAgentStatus(userId: string, status: string, message: string) {
   try {
@@ -39,7 +39,7 @@ async function runDiscovery() {
           const platform = cred.platform.toLowerCase();
           
           let strategy;
-          if (platform.includes('linkedin')) strategy = new LinkedinStrategy();
+          if (platform.includes('linkedin') || platform.includes('company_portal')) strategy = new CompanyPortalsStrategy();
           else {
             console.log(`[Discovery] Platform ${platform} not supported yet`);
             continue;

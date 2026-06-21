@@ -1,6 +1,4 @@
-- [x] Add AgentStatus model to schema.prisma
-- [x] Generate Prisma Client
-- [x] Add updateAgentStatus helper to discovery.worker.ts and call it
-- [x] Pass status updates from linkedin.strategy.ts
-- [x] Create server action getAgentStatus in agent.ts
-- [x] Create AgentStatusIndicator.tsx and embed in ReviewQueueClient.tsx
+- [x] Add `playwright-core` to dependencies for cloud connection.
+- [x] Create `/api/agent/start/route.ts` API route using `playwright-core` and Browserless WebSocket.
+- [x] Add "Start Agent" button to Dashboard UI with Google Credentials modal.
+- [x] Remove permanent credential storage from Onboarding / Connect forms.

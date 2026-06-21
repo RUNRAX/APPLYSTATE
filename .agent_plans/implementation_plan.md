@@ -1,42 +1,32 @@
-# Greenhouse Automated Application Worker
+# Shift from LinkedIn to Company Career Portals
 
-The goal is to expand the application worker to automatically fill out and submit job applications on Greenhouse job boards (`boards.greenhouse.io`). 
-
-## Open Questions
-> [!IMPORTANT]  
-> Greenhouse forms require a First Name, Last Name, Email, and Phone Number. Since our database `Profile` table does not explicitly store your Phone Number or LinkedIn URL, I plan to **extract these details automatically from your base Resume** using AI right before applying. 
-> 
-> Does this approach sound good to you? Or would you prefer we add a dedicated "Contact Info" settings page to the dashboard?
+The goal is to transition the job discovery mechanism away from LinkedIn and focus entirely on company career portals (ATS platforms like Lever, Greenhouse, Ashby, etc.). This avoids the high competition and traffic associated with LinkedIn Easy Apply.
 
 ## Proposed Changes
 
-### Database & Types
-No database schema changes are strictly required since we will extract contact info from the resume on-the-fly.
+### 1. New Scraping Strategy
+Create a new `company-portals.strategy.ts` which implements the required methods (`login`, `search`). 
+- `login`: Can simply be a no-op or pass-through since most company portals do not require authentication to search.
+- `search`: Will use search engines (e.g., Google or DuckDuckGo) with advanced operators (`site:lever.co OR site:boards.greenhouse.io`) or use direct ATS aggregation techniques to find roles matching the user's criteria.
 
-### Platform Automations
+### 2. Update Discovery Worker
+Modify `src/workers/discovery.worker.ts` to:
+- Remove the `LinkedinStrategy` dependency.
+- Instantiate and use `CompanyPortalsStrategy` when the configured platform is invoked.
+- Update log messages and status updates to reflect company portals instead of LinkedIn.
 
-#### [NEW] [src/features/automation/platforms/greenhouse.ts](file:///d:/APPLYSTATE/src/features/automation/platforms/greenhouse.ts)
-- Create `applyToGreenhouse(page, url, resumePath, candidateData)`
-- Use Playwright to:
-  - Navigate to the Greenhouse job URL.
-  - Wait for `#first_name`, `#last_name`, `#email`, `#phone`.
-  - Fill in the candidate's details.
-  - Upload the tailored PDF resume via `input[type="file"]`.
-  - Check for common custom questions (e.g. LinkedIn Profile URL) and fill them if `candidateData.linkedinUrl` is available.
-  - Click the Submit button (`#submit_app`).
-  - Wait for the success confirmation page and return a screenshot.
+### 3. UI and Onboarding Updates
+Remove LinkedIn terminology from the user interface:
+- **Dashboard**: Update `DashboardClient.tsx` to display "Company Portals" instead of "LinkedIn".
+- **Onboarding**: Update `src/app/dashboard/onboarding/page.tsx` to offer connecting to ATS/Company Portals rather than LinkedIn.
+- **Connection Form**: Since company portals don't require user credentials to search, we can modify `ConnectForm.tsx` to either auto-connect or just act as a toggle (or use a dummy credential to satisfy the `PlatformCredential` DB model).
 
-### Worker Updates
-
-#### [MODIFY] [src/workers/application.worker.ts](file:///d:/APPLYSTATE/src/workers/application.worker.ts)
-- Modify the `processApplication` flow to detect if the `jobListing.listingUrl` is a Greenhouse link (`boards.greenhouse.io`).
-- If it is Greenhouse:
-  1. Use the AI to quickly extract `{ firstName, lastName, phone, linkedinUrl, githubUrl }` from `resume.originalContent` (or we can just split `user.name` and use `user.email`).
-  2. Call `applyToGreenhouse(...)`.
-- If it is LinkedIn:
-  1. Continue using `applyToLinkedInEasyApply`.
+## User Review Required
+> [!IMPORTANT]
+> Company career portals generally do not require a login. The current database schema uses `PlatformCredential` to trigger the worker. Should we:
+> A) Simply rename "LinkedIn" to "Company Portals" in the UI and allow users to "Connect" by just clicking a button (saving a dummy credential)?
+> B) Or bypass credentials entirely for company portals, having the worker run automatically for any user with `autoApply` enabled? (I recommend A for minimal database changes).
 
 ## Verification Plan
-1. Find a live Greenhouse job link.
-2. Manually trigger the application worker or add the job to the database queue.
-3. Verify that the Playwright browser successfully fills out the form, uploads the generated PDF resume, and submits the application.
+1. **Automated / Local Testing**: I will trigger the `discovery.worker.ts` script to ensure it correctly initializes the new strategy, performs a search on an ATS platform, and extracts at least one job successfully.
+2. **UI Verification**: Ensure all LinkedIn references are gone from the dashboard.

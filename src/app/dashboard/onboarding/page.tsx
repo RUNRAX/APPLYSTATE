@@ -84,25 +84,17 @@ export default function OnboardingWizard() {
 
             {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} style={{ padding: '2rem' }}>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '1rem' }}>Step 3: Connect Platforms</h2>
-                <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>Securely connect the job boards you want ApplyMate to use.</p>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <Link href="/dashboard/connect/linkedin" target="_blank" style={{ textDecoration: 'none' }}>
-                    <Button type="button" variant={connectedPlatforms['LinkedIn'] ? 'primary' : 'outline'} onClick={() => togglePlatform('LinkedIn')} style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      <span>LinkedIn</span> <span>{connectedPlatforms['LinkedIn'] ? 'Connected ✅' : 'Connect'}</span>
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard/connect/indeed" target="_blank" style={{ textDecoration: 'none' }}>
-                    <Button type="button" variant={connectedPlatforms['Indeed'] ? 'primary' : 'outline'} onClick={() => togglePlatform('Indeed')} style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      <span>Indeed</span> <span>{connectedPlatforms['Indeed'] ? 'Connected ✅' : 'Connect'}</span>
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard/connect/wellfound" target="_blank" style={{ textDecoration: 'none' }}>
-                    <Button type="button" variant={connectedPlatforms['Wellfound'] ? 'primary' : 'outline'} onClick={() => togglePlatform('Wellfound')} style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      <span>Wellfound</span> <span>{connectedPlatforms['Wellfound'] ? 'Connected ✅' : 'Connect'}</span>
-                    </Button>
-                  </Link>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '1rem' }}>Step 3: Secure Session Setup</h2>
+                <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>
+                  ApplyMate uses a secure cloud browser architecture. To protect your security, we <strong>do not store</strong> your passwords.
+                </p>
+                <div style={{ padding: '1.5rem', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '12px' }}>
+                  <h4 style={{ color: '#60a5fa', fontWeight: 600, marginBottom: '0.5rem' }}>How it works:</h4>
+                  <ul style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <li>You will enter your Google credentials directly in the Dashboard when you want to launch a discovery session.</li>
+                    <li>We connect you to a secure Browserless.io cloud instance.</li>
+                    <li>Credentials are cleared from memory immediately after the session ends.</li>
+                  </ul>
                 </div>
               </motion.div>
             )}
