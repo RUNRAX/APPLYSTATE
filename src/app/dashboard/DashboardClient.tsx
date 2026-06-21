@@ -187,9 +187,9 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
                     placeholder="email@gmail.com" type="email" 
                   />
                   <Input 
-                    name="password" label="Password" 
+                    name="password" label="Google App Password" 
                     value={agentPassword} onChange={e => setAgentPassword(e.target.value)} 
-                    placeholder="••••••••" type="password" 
+                    placeholder="16-character app password" type="password" 
                   />
                   {agentStatus && (
                     <div style={{ fontSize: '0.8rem', color: agentStatus.includes('Error') ? '#ef4444' : '#4ade80' }}>
@@ -206,8 +206,16 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ email: agentEmail, password: agentPassword })
                         });
-                        const data = await res.json();
+                        
+                        let data;
+                        try {
+                          data = await res.json();
+                        } catch (e) {
+                          throw new Error("Server returned an invalid response (Likely a 404 or 500 page). Please ensure the latest Vercel deployment has finished building.");
+                        }
+
                         if (!res.ok) throw new Error(data.error || "Failed to start agent");
+                        
                         setAgentStatus("Agent started successfully!");
                         setTimeout(() => setIsAgentModalOpen(false), 2000);
                       } catch (err: any) {
