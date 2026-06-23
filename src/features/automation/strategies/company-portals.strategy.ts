@@ -109,9 +109,9 @@ export class CompanyPortalsStrategy {
     const randomRole = params.targetRoles[Math.floor(Math.random() * params.targetRoles.length)];
     const location = params.remote ? 'remote' : (params.locations[0] || '');
     
-    // Construct Google search query
-    // E.g., "Software Engineer" (careers OR jobs) (remote) -site:linkedin.com -site:indeed.com -site:glassdoor.com -site:ziprecruiter.com
-    const query = `"${randomRole}" (careers OR jobs) ${location ? `(${location})` : ''} -site:linkedin.com -site:indeed.com -site:glassdoor.com -site:ziprecruiter.com -site:builtindo.com -site:simplyhired.com`;
+    // Construct Google search query specifically targeting well-known ATS subdomains
+    // e.g., site:greenhouse.io OR site:jobs.lever.co OR site:myworkdayjobs.com
+    const query = `"${randomRole}" ${location ? `"${location}" OR remote` : 'remote'} (site:greenhouse.io OR site:jobs.lever.co OR site:myworkdayjobs.com OR site:boards.greenhouse.io OR site:ashbyhq.com)`;
     
     const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
     report(`Navigating to: ${searchUrl}`);

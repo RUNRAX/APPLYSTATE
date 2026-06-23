@@ -1,4 +1,5 @@
-- [x] Add `playwright-core` to dependencies for cloud connection.
-- [x] Create `/api/agent/start/route.ts` API route using `playwright-core` and Browserless WebSocket.
-- [x] Add "Start Agent" button to Dashboard UI with Google Credentials modal.
-- [x] Remove permanent credential storage from Onboarding / Connect forms.
+- [x] Update `src/app/api/agent/start/route.ts` to persist Google credentials using `encryptCredential`.
+- [x] Update `src/app/api/agent/start/route.ts` to set agent status to `INITIALIZING`.
+- [x] Add `/api/agent/stop` route (or modify `/start` to handle stop/refresh).
+- [x] Update `DashboardClient.tsx` modal to show Refresh/Stop/Cancel if agent is active.
+- [x] Refine `company-portals.strategy.ts` search query.
