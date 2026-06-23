@@ -132,13 +132,13 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
               <Play size={20} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Launch Cloud Agent</h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>Provide session credentials to start job discovery.</p>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>{stats.activeBots > 0 ? "Restart Agent" : "Launch Cloud Agent"}</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>{stats.activeBots > 0 ? "Provide credentials to restart discovery." : "Provide session credentials to start job discovery."}</p>
             </div>
           </div>
           <div style={{ marginTop: 'auto' }}>
-            <Button variant="primary" style={{ width: '100%' }} onClick={() => setIsAgentModalOpen(true)}>
-              Start Agent Session
+            <Button variant={stats.activeBots > 0 ? "outline" : "primary"} style={{ width: '100%' }} onClick={() => setIsAgentModalOpen(true)}>
+              {stats.activeBots > 0 ? "Restart Agent Session" : "Start Agent Session"}
             </Button>
           </div>
         </GlassCard>
