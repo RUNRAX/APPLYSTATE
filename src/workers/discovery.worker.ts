@@ -101,7 +101,15 @@ async function runDiscovery() {
           console.log(`[Discovery] Starting harvest for user ${userId} on ${platform}`);
           await updateAgentStatus(userId, "INITIALIZING", `Preparing discovery on ${platform}...`);
 
-          const browser = await chromium.launch({ headless: false });
+          let browser;
+          try {
+            browser = await chromium.launch({ headless: false });
+          } catch (launchErr: any) {
+            console.error(`[Discovery] Browser launch failed:`, launchErr.message);
+            await updateAgentStatus(userId, "ERROR", `Browser not available: Run "npx playwright install chromium" first.`);
+            continue;
+          }
+
           let context;
           try {
             context = await browser.newContext({ storageState: 'scratch/state.json' });
