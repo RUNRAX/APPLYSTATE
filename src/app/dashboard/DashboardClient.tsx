@@ -7,7 +7,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
-
+import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { TrendingUp, Clock, ArrowUpRight, PlayCircle, FileText, Link as LinkIcon, Play, Square } from "lucide-react";
