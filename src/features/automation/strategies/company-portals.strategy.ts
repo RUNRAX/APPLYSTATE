@@ -139,6 +139,17 @@ export class CompanyPortalsStrategy {
         // No consent dialog, continue
       }
 
+      // Check for Google CAPTCHA / Block page
+      const pageText = await page.evaluate(() => document.body.innerText).catch(() => '');
+      if (pageText.includes('unusual traffic from your computer network') || pageText.includes('systems have detected unusual traffic')) {
+        report(`⚠️ GOOGLE CAPTCHA DETECTED! ⚠️`);
+        report(`Please look at the open Chromium browser window and solve the CAPTCHA manually.`);
+        report(`Waiting 60 seconds for you to solve it...`);
+        if (statusCallback) statusCallback(`Waiting 60s for you to solve Google CAPTCHA in browser...`);
+        await page.waitForTimeout(60000); // Wait 60s for user to solve
+        report(`Resuming search after CAPTCHA wait...`);
+      }
+
       // Wait for search results with multiple selector fallbacks
       const pageTitle = await page.title().catch(() => 'unknown');
       report(`Page loaded: "${pageTitle}"`);
