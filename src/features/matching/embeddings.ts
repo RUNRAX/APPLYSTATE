@@ -13,14 +13,21 @@ export async function embedText(text: string): Promise<number[]> {
   }
 
   try {
-    const response = await ai.embeddings.create({
-      model: "nomic-embed-text-v1_5", 
-      input: text,
-    });
+    console.log("[embedText] Requesting embedding from Groq API...");
+    // Add a 15-second timeout so the worker never hangs indefinitely
+    const response = await Promise.race([
+      ai.embeddings.create({
+        model: "nomic-embed-text-v1_5", 
+        input: text,
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Groq API timeout after 15s")), 15000))
+    ]) as any;
+    
+    console.log("[embedText] Successfully received embedding from Groq");
     return response.data[0]?.embedding ?? [];
   } catch (error) {
-    console.error("Embedding generation failed, falling back to dummy vector:", error);
-    // Fallback to dummy vector if Groq model is missing or fails
+    console.error("[embedText] Embedding generation failed or timed out, falling back to dummy vector:", error);
+    // Fallback to dummy vector if Groq model is missing, hangs, or fails
     return Array.from({ length: 1536 }, () => Math.random());
   }
 }

@@ -178,12 +178,15 @@ async function runDiscovery() {
                     2. "atsScore": A number from 1 to 100 representing how well this new tailored resume matches the job description. Be realistic, aim for high 80s or 90s.
                   `;
 
-                  const response = await ai.chat.completions.create({
-                    model: 'llama-3.3-70b-versatile',
-                    messages: [{ role: 'user', content: prompt }],
-                    response_format: { type: "json_object" },
-                    max_tokens: 6000
-                  });
+                  const response = await Promise.race([
+                    ai.chat.completions.create({
+                      model: 'llama-3.3-70b-versatile',
+                      messages: [{ role: 'user', content: prompt }],
+                      response_format: { type: "json_object" },
+                      max_tokens: 6000
+                    }),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error("Groq API timeout after 30s")), 30000))
+                  ]) as any;
 
                   const content = JSON.parse(response.choices[0]?.message?.content || "{}");
                   if (content.tailoredContent) tailoredContent = content.tailoredContent;
