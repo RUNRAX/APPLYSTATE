@@ -17,16 +17,33 @@ export async function GET(req: NextRequest) {
       controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'connected' })}\n\n`));
 
       let previousStatuses = new Map<string, string>();
+      let previousAgentMessage = "";
 
       const interval = setInterval(async () => {
         if (!session?.user?.id) return;
         
         try {
+          // Poll for agent status updates
+          const agentStatus = await prisma.agentStatus.findUnique({
+            where: { userId: session.user.id }
+          });
+
+          if (agentStatus && agentStatus.message !== previousAgentMessage) {
+            previousAgentMessage = agentStatus.message;
+            const event = {
+              type: agentStatus.status.toLowerCase(),
+              title: agentStatus.status.replace(/_/g, ' '),
+              company: agentStatus.message, // Use the company field to show the actual log message
+              timestamp: new Date(agentStatus.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+          }
+
           // Poll for recently updated applications
           const recentApps = await prisma.application.findMany({
             where: { userId: session.user.id },
             orderBy: { id: 'desc' },
-            take: 10,
+            take: 5,
             include: { jobListing: true }
           });
           
@@ -36,7 +53,7 @@ export async function GET(req: NextRequest) {
               previousStatuses.set(app.id, app.status);
               const event = {
                 type: app.status.toLowerCase(),
-                title: `Application ${app.status}`,
+                title: `Application ${app.status.replace(/_/g, ' ')}`,
                 company: app.jobListing?.company || 'Unknown Company',
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
               };

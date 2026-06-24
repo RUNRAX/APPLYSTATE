@@ -1,5 +1,2 @@
-- [x] Update `src/app/api/agent/start/route.ts` to persist Google credentials using `encryptCredential`.
-- [x] Update `src/app/api/agent/start/route.ts` to set agent status to `INITIALIZING`.
-- [x] Add `/api/agent/stop` route (or modify `/start` to handle stop/refresh).
-- [x] Update `DashboardClient.tsx` modal to show Refresh/Stop/Cancel if agent is active.
-- [x] Refine `company-portals.strategy.ts` search query.
+- [x] Update `src/app/dashboard/page.tsx` to compute `activeBots` from `AgentStatus`.
+- [x] Update `src/app/api/sse/stream/route.ts` to poll `AgentStatus` and emit SSE events.
