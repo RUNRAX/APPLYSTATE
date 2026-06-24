@@ -35,7 +35,7 @@ export default async function DashboardOverview() {
     connectedPlatforms = platforms.map(p => p.platform);
 
     const agentStatus = await prisma.agentStatus.findUnique({ where: { userId } });
-    const isActive = agentStatus && agentStatus.status !== "IDLE" && agentStatus.status !== "PAUSED" && agentStatus.status !== "SLEEPING";
+    const isActive = agentStatus && agentStatus.status !== "IDLE" && agentStatus.status !== "PAUSED" && agentStatus.status !== "SLEEPING" && agentStatus.status !== "ERROR";
 
   } catch (error) {
     console.error("Database connection failed on dashboard:", error);
@@ -51,7 +51,7 @@ export default async function DashboardOverview() {
   const activeBotsCount = await prisma.agentStatus.count({ 
     where: { 
       userId, 
-      status: { notIn: ["IDLE", "PAUSED", "SLEEPING"] } 
+      status: { notIn: ["IDLE", "PAUSED", "SLEEPING", "ERROR"] } 
     } 
   }).catch(() => 0);
 

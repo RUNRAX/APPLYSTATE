@@ -17,24 +17,75 @@ async function updateAgentStatus(userId: string, status: string, message: string
   }
 }
 
-const POLLING_INTERVAL = 1000 * 60 * 60; // 1 hour
+const IDLE_COOLDOWN = 15_000; // 15 seconds between cycles when idle
 
 async function runDiscovery() {
-  console.log("🚀 [Discovery Worker] Starting database polling...");
+  console.log("🚀 [Discovery Worker] Starting continuous polling...");
 
   while (true) {
+    let didWork = false;
+
     try {
-      // Find users with active credentials and autoApply true or just job preferences
+      // Find users with active credentials and job preferences
       const preferences = await prisma.jobPreference.findMany({
         where: { targetRoles: { isEmpty: false } }
       });
 
       for (const pref of preferences) {
         const userId = pref.userId;
+
+        // Check if this user was triggered (PENDING) or is ready for a new cycle (IDLE)
+        const currentStatus = await prisma.agentStatus.findUnique({ where: { userId } });
+        const s = currentStatus?.status?.toUpperCase();
+
+        // Skip users who are PAUSED or currently in an ERROR state
+        if (s === "PAUSED") {
+          console.log(`[Discovery] User ${userId} agent is PAUSED. Skipping.`);
+          continue;
+        }
+
+        // If user is already actively being processed by another cycle, skip
+        if (s === "SEARCHING" || s === "EXTRACTING" || s === "AUTHENTICATING") {
+          console.log(`[Discovery] User ${userId} is already active (${s}). Skipping.`);
+          continue;
+        }
+
         const credentials = await prisma.platformCredential.findMany({
           where: { userId, isActive: true }
         });
 
+        if (credentials.length === 0) {
+          console.log(`[Discovery] User ${userId} has no active credentials. Skipping.`);
+          await updateAgentStatus(userId, "IDLE", "No active platform credentials found. Add credentials to start scanning.");
+          continue;
+        }
+
+        if (!pref || pref.targetRoles.length === 0) {
+          console.log(`[Discovery] User ${userId} has no target roles set. Skipping.`);
+          await updateAgentStatus(userId, "IDLE", "No target roles configured. Set your job preferences to start scanning.");
+          continue;
+        }
+
+        const pVector = await getProfileVector(userId);
+        if (!pVector) {
+          console.log(`[Discovery] User ${userId} has no profile vector, skipping.`);
+          await updateAgentStatus(userId, "IDLE", "Profile not set up. Upload your resume to generate a profile vector.");
+          continue;
+        }
+
+        // Fetch the user's active resume to link the application
+        const baseResume = await prisma.resume.findFirst({
+          where: { userId, isActive: true },
+          orderBy: { id: 'desc' }
+        });
+
+        if (!baseResume) {
+          console.log(`[Discovery] User ${userId} has no active resume, skipping.`);
+          await updateAgentStatus(userId, "IDLE", "No active resume found. Upload a base resume so the agent can tailor it.");
+          continue;
+        }
+
+        // User has everything needed — start processing
         for (const cred of credentials) {
           const platform = cred.platform.toLowerCase();
           
@@ -42,40 +93,13 @@ async function runDiscovery() {
           if (platform.includes('linkedin') || platform.includes('company_portal')) strategy = new CompanyPortalsStrategy();
           else {
             console.log(`[Discovery] Platform ${platform} not supported yet`);
+            await updateAgentStatus(userId, "IDLE", `Platform "${platform}" is not supported yet. Supported: LinkedIn, Company Portals.`);
             continue;
           }
 
+          didWork = true;
           console.log(`[Discovery] Starting harvest for user ${userId} on ${platform}`);
-          await updateAgentStatus(userId, "INITIALIZING", `Starting discovery on ${platform}...`);
-          
-          const currentStatus = await prisma.agentStatus.findUnique({ where: { userId } });
-          if (currentStatus?.status === "PAUSED") {
-            console.log(`[Discovery] User ${userId} agent is PAUSED. Skipping.`);
-            continue;
-          }
-
-          if (!pref || pref.targetRoles.length === 0) {
-            console.log(`[Discovery] User ${userId} has no target roles set. Skipping.`);
-            await updateAgentStatus(userId, "IDLE", `Skipping: No target roles configured.`);
-            continue;
-          }
-
-          const pVector = await getProfileVector(userId);
-          if (!pVector) {
-            console.log(`[Discovery] User ${userId} has no profile vector, skipping.`);
-            continue;
-          }
-
-          // Fetch the user's active resume to link the application
-          const baseResume = await prisma.resume.findFirst({
-            where: { userId, isActive: true },
-            orderBy: { id: 'desc' }
-          });
-
-          if (!baseResume) {
-            console.log(`[Discovery] User ${userId} has no active resume, skipping.`);
-            continue;
-          }
+          await updateAgentStatus(userId, "INITIALIZING", `Preparing discovery on ${platform}...`);
 
           const browser = await chromium.launch({ headless: false });
           let context;
@@ -186,12 +210,14 @@ async function runDiscovery() {
 
                 count++;
                 console.log(`[Discovery] Match found! Queued job ${savedJob.id} (${(match.score * 100).toFixed(1)}%)`);
+                await updateAgentStatus(userId, "ACTIVE", `Found ${count} match${count > 1 ? 'es' : ''} so far. Continuing search...`);
               }
               
               await new Promise(r => setTimeout(r, 2000));
             }
             
-            await updateAgentStatus(userId, "IDLE", `Finished search. Found ${count} matches. Sleeping...`);
+            // Per-user completion — set to IDLE with a summary, NOT blanket SLEEPING
+            await updateAgentStatus(userId, "IDLE", `Cycle complete on ${platform}. Found ${count} new match${count !== 1 ? 'es' : ''}. Next scan in ~${IDLE_COOLDOWN / 1000}s.`);
             
           } catch (error) {
             console.error(`[Discovery Error]`, error);
@@ -205,15 +231,10 @@ async function runDiscovery() {
       console.error("[Discovery Worker] Error in polling loop:", err);
     }
     
-    // Reset status to SLEEPING when done with all users/strategies
-    try {
-      await prisma.agentStatus.updateMany({
-        data: { status: 'SLEEPING', message: 'Waiting for next harvest cycle...' }
-      });
-    } catch(e) {}
-
-    console.log(`[Discovery Worker] Sleeping for 60s...`);
-    await new Promise(resolve => setTimeout(resolve, 60000));
+    // Only sleep between full cycles — short cooldown when idle, no sleep when work was done
+    const cooldown = didWork ? 5_000 : IDLE_COOLDOWN;
+    console.log(`[Discovery Worker] Cycle finished (didWork=${didWork}). Cooldown: ${cooldown / 1000}s`);
+    await new Promise(resolve => setTimeout(resolve, cooldown));
   }
 }
 

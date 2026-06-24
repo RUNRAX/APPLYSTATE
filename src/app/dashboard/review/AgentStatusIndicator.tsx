@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getAgentStatus } from "@/app/actions/agent";
-import { Bot, RefreshCcw, Search, Zap, UserX, AlertCircle } from "lucide-react";
+import { Bot, RefreshCcw, Search, Zap, UserX, AlertCircle, Moon, PauseCircle, Loader } from "lucide-react";
 
 export function AgentStatusIndicator() {
   const [status, setStatus] = useState<any>(null);
@@ -36,6 +36,10 @@ export function AgentStatusIndicator() {
   
   if (s === "IDLE") {
     color = "var(--muted-foreground)";
+  } else if (s === "PENDING") {
+    icon = <Loader size={18} className="animate-spin" />;
+    color = "#06b6d4"; // cyan
+    isPulsing = true;
   } else if (s === "INITIALIZING" || s === "AUTHENTICATING") {
     icon = <RefreshCcw size={18} className="animate-spin" />;
     color = "#3b82f6"; // blue
@@ -43,6 +47,10 @@ export function AgentStatusIndicator() {
   } else if (s === "SEARCHING") {
     icon = <Search size={18} />;
     color = "#8b5cf6"; // purple
+    isPulsing = true;
+  } else if (s === "ACTIVE") {
+    icon = <Zap size={18} />;
+    color = "#22c55e"; // green
     isPulsing = true;
   } else if (s === "EXTRACTING") {
     icon = <Zap size={18} />;
@@ -52,6 +60,12 @@ export function AgentStatusIndicator() {
     icon = <UserX size={18} />;
     color = "#f97316"; // orange
     isPulsing = true;
+  } else if (s === "SLEEPING") {
+    icon = <Moon size={18} />;
+    color = "#818cf8"; // indigo
+  } else if (s === "PAUSED") {
+    icon = <PauseCircle size={18} />;
+    color = "#6b7280"; // gray
   } else if (s === "ERROR") {
     icon = <AlertCircle size={18} />;
     color = "#ef4444"; // red
@@ -100,8 +114,8 @@ export function AgentStatusIndicator() {
             const { stopAgent, startAgent } = await import("@/app/actions/agent");
             if (s === "PAUSED") {
               await startAgent();
-              setStatus({ ...status, status: "IDLE", message: "Agent started, waiting for next cycle" });
-              showToast("Agent started successfully!");
+              setStatus({ ...status, status: "PENDING", message: "Agent triggered — starting immediately..." });
+              showToast("Agent triggered! Starting immediately...");
             } else {
               await stopAgent();
               setStatus({ ...status, status: "PAUSED", message: "Agent stopped by user" });

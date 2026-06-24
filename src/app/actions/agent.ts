@@ -29,8 +29,8 @@ export async function startAgent() {
   if (!session?.user?.id) return { success: false };
   await prisma.agentStatus.upsert({
     where: { userId: session.user.id },
-    update: { status: "IDLE", message: "Agent started, waiting for next cycle" },
-    create: { userId: session.user.id, status: "IDLE", message: "Agent started, waiting for next cycle" }
+    update: { status: "PENDING", message: "Agent triggered — starting immediately...", updatedAt: new Date() },
+    create: { userId: session.user.id, status: "PENDING", message: "Agent triggered — starting immediately..." }
   });
   revalidatePath("/dashboard/review");
   return { success: true };
