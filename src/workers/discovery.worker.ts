@@ -4,6 +4,13 @@ chromium.use(stealth());
 import prisma from '../lib/prisma';
 import { embedText, matchJob, getProfileVector } from '../features/matching/embeddings';
 import { CompanyPortalsStrategy } from '../features/automation/strategies/company-portals.strategy';
+import * as path from 'path';
+import * as fs from 'fs';
+
+// Ensure scratch directory exists for browser state and debug screenshots
+const SCRATCH_DIR = path.resolve(__dirname, '../../scratch');
+if (!fs.existsSync(SCRATCH_DIR)) fs.mkdirSync(SCRATCH_DIR, { recursive: true });
+const STATE_FILE = path.join(SCRATCH_DIR, 'state.json');
 
 async function updateAgentStatus(userId: string, status: string, message: string) {
   try {
@@ -112,7 +119,7 @@ async function runDiscovery() {
 
           let context;
           try {
-            context = await browser.newContext({ storageState: 'scratch/state.json' });
+            context = await browser.newContext({ storageState: STATE_FILE });
           } catch (e) {
             context = await browser.newContext();
           }
@@ -121,7 +128,7 @@ async function runDiscovery() {
           try {
             await updateAgentStatus(userId, "AUTHENTICATING", `Logging into ${platform}...`);
             await strategy.login(page, userId, cred.vaultPath, (msg: string) => updateAgentStatus(userId, "AUTHENTICATING", msg));
-            await context.storageState({ path: 'scratch/state.json' }).catch(() => {});
+            await context.storageState({ path: STATE_FILE }).catch(() => {});
             
             await updateAgentStatus(userId, "SEARCHING", `Searching for roles: ${pref.targetRoles.join(', ')}...`);
             const listingsGenerator = strategy.search(page, pref, (msg: string) => updateAgentStatus(userId, "SEARCHING", msg));
