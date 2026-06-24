@@ -20,21 +20,25 @@ export async function POST(req: Request) {
     // We only support 'company_portal' / Google login for this flow
     const prisma = (await import('@/lib/prisma')).default;
     
-    await prisma.platformCredential.upsert({
-      where: {
-        userId_platform: { userId: session.user.id, platform: 'company_portal' }
-      },
-      update: {
-        vaultPath: encryptedPassword,
-        isActive: true,
-      },
-      create: {
-        userId: session.user.id,
-        platform: 'company_portal',
-        vaultPath: encryptedPassword,
-        isActive: true,
-      }
+    const existingCredential = await prisma.platformCredential.findFirst({
+      where: { userId: session.user.id, platform: 'company_portal' }
     });
+
+    if (existingCredential) {
+      await prisma.platformCredential.update({
+        where: { id: existingCredential.id },
+        data: { vaultPath: encryptedPassword, isActive: true }
+      });
+    } else {
+      await prisma.platformCredential.create({
+        data: {
+          userId: session.user.id,
+          platform: 'company_portal',
+          vaultPath: encryptedPassword,
+          isActive: true
+        }
+      });
+    }
 
     // Set Agent Status to INITIALIZING to trigger the background worker
     await prisma.agentStatus.upsert({
