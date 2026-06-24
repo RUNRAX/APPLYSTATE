@@ -114,11 +114,11 @@ export class CompanyPortalsStrategy {
       : params.targetRoles;
 
     for (const role of rolesToSearch) {
-      // Broader query — don't restrict to specific ATS sites only 
-      const query = `${role} jobs ${location} site:greenhouse.io OR site:lever.co OR site:myworkdayjobs.com OR site:ashbyhq.com OR site:linkedin.com/jobs`;
+      // Strictly search company ATS portals (no LinkedIn/Indeed)
+      const query = `"${role}" jobs ${location} (site:greenhouse.io OR site:lever.co OR site:myworkdayjobs.com OR site:ashbyhq.com OR site:boards.greenhouse.io)`;
       
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}&num=15&hl=en`;
-      report(`Searching Google for: "${role}" in ${location || 'any location'}...`);
+      report(`Searching Google for company portals: "${role}" in ${location || 'any location'}...`);
       
       try {
         await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
