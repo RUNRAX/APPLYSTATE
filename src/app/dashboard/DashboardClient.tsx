@@ -1,5 +1,5 @@
 "use client";
-import { useTransition, useState } from "react";
+import { useTransition, useState, useCallback } from "react";
 import { useSSE } from "@/features/dashboard/useSSE";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./dashboard.module.css";
@@ -7,10 +7,10 @@ import { StatCard } from "@/components/ui/StatCard";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { TrendingUp, Clock, ArrowUpRight, PlayCircle, FileText, Link as LinkIcon, Play } from "lucide-react";
+import { TrendingUp, Clock, ArrowUpRight, PlayCircle, FileText, Link as LinkIcon, Play, Square } from "lucide-react";
 import { testAutoApply } from "@/app/actions/test-apply";
 import ResumeVault from "./ResumeVault";
 
@@ -46,10 +46,7 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
   const [isPending, startTransition] = useTransition();
   const [testMessage, setTestMessage] = useState("");
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
-  const [isAgentModalOpen, setIsAgentModalOpen] = useState(false);
-  const [agentEmail, setAgentEmail] = useState("");
-  const [agentPassword, setAgentPassword] = useState("");
-  const [agentStatus, setAgentStatus] = useState("");
+  const [agentLoading, setAgentLoading] = useState(false);
   const events = useSSE();
   const { data: session } = useSession();
   const firstName = session?.user?.name?.split(' ')[0] || 'there';
@@ -128,17 +125,36 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
       <motion.div variants={itemVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
         <GlassCard variant="strong" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6' }}>
-              <Play size={20} />
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: stats.activeBots > 0 ? 'rgba(74, 222, 128, 0.1)' : 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: stats.activeBots > 0 ? '#4ade80' : '#3b82f6' }}>
+              {stats.activeBots > 0 ? <Square size={20} /> : <Play size={20} />}
             </div>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>{stats.activeBots > 0 ? "Restart Agent" : "Launch Cloud Agent"}</h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>{stats.activeBots > 0 ? "Provide credentials to restart discovery." : "Provide session credentials to start job discovery."}</p>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>{stats.activeBots > 0 ? "Agent Running" : "Agent Idle"}</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>{stats.activeBots > 0 ? "Discovery agent is actively scanning for jobs." : "Start the agent to begin automated job discovery."}</p>
             </div>
           </div>
           <div style={{ marginTop: 'auto' }}>
-            <Button variant={stats.activeBots > 0 ? "outline" : "primary"} style={{ width: '100%' }} onClick={() => setIsAgentModalOpen(true)}>
-              {stats.activeBots > 0 ? "Restart Agent Session" : "Start Agent Session"}
+            <Button 
+              variant={stats.activeBots > 0 ? "outline" : "primary"} 
+              style={{ width: '100%', borderColor: stats.activeBots > 0 ? '#ef4444' : undefined, color: stats.activeBots > 0 ? '#ef4444' : undefined }} 
+              disabled={agentLoading}
+              onClick={async () => {
+                setAgentLoading(true);
+                try {
+                  if (stats.activeBots > 0) {
+                    await fetch('/api/agent/stop', { method: 'POST' });
+                  } else {
+                    const { startAgent } = await import('@/app/actions/agent');
+                    await startAgent();
+                  }
+                  window.location.reload();
+                } catch (err) {
+                  console.error('Agent toggle failed:', err);
+                  setAgentLoading(false);
+                }
+              }}
+            >
+              {agentLoading ? <><span className="spinner"></span> {stats.activeBots > 0 ? 'Stopping...' : 'Starting...'}</> : (stats.activeBots > 0 ? 'Stop Agent' : 'Start Agent')}
             </Button>
           </div>
         </GlassCard>
@@ -170,95 +186,7 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
       {/* Resume Vault Modal */}
       <ResumeVault initialResume={initialResume} isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} />
 
-      {/* Start Agent Modal */}
-      <AnimatePresence>
-        {isAgentModalOpen && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} style={{ width: '100%', maxWidth: '400px' }}>
-              <GlassCard variant="strong" style={{ padding: '2rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>{stats.activeBots > 0 ? "Manage Agent Session" : "Start Agent Session"}</h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', marginBottom: '1.5rem' }}>
-                  {stats.activeBots > 0 ? "Your agent is currently active. You can force a refresh or stop it completely." : "Provide your Google credentials for this session only. They will not be saved."}
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {stats.activeBots > 0 ? (
-                    <>
-                      <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                        <Button variant="outline" style={{ flex: 1 }} onClick={() => setIsAgentModalOpen(false)}>Cancel</Button>
-                        <Button variant="outline" style={{ flex: 1, borderColor: '#ef4444', color: '#ef4444' }} onClick={async () => {
-                          setAgentStatus("Stopping agent...");
-                          try {
-                            await fetch('/api/agent/stop', { method: 'POST' });
-                            setAgentStatus("Agent stopped successfully!");
-                            setTimeout(() => setIsAgentModalOpen(false), 1500);
-                          } catch (err: any) {
-                            setAgentStatus(`Error: ${err.message}`);
-                          }
-                        }}>
-                          Stop Agent
-                        </Button>
-                        <Button variant="primary" style={{ flex: 1 }} onClick={() => {
-                          setAgentStatus("Restarting... (Worker will pick this up)");
-                          setTimeout(() => setIsAgentModalOpen(false), 1500);
-                        }}>
-                          Refresh
-                        </Button>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <Input 
-                        name="email" label="Google Email" 
-                        value={agentEmail} onChange={e => setAgentEmail(e.target.value)} 
-                        placeholder="email@gmail.com" type="email" 
-                      />
-                      <Input 
-                        name="password" label="Google App Password" 
-                        value={agentPassword} onChange={e => setAgentPassword(e.target.value)} 
-                        placeholder="16-character app password" type="password" 
-                      />
-                      {agentStatus && (
-                        <div style={{ fontSize: '0.8rem', color: agentStatus.includes('Error') ? '#ef4444' : '#4ade80' }}>
-                          {agentStatus}
-                        </div>
-                      )}
-                      <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                        <Button variant="outline" style={{ flex: 1 }} onClick={() => setIsAgentModalOpen(false)}>Cancel</Button>
-                        <Button variant="primary" style={{ flex: 1 }} onClick={async () => {
-                          setAgentStatus("Starting cloud browser...");
-                          try {
-                            const res = await fetch('/api/agent/start', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ email: agentEmail, password: agentPassword })
-                            });
-                            
-                            let data;
-                            try {
-                              data = await res.json();
-                            } catch (e) {
-                              throw new Error("Server returned an invalid response. Please ensure the latest deployment is ready.");
-                            }
 
-                            if (!res.ok) throw new Error(data.error || "Failed to start agent");
-                            
-                            setAgentStatus("Agent started successfully!");
-                            setTimeout(() => setIsAgentModalOpen(false), 2000);
-                          } catch (err: any) {
-                            setAgentStatus(`Error: ${err.message}`);
-                          }
-                        }}>
-                          Launch
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </GlassCard>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* Stat Cards — 2 column layout */}
       <motion.div variants={itemVariants} className={styles.statsGrid}>
