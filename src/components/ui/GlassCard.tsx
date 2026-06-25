@@ -19,22 +19,20 @@ export function GlassCard({ children, className = "", interactive = false, varia
   const filterId = useId().replace(/:/g, "");
 
   return (
-    <>
-      <LiquidGlassFilter id={`glass-filter-${filterId}`} />
-      <motion.div
-        id={`glass-filter-${filterId}`}
-        className={`${baseClass} ${glowClass} ${interactiveClass} ${className}`}
-        transition={springPhysics}
-        whileHover={interactive ? { y: -4, scale: 1.01 } : undefined}
-        whileTap={interactive ? { scale: 0.98 } : undefined}
-        {...props}
-        style={{ 
-          padding: '1.5rem', 
-          ...props.style 
-        }}
-      >
-        {children}
-      </motion.div>
-    </>
+    <motion.div
+      className={`${baseClass} ${glowClass} ${interactiveClass} ${className}`}
+      transition={springPhysics}
+      whileHover={interactive ? { y: -4, scale: 1.01 } : undefined}
+      whileTap={interactive ? { scale: 0.98 } : undefined}
+      {...props}
+      style={{ 
+        padding: '1.5rem', 
+        backdropFilter: variant === 'strong' ? 'blur(48px)' : 'blur(32px)',
+        WebkitBackdropFilter: variant === 'strong' ? 'blur(48px)' : 'blur(32px)',
+        ...props.style 
+      }}
+    >
+      {children}
+    </motion.div>
   );
 }

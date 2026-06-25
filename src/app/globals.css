@@ -97,15 +97,11 @@ a {
 .glass {
   background: rgba(255, 255, 255, 0.08);
   border: none;
-  /* Stronger right-edge refraction effect */
   box-shadow: 
     0 16px 32px rgba(0, 0, 0, 0.12),
-    inset -2px 0 10px rgba(255, 255, 255, 0.3),
-    inset -1px 0 2px rgba(255, 255, 255, 0.9);
+    inset -1px 0 1px rgba(255, 255, 255, 0.4);
   -webkit-backdrop-filter: blur(32px);
   backdrop-filter: blur(32px);
-  transform: translateZ(0);
-  will-change: transform, box-shadow;
   border-radius: var(--radius);
   position: relative;
 }
@@ -140,8 +136,6 @@ a {
     inset -1px 0 1px rgba(255, 255, 255, 0.4);
   -webkit-backdrop-filter: blur(48px);
   backdrop-filter: blur(48px);
-  transform: translateZ(0);
-  will-change: transform, box-shadow;
   border-radius: var(--radius);
   position: relative;
 }
