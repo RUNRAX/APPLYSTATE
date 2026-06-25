@@ -49,25 +49,7 @@ export default async function SettingsPage() {
 
 
 
-        {/* Connected Platforms Section */}
-        <GlassCard variant="strong">
-          <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>Connected Platforms</h3>
-          <p style={{ fontSize: '0.9rem', color: 'var(--muted-foreground)', marginBottom: '1.5rem' }}>
-            Securely link your credentials so the autonomous agent can scan and apply for jobs on your behalf.
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/dashboard/connect/company_portal">
-              <Button variant={hasGoogle ? "outline" : "primary"}>
-                {hasGoogle ? "✓ Google Connected" : "Connect Google (Company Portals)"}
-              </Button>
-            </Link>
-            <Link href="/dashboard/connect/linkedin">
-              <Button variant={hasLinkedIn ? "outline" : "outline"}>
-                {hasLinkedIn ? "✓ LinkedIn Connected" : "Connect LinkedIn"}
-              </Button>
-            </Link>
-          </div>
-        </GlassCard>
+
 
         {/* AI Integration Section */}
         <GlassCard variant="strong">

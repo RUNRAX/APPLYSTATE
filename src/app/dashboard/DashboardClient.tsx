@@ -199,10 +199,15 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
               </p>
             </div>
           </div>
-          <div style={{ marginTop: 'auto' }}>
-            <Link href="/dashboard/settings" style={{ textDecoration: 'none' }}>
-              <Button variant={connectedPlatforms?.includes('company_portal') || connectedPlatforms?.includes('linkedin') ? "outline" : "primary"} style={{ width: '100%' }}>
-                {connectedPlatforms?.includes('company_portal') || connectedPlatforms?.includes('linkedin') ? "Manage Connections" : "Connect Platforms"}
+          <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <Link href="/dashboard/connect/company_portal" style={{ textDecoration: 'none' }}>
+              <Button variant={connectedPlatforms?.includes('company_portal') ? "outline" : "primary"} style={{ width: '100%', borderColor: connectedPlatforms?.includes('company_portal') ? 'var(--success)' : undefined, color: connectedPlatforms?.includes('company_portal') ? 'var(--success)' : undefined }}>
+                {connectedPlatforms?.includes('company_portal') ? "✓ Google Connected" : "Connect Google"}
+              </Button>
+            </Link>
+            <Link href="/dashboard/connect/linkedin" style={{ textDecoration: 'none' }}>
+              <Button variant={connectedPlatforms?.includes('linkedin') ? "outline" : "outline"} style={{ width: '100%', borderColor: connectedPlatforms?.includes('linkedin') ? 'var(--success)' : undefined, color: connectedPlatforms?.includes('linkedin') ? 'var(--success)' : undefined }}>
+                {connectedPlatforms?.includes('linkedin') ? "✓ LinkedIn Connected" : "Connect LinkedIn"}
               </Button>
             </Link>
           </div>
