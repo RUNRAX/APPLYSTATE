@@ -107,11 +107,9 @@ export class CompanyPortalsStrategy {
     report(`[CompanyPortalsStrategy] Searching company portals via Google for: ${params.targetRoles.join(', ')}`);
     
     const location = params.remote ? 'remote' : (params.locations[0] || '');
-    
-    // Search each role (or up to 3 random ones to avoid too many searches)
-    const rolesToSearch = params.targetRoles.length > 3 
-      ? params.targetRoles.sort(() => Math.random() - 0.5).slice(0, 3)
-      : params.targetRoles;
+    // Search roles in the exact priority order the user provided them
+    // (We limit to 3 per cycle to prevent Google from blocking us instantly, but we take the top 3 instead of randomizing)
+    const rolesToSearch = params.targetRoles.slice(0, 3);
 
     for (const role of rolesToSearch) {
       // Strictly search company ATS portals (no LinkedIn/Indeed)
