@@ -1,6 +1,4 @@
-import * as dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
-process.env.DATABASE_URL = process.env.DIRECT_URL;
+
 import prisma from '../lib/prisma';
 import { updateProfileVector } from '../features/matching/embeddings';
 

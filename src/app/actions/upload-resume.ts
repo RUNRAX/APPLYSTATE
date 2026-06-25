@@ -37,6 +37,14 @@ export async function uploadResumeAction(formData: FormData) {
     }
   });
 
+  // Automatically generate the profile vector so the agent can match jobs
+  const { updateProfileVector } = await import("@/features/matching/embeddings");
+  try {
+    await updateProfileVector(session.user.id, resumeText);
+  } catch (e) {
+    console.error("Failed to generate vector for uploaded resume", e);
+  }
+
   return {
     success: true,
     resumeText: resumeText

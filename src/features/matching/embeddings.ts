@@ -62,6 +62,20 @@ export async function updateProfileVector(userId: string, profileText: string) {
   
   // Format vector for pgvector: [0.1, 0.2, ...]
   const vectorStr = `[${vector.join(',')}]`;
+
+  // Ensure Profile exists
+  await prisma.profile.upsert({
+    where: { userId },
+    update: {},
+    create: {
+      userId,
+      skills: [],
+      education: {},
+      experience: {},
+      certifications: {},
+      projects: {}
+    }
+  });
   
   await prisma.$executeRaw`
     UPDATE "Profile" 
