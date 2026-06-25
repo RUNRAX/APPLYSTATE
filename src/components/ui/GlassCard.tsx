@@ -33,8 +33,8 @@ export function GlassCard({ children, className = "", interactive = false, varia
         {...props}
         style={{ 
           padding: '1.5rem', 
-          backdropFilter: `url(#${filterId}) saturate(200%) contrast(150%) brightness(1.1)`,
-          WebkitBackdropFilter: `url(#${filterId}) saturate(200%) contrast(150%) brightness(1.1)`,
+          backdropFilter: `url(#${filterId})`,
+          WebkitBackdropFilter: `url(#${filterId})`,
           ...props.style 
         }}
       >
