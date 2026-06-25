@@ -119,6 +119,8 @@ a {
   -webkit-mask-composite: xor;
           mask-composite: exclude;
   pointer-events: none;
+}
+
 .glass::after {
   content: "";
   position: absolute;
