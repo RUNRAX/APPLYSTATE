@@ -189,8 +189,9 @@ export class CompanyPortalsStrategy {
           const url = await linkLocator.getAttribute('href').catch(() => null);
           
           if (!url || !url.startsWith('http')) continue;
-          // Skip non-job URLs
+          // Skip non-job URLs and third-party job boards (we only want actual ATS portals)
           if (url.includes('google.com') || url.includes('youtube.com') || url.includes('wikipedia.org')) continue;
+          if (url.includes('linkedin.com') || url.includes('indeed.com') || url.includes('glassdoor.com') || url.includes('naukri.com') || url.includes('simplyhired')) continue;
           
           const title = await result.locator('h3').first().innerText().catch(() => 'Unknown Title');
           const snippet = await result.locator('div[data-sncf="1"], .VwiC3b, span').first().innerText().catch(() => 'Unknown Description');
