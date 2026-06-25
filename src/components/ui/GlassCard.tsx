@@ -16,23 +16,30 @@ export function GlassCard({ children, className = "", interactive = false, varia
   const baseClass = variant === "strong" ? "glass-strong" : "glass";
   const glowClass = glow ? "shadow-glow" : "";
   const interactiveClass = interactive ? "liquid-shine" : "";
-  const filterId = useId().replace(/:/g, "");
+  const uniqueId = useId().replace(/:/g, "");
+  const filterId = `liquid-filter-${uniqueId}`;
+  const targetId = `glass-card-${uniqueId}`;
+  const blurAmount = variant === "strong" ? 8 : 4;
 
   return (
-    <motion.div
-      className={`${baseClass} ${glowClass} ${interactiveClass} ${className}`}
-      transition={springPhysics}
-      whileHover={interactive ? { y: -4, scale: 1.01 } : undefined}
-      whileTap={interactive ? { scale: 0.98 } : undefined}
-      {...props}
-      style={{ 
-        padding: '1.5rem', 
-        backdropFilter: variant === 'strong' ? 'blur(8px)' : 'blur(4px)',
-        WebkitBackdropFilter: variant === 'strong' ? 'blur(8px)' : 'blur(4px)',
-        ...props.style 
-      }}
-    >
-      {children}
-    </motion.div>
+    <>
+      <LiquidGlassFilter id={filterId} targetId={targetId} blur={blurAmount} />
+      <motion.div
+        id={targetId}
+        className={`${baseClass} ${glowClass} ${interactiveClass} ${className}`}
+        transition={springPhysics}
+        whileHover={interactive ? { y: -4, scale: 1.01 } : undefined}
+        whileTap={interactive ? { scale: 0.98 } : undefined}
+        {...props}
+        style={{ 
+          padding: '1.5rem', 
+          backdropFilter: `url(#${filterId}) saturate(200%) contrast(150%) brightness(1.1)`,
+          WebkitBackdropFilter: `url(#${filterId}) saturate(200%) contrast(150%) brightness(1.1)`,
+          ...props.style 
+        }}
+      >
+        {children}
+      </motion.div>
+    </>
   );
 }

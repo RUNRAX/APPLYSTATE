@@ -1,2 +1,3 @@
-- [x] Update `src/app/dashboard/page.tsx` to compute `activeBots` from `AgentStatus`.
-- [x] Update `src/app/api/sse/stream/route.ts` to poll `AgentStatus` and emit SSE events.
+- `[x]` Update `LiquidGlassFilter.tsx` to use the smooth base64-encoded SVG radial gradient for displacement map.
+- `[x]` Update `globals.css` `.glass`, `.glass-strong`, and `.glass-pill` to use the 3D bevel and lighting technique (`::after` with inset box-shadow and CSS mask-image).
+- `[ ]` Test rendering and UI look to ensure it accurately follows the prompt's styling constraints.
