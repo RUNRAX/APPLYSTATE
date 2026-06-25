@@ -137,6 +137,16 @@ export default function ReviewQueueClient({ applications, initialSelectedAppId, 
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
 
+  // Auto-sync frontend with backend every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isRefreshing && !chatLoading && Object.keys(analysisLoading).length === 0) {
+        router.refresh();
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [router, isRefreshing, chatLoading, analysisLoading]);
+
   const handleRefresh = () => {
     setIsRefreshing(true);
     router.refresh();
