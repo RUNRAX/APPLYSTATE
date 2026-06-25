@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { savePlatformCredential } from "@/app/actions/connect";
 
-export default function ConnectForm({ platformName }: { platformName: string }) {
+export default function ConnectForm({ platformName, platformId }: { platformName: string, platformId: string }) {
   const [loginMethod, setLoginMethod] = useState("direct");
   const [isPending, startTransition] = useTransition();
 
@@ -18,7 +18,7 @@ export default function ConnectForm({ platformName }: { platformName: string }) 
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      <input type="hidden" name="platform" value={platformName} />
+      <input type="hidden" name="platform" value={platformId} />
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--foreground)' }}>How do you normally log in?</label>

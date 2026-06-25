@@ -20,6 +20,14 @@ export default async function SettingsPage() {
   });
   const isAutoApply = preference?.autoApply || false;
 
+  const connectedPlatforms = await prisma.platformCredential.findMany({
+    where: { userId: session.user.id },
+    select: { platform: true }
+  });
+  
+  const hasGoogle = connectedPlatforms.some(p => p.platform === 'company_portal');
+  const hasLinkedIn = connectedPlatforms.some(p => p.platform === 'linkedin');
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
@@ -49,10 +57,14 @@ export default async function SettingsPage() {
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <Link href="/dashboard/connect/company_portal">
-              <Button variant="primary">Connect Google (Company Portals)</Button>
+              <Button variant={hasGoogle ? "outline" : "primary"}>
+                {hasGoogle ? "✓ Google Connected" : "Connect Google (Company Portals)"}
+              </Button>
             </Link>
             <Link href="/dashboard/connect/linkedin">
-              <Button variant="outline">Connect LinkedIn</Button>
+              <Button variant={hasLinkedIn ? "outline" : "outline"}>
+                {hasLinkedIn ? "✓ LinkedIn Connected" : "Connect LinkedIn"}
+              </Button>
             </Link>
           </div>
         </GlassCard>
