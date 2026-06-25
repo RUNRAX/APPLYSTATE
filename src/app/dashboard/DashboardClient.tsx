@@ -181,6 +181,32 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
             </Button>
           </div>
         </GlassCard>
+
+        {/* Connect Platforms Card */}
+        <GlassCard variant="strong" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b' }}>
+              <LinkIcon size={20} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>
+                {connectedPlatforms?.includes('company_portal') || connectedPlatforms?.includes('linkedin') ? "Platforms Linked" : "Link Platforms"}
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)' }}>
+                {connectedPlatforms?.includes('company_portal') || connectedPlatforms?.includes('linkedin')
+                  ? "Your agent has access to job portals." 
+                  : "Connect accounts for the agent to use."}
+              </p>
+            </div>
+          </div>
+          <div style={{ marginTop: 'auto' }}>
+            <Link href="/dashboard/settings" style={{ textDecoration: 'none' }}>
+              <Button variant={connectedPlatforms?.includes('company_portal') || connectedPlatforms?.includes('linkedin') ? "outline" : "primary"} style={{ width: '100%' }}>
+                {connectedPlatforms?.includes('company_portal') || connectedPlatforms?.includes('linkedin') ? "Manage Connections" : "Connect Platforms"}
+              </Button>
+            </Link>
+          </div>
+        </GlassCard>
       </motion.div>
 
       {/* Resume Vault Modal */}
