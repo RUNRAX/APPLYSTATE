@@ -16,13 +16,7 @@ export async function GET() {
       }
     });
 
-    const newJobsCount = await prisma.jobListing.count({
-      where: {
-        status: "NEW"
-      }
-    });
-
-    return NextResponse.json({ pendingCount: pendingReviewCount, newJobsCount: newJobsCount });
+    return NextResponse.json({ pendingCount: pendingReviewCount, newJobsCount: 0 });
   } catch (error) {
     return NextResponse.json({ pendingCount: 0, newJobsCount: 0 }, { status: 500 });
   }
