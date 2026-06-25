@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { GlassCard } from "@/components/ui/GlassCard";
 import ReviewQueueClient from "./ReviewQueueClient";
 
+export const dynamic = 'force-dynamic';
+
 export default async function ReviewQueuePage({
   searchParams,
 }: {

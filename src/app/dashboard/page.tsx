@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import DashboardClient from "./DashboardClient";
 import { redirect } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardOverview() {
   const session = await auth();
   
@@ -48,10 +50,11 @@ export default async function DashboardOverview() {
   // }
 
   // Use the queried agent status to determine active bots
+  // (IDLE and SLEEPING just mean the worker is between jobs but still running)
   const activeBotsCount = await prisma.agentStatus.count({ 
     where: { 
       userId, 
-      status: { notIn: ["IDLE", "PAUSED", "SLEEPING", "ERROR"] } 
+      status: { notIn: ["PAUSED", "ERROR"] } 
     } 
   }).catch(() => 0);
 
