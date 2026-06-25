@@ -119,16 +119,23 @@ a {
   -webkit-mask-composite: xor;
           mask-composite: exclude;
   pointer-events: none;
+.glass::after {
+  content: "";
+  position: absolute;
+  right: 0; top: 10%; bottom: 10%; width: 1px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1), rgba(255,255,255,0));
+  box-shadow: -2px 0 8px rgba(0, 255, 255, 0.8), -4px 0 16px rgba(255, 0, 255, 0.8);
+  pointer-events: none;
+  opacity: 0.8;
+  border-radius: 50%;
 }
 
 .glass-strong {
   background: rgba(255, 255, 255, 0.12);
   border: none;
-  /* Stronger right-edge refraction effect */
   box-shadow: 
     0 20px 40px rgba(0, 0, 0, 0.15),
-    inset -2px 0 12px rgba(255, 255, 255, 0.4),
-    inset -1px 0 2px rgba(255, 255, 255, 1);
+    inset -1px 0 1px rgba(255, 255, 255, 0.4);
   -webkit-backdrop-filter: blur(48px);
   backdrop-filter: blur(48px);
   transform: translateZ(0);
@@ -141,11 +148,21 @@ a {
   position: absolute; inset: 0;
   border-radius: inherit;
   padding: 2px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 255, 255, 0.8));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 255, 255, 0.4));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
   pointer-events: none;
+}
+.glass-strong::after {
+  content: "";
+  position: absolute;
+  right: 0; top: 10%; bottom: 10%; width: 2px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1), rgba(255,255,255,0));
+  box-shadow: -2px 0 10px rgba(0, 255, 255, 0.9), -5px 0 20px rgba(255, 0, 255, 0.9);
+  pointer-events: none;
+  opacity: 0.9;
+  border-radius: 50%;
 }
 
 .glass-pill {
