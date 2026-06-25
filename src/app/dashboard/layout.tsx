@@ -145,12 +145,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
           <motion.div
             key={pathname}
-            initial={{ opacity: 0, y: 20, filter: "blur(8px)", scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ 
               duration: 0.45, 
               ease: [0.22, 1, 0.36, 1],
-              filter: { duration: 0.35 },
               scale: { duration: 0.4 }
             }}
             style={{ padding: '0 1.5rem 2rem 1.5rem' }}
