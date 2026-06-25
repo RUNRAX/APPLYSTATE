@@ -97,9 +97,13 @@ a {
 .glass {
   background: rgba(255, 255, 255, 0.08);
   border: none;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  /* Stronger right-edge refraction effect */
+  box-shadow: 
+    0 16px 32px rgba(0, 0, 0, 0.12),
+    inset -2px 0 10px rgba(255, 255, 255, 0.3),
+    inset -1px 0 2px rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(32px);
+  backdrop-filter: blur(32px);
   transform: translateZ(0);
   will-change: transform, box-shadow;
   border-radius: var(--radius);
@@ -110,7 +114,7 @@ a {
   position: absolute; inset: 0;
   border-radius: inherit;
   padding: 2px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 255, 255, 0.3));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 255, 255, 0.6));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
@@ -120,9 +124,13 @@ a {
 .glass-strong {
   background: rgba(255, 255, 255, 0.12);
   border: none;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  /* Stronger right-edge refraction effect */
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    inset -2px 0 12px rgba(255, 255, 255, 0.4),
+    inset -1px 0 2px rgba(255, 255, 255, 1);
+  -webkit-backdrop-filter: blur(48px);
+  backdrop-filter: blur(48px);
   transform: translateZ(0);
   will-change: transform, box-shadow;
   border-radius: var(--radius);
@@ -133,7 +141,7 @@ a {
   position: absolute; inset: 0;
   border-radius: inherit;
   padding: 2px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 255, 255, 0.4));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0) 65%, rgba(255, 255, 255, 0.8));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
