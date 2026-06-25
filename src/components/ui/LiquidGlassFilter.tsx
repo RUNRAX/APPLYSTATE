@@ -15,10 +15,10 @@ export function LiquidGlassFilter({ id, targetId, blur = 12 }: { id: string; tar
           width="100%" height="100%"
         />
         <feGaussianBlur in="SourceGraphic" stdDeviation={blur * 0.5} result="blur" />
-        <feDisplacementMap id={`disp-${id}`} in="blur" in2="img" scale="20" xChannelSelector="R" yChannelSelector="G">
+        <feDisplacementMap id={`disp-${id}`} in="blur" in2="img" scale="60" xChannelSelector="R" yChannelSelector="G">
           {/* Apply animations based on mouseover and mouseout of the target id */}
-          <animate attributeName="scale" to="50" dur="0.4s" begin={`${eventTarget}.mouseover`} fill="freeze" />
-          <animate attributeName="scale" to="20" dur="0.4s" begin={`${eventTarget}.mouseout`} fill="freeze" />
+          <animate attributeName="scale" to="150" dur="0.4s" begin={`${eventTarget}.mouseover`} fill="freeze" />
+          <animate attributeName="scale" to="60" dur="0.4s" begin={`${eventTarget}.mouseout`} fill="freeze" />
         </feDisplacementMap>
       </filter>
     </svg>
