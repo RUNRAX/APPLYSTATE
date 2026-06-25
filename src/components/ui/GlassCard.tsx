@@ -27,8 +27,8 @@ export function GlassCard({ children, className = "", interactive = false, varia
       {...props}
       style={{ 
         padding: '1.5rem', 
-        backdropFilter: variant === 'strong' ? 'blur(20px)' : 'blur(12px)',
-        WebkitBackdropFilter: variant === 'strong' ? 'blur(20px)' : 'blur(12px)',
+        backdropFilter: variant === 'strong' ? 'blur(8px)' : 'blur(4px)',
+        WebkitBackdropFilter: variant === 'strong' ? 'blur(8px)' : 'blur(4px)',
         ...props.style 
       }}
     >
