@@ -20,12 +20,10 @@ export default async function ConnectPlatformPage({ params }: Props) {
   let platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
   if (platform.toLowerCase() === 'company_portal') platformName = "Company Portals (Google)";
 
-  const existingCredential = await prisma.platformCredential.findUnique({
+  const existingCredential = await prisma.platformCredential.findFirst({
     where: {
-      userId_platform: {
-        userId: session.user.id,
-        platform: platform.toLowerCase(),
-      }
+      userId: session.user.id,
+      platform: platform.toLowerCase(),
     }
   });
 
