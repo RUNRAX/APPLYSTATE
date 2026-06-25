@@ -24,7 +24,7 @@ async function updateAgentStatus(userId: string, status: string, message: string
   }
 }
 
-const IDLE_COOLDOWN = 15_000; // 15 seconds between cycles when idle
+const IDLE_COOLDOWN = 1000; // 1 second between cycles to search non-stop
 
 async function runDiscovery() {
   console.log("🚀 [Discovery Worker] Starting continuous polling...");
@@ -250,7 +250,7 @@ async function runDiscovery() {
     }
     
     // Only sleep between full cycles — short cooldown when idle, no sleep when work was done
-    const cooldown = didWork ? 5_000 : IDLE_COOLDOWN;
+    const cooldown = didWork ? 1000 : IDLE_COOLDOWN;
     console.log(`[Discovery Worker] Cycle finished (didWork=${didWork}). Cooldown: ${cooldown / 1000}s`);
     await new Promise(resolve => setTimeout(resolve, cooldown));
   }
