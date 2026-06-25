@@ -33,16 +33,14 @@ async function runDiscovery() {
     let didWork = false;
 
     try {
-      // Find users with active credentials and job preferences
-      const preferences = await prisma.jobPreference.findMany({
-        where: { targetRoles: { isEmpty: false } }
+      // Find all users who have the agent enabled (not paused)
+      const activeAgents = await prisma.agentStatus.findMany({
+        where: { status: { not: "PAUSED" } }
       });
 
-      for (const pref of preferences) {
-        const userId = pref.userId;
-
-        // Check if this user was triggered (PENDING) or is ready for a new cycle (IDLE)
-        const currentStatus = await prisma.agentStatus.findUnique({ where: { userId } });
+      for (const agent of activeAgents) {
+        const userId = agent.userId;
+        const currentStatus = agent;
         const s = currentStatus?.status?.toUpperCase();
 
         // Skip users who are PAUSED or currently in an ERROR state
@@ -56,6 +54,8 @@ async function runDiscovery() {
           console.log(`[Discovery] User ${userId} is already active (${s}). Skipping.`);
           continue;
         }
+
+        const pref = await prisma.jobPreference.findUnique({ where: { userId } });
 
         const credentials = await prisma.platformCredential.findMany({
           where: { userId, isActive: true }
