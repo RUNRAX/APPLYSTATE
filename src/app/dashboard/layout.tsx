@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <div style={{ position: 'fixed', bottom: '-10%', right: '10%', width: '35vw', height: '35vw', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0,0,0,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }} />
       <div style={{ position: 'fixed', top: '40%', right: '30%', width: '25vw', height: '25vw', background: 'radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, rgba(0,0,0,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }} />
       
-      <LiquidGlassFilter id={`glass-filter-${filterId}`} />
+      <LiquidGlassFilter id={`svg-filter-${filterId}`} targetId={`header-id-${filterId}`} blur={16} />
       
       {/* Sidebar — floating glass-strong card */}
       <aside className={`glass-strong ${styles.sidebar}`}>
@@ -106,11 +106,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <div className={styles.scrollArea}>
           {/* Header — sticky inside scroll area so content passes under it */}
           <header 
-            id={`glass-filter-${filterId}`}
+            id={`header-id-${filterId}`}
             className={styles.header}
             style={{ 
-              backdropFilter: `url(#glass-filter-${filterId})`,
-              WebkitBackdropFilter: `url(#glass-filter-${filterId})`
+              backdropFilter: `url(#svg-filter-${filterId})`,
+              WebkitBackdropFilter: `url(#svg-filter-${filterId})`
             }}
           >
             <div className={styles.headerLeft}>
