@@ -44,6 +44,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.dashboardOuter}>
+      {/* Background Orbs for Glassmorphism Refraction */}
+      <div style={{ position: 'fixed', top: '10%', left: '20%', width: '40vw', height: '40vw', background: 'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', bottom: '-10%', right: '10%', width: '35vw', height: '35vw', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0,0,0,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', top: '40%', right: '30%', width: '25vw', height: '25vw', background: 'radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, rgba(0,0,0,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }} />
+      
       <LiquidGlassFilter id={`glass-filter-${filterId}`} />
       
       {/* Sidebar — floating glass-strong card */}
