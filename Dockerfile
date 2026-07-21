@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
+COPY prisma ./prisma/
 RUN npm ci
 
 # Install playwright browsers (chromium only to save space and memory)
