@@ -23,7 +23,7 @@ server.listen(Number(PORT), '0.0.0.0', () => {
 // 2. Spawn both workers concurrently
 const spawnWorker = (name: string, path: string) => {
   console.log(`[Worker Hub] Spawning ${name}...`);
-  const worker = spawn('tsx', [path], {
+  const worker = spawn('./node_modules/.bin/tsx', [path], {
     stdio: 'inherit',
     env: { ...process.env } // Pass all environment variables (including XVFB display)
   });
