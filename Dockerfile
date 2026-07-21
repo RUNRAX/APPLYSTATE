@@ -11,6 +11,9 @@ COPY package*.json ./
 COPY prisma ./prisma/
 RUN npm ci
 
+# Set explicit path for Playwright browsers so Render doesn't lose them
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/pw-browsers
+
 # Install playwright browsers (chromium only to save space and memory)
 # --with-deps will install all necessary linux libraries like libnss3, libxss1, etc.
 RUN npx playwright install chromium --with-deps
