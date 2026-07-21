@@ -110,7 +110,16 @@ async function runDiscovery() {
 
           let browser;
           try {
-            browser = await chromium.launch({ headless: false });
+            browser = await chromium.launch({ 
+              headless: false,
+              args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--single-process'
+              ]
+            });
           } catch (launchErr: any) {
             console.error(`[Discovery] Browser launch failed:`, launchErr.message);
             await updateAgentStatus(userId, "ERROR", `Browser not available: Run "npx playwright install chromium" first.`);

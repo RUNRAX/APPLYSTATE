@@ -24,7 +24,16 @@ async function processApplication(applicationId: string, userId: string, jobList
   });
 
   const statePath = path.join(process.cwd(), 'scratch', 'state.json');
-  const browser = await chromium.launch({ headless: false }); // Headless false to avoid immediate bot detection
+  const browser = await chromium.launch({ 
+    headless: false,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--single-process'
+    ]
+  });
   const context = await browser.newContext({
     storageState: require('fs').existsSync(statePath) ? statePath : undefined,
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
