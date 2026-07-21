@@ -16,7 +16,7 @@ const server = http.createServer((req, res) => {
   }
 });
 
-server.listen(PORT, () => {
+server.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`🌐 [Worker Hub] Health server listening on port ${PORT}`);
 });
 
