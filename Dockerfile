@@ -20,8 +20,5 @@ COPY . .
 # Expose port 8080 for Render's health checks and cron ping
 EXPOSE 8080
 
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
-
-# Start using the Xvfb entrypoint
-CMD ["/app/docker-entrypoint.sh"]
+# Start using the pure JS hub
+CMD ["node", "src/workers/start.js"]

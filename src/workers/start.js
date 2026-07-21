@@ -1,10 +1,8 @@
-import { spawn } from 'child_process';
-import http from 'http';
+const { spawn } = require('child_process');
+const http = require('http');
 
 console.log("🚀 [Worker Hub] Starting...");
 
-// 1. Create a lightweight HTTP server to satisfy Render's health checks
-// and to allow cron-job.org to keep the service awake.
 const PORT = process.env.PORT || 8080;
 const server = http.createServer((req, res) => {
   if (req.url === '/health' || req.url === '/') {
@@ -20,12 +18,13 @@ server.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`🌐 [Worker Hub] Health server listening on port ${PORT}`);
 });
 
-// 2. Spawn both workers concurrently
-const spawnWorker = (name: string, path: string) => {
+const spawnWorker = (name, path) => {
   console.log(`[Worker Hub] Spawning ${name}...`);
-  const worker = spawn('./node_modules/.bin/tsx', [path], {
+  // We wrap the workers in xvfb-run here, so the main server starts instantly
+  const worker = spawn(`xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" ./node_modules/.bin/tsx ${path}`, {
     stdio: 'inherit',
-    env: { ...process.env } // Pass all environment variables (including XVFB display)
+    env: { ...process.env },
+    shell: true
   });
 
   worker.on('close', (code) => {
@@ -37,7 +36,6 @@ const spawnWorker = (name: string, path: string) => {
 spawnWorker('DiscoveryWorker', 'src/workers/discovery.worker.ts');
 spawnWorker('ApplicationWorker', 'src/workers/application.worker.ts');
 
-// Handle graceful shutdown
 process.on('SIGTERM', () => {
   console.log("SIGTERM received, shutting down gracefully...");
   server.close(() => process.exit(0));
