@@ -182,7 +182,7 @@
   overflow: hidden;
 }
 
-/* Header — 3D spherical glass refraction */
+/* Header — full 3D glass sphere surface */
 .header {
   display: flex;
   flex-wrap: nowrap;
@@ -195,63 +195,87 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   transform: translateZ(0);
-  /* Light center blur — clear center of the glass sphere */
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  /* Dark edge vignette — simulates total internal reflection at sphere edges */
+
+  /* The glass body — everything behind is heavily blurred and color-saturated */
+  background: transparent;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+  backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+
+  /* 3D glass depth — layered inset shadows simulate thick curved glass */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.25);
+  border-bottom-color: rgba(255, 255, 255, 0.04);
   box-shadow:
-    inset 0 0 60px -10px rgba(0, 0, 0, 0.4),
-    0 8px 32px rgba(0, 0, 0, 0.15);
+    /* Inner depth — dark ring around inner perimeter like looking into a glass ball */
+    inset 0 0 80px -20px rgba(0, 0, 0, 0.5),
+    /* Inner top highlight — light entering from above */
+    inset 0 2px 4px rgba(255, 255, 255, 0.12),
+    /* Inner bottom shadow — glass is thicker at bottom */
+    inset 0 -2px 6px rgba(0, 0, 0, 0.3),
+    /* External drop shadow */
+    0 8px 32px -4px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Layer 1: Heavy edge refraction — extreme blur only at the borders like curved glass */
+/* Layer 1: Primary specular highlight — bright crescent at top like overhead light on glass */
 .header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  z-index: -2;
-  pointer-events: none;
-  /* Much heavier blur at edges — light bends more at the curved surface */
-  -webkit-backdrop-filter: blur(48px) saturate(140%);
-  backdrop-filter: blur(48px) saturate(140%);
-  /* Elliptical mask: clear center, blurred edges — like looking through a lens */
-  -webkit-mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, transparent 30%, rgba(0,0,0,0.4) 60%, black 100%);
-  mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, transparent 30%, rgba(0,0,0,0.4) 60%, black 100%);
-}
-
-/* Layer 2: Specular highlight — the bright spot on a glass sphere from light source */
-.header::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   z-index: -1;
   pointer-events: none;
-  /* Top-left specular highlight like light hitting a glass sphere */
+  background:
+    /* Main specular crescent across top */
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.06) 25%,
+      transparent 50%
+    ),
+    /* Subtle secondary highlight at bottom-right — internal reflection */
+    radial-gradient(
+      ellipse 50% 80% at 80% 90%,
+      rgba(255, 255, 255, 0.04) 0%,
+      transparent 60%
+    );
+}
+
+/* Layer 2: Fresnel edge darkening — glass edges absorb more light */
+.header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -2;
+  pointer-events: none;
+  /* Radial vignette darkens edges — Fresnel effect */
   background: radial-gradient(
-    ellipse 40% 50% at 15% 20%,
-    rgba(255, 255, 255, 0.15) 0%,
-    rgba(255, 255, 255, 0.05) 40%,
-    transparent 70%
+    ellipse 80% 90% at 50% 45%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.15) 80%,
+    rgba(0, 0, 0, 0.25) 100%
   );
 }
 
-/* Outer glow — soft caustic light around the glass sphere */
+/* Caustic light band — light focused through the glass onto the surface below */
 .headerGlow {
   position: absolute;
-  inset: -2px;
-  border-radius: calc(var(--radius) + 2px);
+  left: 10%;
+  right: 10%;
+  bottom: -6px;
+  height: 6px;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
   pointer-events: none;
   z-index: -3;
-  background: transparent;
-  box-shadow:
-    0 0 15px -3px rgba(255, 255, 255, 0.06),
-    0 4px 20px -4px rgba(0, 0, 0, 0.2);
+  background: radial-gradient(
+    ellipse 60% 100% at 50% 0%,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 70%
+  );
+  filter: blur(3px);
 }
 
 .headerLeft {
