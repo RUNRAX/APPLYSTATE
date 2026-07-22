@@ -1,5 +1,7 @@
 "use client";
-import { useTransition, useState, useCallback } from "react";
+import { useTransition, useState, useCallback, useRef } from "react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
 import { useSSE } from "@/features/dashboard/useSSE";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./dashboard.module.css";
@@ -26,21 +28,9 @@ interface DashboardClientProps {
   connectedPlatforms?: string[];
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
-    }
-  }
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 400, damping: 30, mass: 0.8 } }
-};
+
+
 
 export default function DashboardClient({ stats, initialResume, connectedPlatforms = [] }: DashboardClientProps) {
   const [isPending, startTransition] = useTransition();
@@ -50,6 +40,21 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
   const events = useSSE();
   const { data: session } = useSession();
   const firstName = session?.user?.name?.split(' ')[0] || 'there';
+  
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    // Lively GSAP spring stagger for all elements with class .gsap-reveal
+    gsap.from(".gsap-reveal", {
+      y: 40,
+      opacity: 0,
+      scale: 0.95,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: "back.out(1.2)",
+      clearProps: "all"
+    });
+  }, { scope: container });
 
   const handleTestApply = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,14 +70,9 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
   };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-      style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-    >
+    <div ref={container} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Welcome Hero Banner */}
-      <motion.div variants={itemVariants}>
+      <div className="gsap-reveal">
         <GlassCard variant="strong" className={styles.welcomeHero} style={{ padding: 0 }}>
           <div className={styles.heroContent} style={{ padding: '2.5rem 2rem' }}>
             <div className={styles.heroLabel}>Welcome back</div>
@@ -119,10 +119,10 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
             )}
           </div>
         </GlassCard>
-      </motion.div>
+      </div>
 
       {/* Quick Setup Actions */}
-      <motion.div variants={itemVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+      <div className="gsap-reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
         <GlassCard variant="strong" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: stats.activeBots > 0 ? 'rgba(74, 222, 128, 0.1)' : 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: stats.activeBots > 0 ? '#4ade80' : '#3b82f6' }}>
@@ -212,7 +212,7 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
             </Link>
           </div>
         </GlassCard>
-      </motion.div>
+      </div>
 
       {/* Resume Vault Modal */}
       <ResumeVault initialResume={initialResume} isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} />
@@ -220,7 +220,7 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
 
 
       {/* Stat Cards — 2 column layout */}
-      <motion.div variants={itemVariants} className={styles.statsGrid}>
+      <div className={`gsap-reveal ${styles.statsGrid}`}>
         <StatCard
           label="Total Applied"
           value={stats.totalApplied}
@@ -235,10 +235,10 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
           trendValue="Ready to ship"
           icon={<Clock size={20} />}
         />
-      </motion.div>
+      </div>
 
       {/* Bento Grid — Activity + Live Feed */}
-      <motion.div variants={itemVariants} className={styles.bentoGrid}>
+      <div className={`gsap-reveal ${styles.bentoGrid}`}>
         <GlassCard variant="strong" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600 }}>Application Activity</h3>
@@ -293,7 +293,7 @@ export default function DashboardClient({ stats, initialResume, connectedPlatfor
             </AnimatePresence>
           </div>
         </GlassCard>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

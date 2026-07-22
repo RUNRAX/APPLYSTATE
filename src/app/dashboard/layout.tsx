@@ -19,7 +19,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
-import { LiquidGlassFilter } from "@/components/ui/LiquidGlassFilter";
+// Removed LiquidGlassFilter to fix clipping
 import { NotificationBell } from "./NotificationBell";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <div style={{ position: 'fixed', bottom: '-10%', right: '10%', width: '35vw', height: '35vw', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0,0,0,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }} />
       <div style={{ position: 'fixed', top: '40%', right: '30%', width: '25vw', height: '25vw', background: 'radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, rgba(0,0,0,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }} />
       
-      <LiquidGlassFilter id={`svg-filter-${filterId}`} targetId={`header-id-${filterId}`} blur={16} />
+      {/* SVG filter removed to prevent header clipping */}
       
       {/* Sidebar — floating glass-strong card */}
       <aside className={`glass-strong ${styles.sidebar}`}>
@@ -107,11 +107,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           {/* Header — sticky inside scroll area so content passes under it */}
           <header 
             id={`header-id-${filterId}`}
-            className={styles.header}
-            style={{ 
-              backdropFilter: `url(#svg-filter-${filterId})`,
-              WebkitBackdropFilter: `url(#svg-filter-${filterId})`
-            }}
+            className={`${styles.header} glass-pill`}
+            style={{ borderRadius: 'var(--radius)' }}
           >
             <div className={styles.headerLeft}>
               <div className={styles.headerLabel}>Dashboard</div>

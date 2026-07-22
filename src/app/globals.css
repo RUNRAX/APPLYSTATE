@@ -100,8 +100,8 @@ a {
   box-shadow: 
     0 16px 32px rgba(0, 0, 0, 0.12),
     inset 0 0 30px rgba(255, 255, 255, 0.05);
-  -webkit-backdrop-filter: blur(12px) contrast(120%) brightness(1.1);
-  backdrop-filter: blur(12px) contrast(120%) brightness(1.1);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border-radius: var(--radius);
   position: relative;
   isolation: isolate;
@@ -122,8 +122,8 @@ a {
   box-shadow: 
     0 20px 40px rgba(0, 0, 0, 0.15),
     inset 0 0 40px rgba(255, 255, 255, 0.08);
-  -webkit-backdrop-filter: blur(16px) contrast(130%) brightness(1.15);
-  backdrop-filter: blur(16px) contrast(130%) brightness(1.15);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border-radius: var(--radius);
   position: relative;
   isolation: isolate;
