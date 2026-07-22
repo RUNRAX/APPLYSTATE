@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import AuroraBackground from "@/components/ui/AuroraBackground";
 import NextTopLoader from 'nextjs-toploader';
+import { NavigationLoader } from "@/components/ui/NavigationLoader";
 import SessionProvider from "@/components/providers/SessionProvider";
 
 const inter = Inter({ 
@@ -35,6 +36,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
         <NextTopLoader color="#a855f7" showSpinner={false} height={3} shadow="0 0 10px #a855f7,0 0 5px #a855f7" />
+        <Suspense fallback={null}>
+          <NavigationLoader />
+        </Suspense>
         <SessionProvider>
           <AuroraBackground />
           <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

@@ -33,12 +33,29 @@ export function GlassCard({ children, className = "", interactive = false, varia
         {...props}
         style={{ 
           padding: '1.5rem', 
-          backdropFilter: `url(#${filterId})`,
-          WebkitBackdropFilter: `url(#${filterId})`,
+          position: 'relative',
+          overflow: 'hidden',
           ...props.style 
         }}
       >
-        {children}
+        {/* The glass effect layer applied via standard filter over a CSS backdrop-filter to prevent Chrome black-box bug */}
+        <div 
+          style={{ 
+            position: 'absolute', 
+            inset: 0, 
+            zIndex: 0,
+            pointerEvents: 'none',
+            backdropFilter: `blur(${blurAmount}px)`,
+            WebkitBackdropFilter: `blur(${blurAmount}px)`,
+            filter: `url(#${filterId})`,
+            WebkitFilter: `url(#${filterId})`
+          }} 
+        />
+        
+        {/* Content layer */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          {children}
+        </div>
       </motion.div>
     </>
   );
