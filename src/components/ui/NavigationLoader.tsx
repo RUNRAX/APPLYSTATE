@@ -40,86 +40,93 @@ export function NavigationLoader() {
   if (!isNavigating) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 99999,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'rgba(10, 10, 15, 0.6)',
-      backdropFilter: 'blur(12px)',
-      WebkitBackdropFilter: 'blur(12px)',
-    }}>
+    <>
+      <style>{`
+        @keyframes loader-line-flow {
+          0% { transform: translateX(-100%); }
+          50% { transform: translateX(0%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes loader-pulse-dot {
+          0%, 100% { opacity: 0.4; transform: scale(0.85); }
+          50% { opacity: 1; transform: scale(1.15); }
+        }
+        @keyframes loader-fade-in {
+          0% { opacity: 0; transform: scale(0.96); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
       <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 99999,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '1.5rem',
-        padding: '2.5rem',
-        background: 'rgba(255, 255, 255, 0.03)',
-        borderRadius: '24px',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-        width: '300px'
+        justifyContent: 'center',
+        background: 'rgba(10, 10, 15, 0.6)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        animation: 'loader-fade-in 0.25s ease-out',
       }}>
         <div style={{
-          fontSize: '1.2rem',
-          fontWeight: 600,
-          color: 'rgba(255, 255, 255, 0.9)',
-          letterSpacing: '0.05em',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          gap: '0.75rem'
-        }}>
-          <span style={{ 
-            display: 'inline-block',
-            width: '12px',
-            height: '12px',
-            borderRadius: '50%',
-            background: 'var(--primary)',
-            boxShadow: '0 0 10px var(--primary)',
-            animation: 'pulse 1.5s infinite'
-          }} />
-          AI Generating...
-        </div>
-
-        <div style={{
-          width: '100%',
-          height: '6px',
-          background: 'rgba(255, 255, 255, 0.1)',
-          borderRadius: '99px',
-          overflow: 'hidden',
-          position: 'relative'
+          gap: '1.5rem',
+          padding: '2.5rem',
+          background: 'rgba(255, 255, 255, 0.03)',
+          borderRadius: '24px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          width: '300px'
         }}>
           <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            height: '100%',
-            width: '50%',
-            background: 'linear-gradient(90deg, transparent, var(--primary), transparent)',
+            fontSize: '1.2rem',
+            fontWeight: 600,
+            color: 'rgba(255, 255, 255, 0.9)',
+            letterSpacing: '0.05em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem'
+          }}>
+            <span style={{ 
+              display: 'inline-block',
+              width: '12px',
+              height: '12px',
+              borderRadius: '50%',
+              background: 'var(--primary)',
+              boxShadow: '0 0 10px var(--primary)',
+              animation: 'loader-pulse-dot 1.5s ease-in-out infinite'
+            }} />
+            Loading...
+          </div>
+
+          {/* Smooth flowing line loader */}
+          <div style={{
+            width: '100%',
+            height: '4px',
+            background: 'rgba(255, 255, 255, 0.08)',
             borderRadius: '99px',
-            animation: 'slide-progress 1.5s ease-in-out infinite'
-          }} />
+            overflow: 'hidden',
+            position: 'relative'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              height: '100%',
+              width: '60%',
+              background: 'linear-gradient(90deg, transparent 0%, var(--primary) 30%, rgba(255,255,255,0.9) 50%, var(--primary) 70%, transparent 100%)',
+              borderRadius: '99px',
+              animation: 'loader-line-flow 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+            }} />
+          </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes slide-progress {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(200%); }
-        }
-        @keyframes pulse {
-          0% { opacity: 0.5; transform: scale(0.8); }
-          50% { opacity: 1; transform: scale(1.2); }
-          100% { opacity: 0.5; transform: scale(0.8); }
-        }
-      `}</style>
-    </div>
+    </>
   );
 }
