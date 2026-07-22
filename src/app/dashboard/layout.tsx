@@ -107,9 +107,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           {/* Header — sticky inside scroll area so content passes under it */}
           <header 
             id={`header-id-${filterId}`}
-            className={`${styles.header} glass-pill`}
-            style={{ borderRadius: 'var(--radius)' }}
+            className={styles.header}
           >
+            {/* Bubble outer glow */}
+            <div className={styles.headerGlow} />
             <div className={styles.headerLeft}>
               <div className={styles.headerLabel}>Dashboard</div>
               <div className={styles.headerTitle}>
