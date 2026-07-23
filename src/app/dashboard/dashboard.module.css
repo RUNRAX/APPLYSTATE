@@ -197,11 +197,15 @@
   z-index: 30;
   border-radius: 1.5rem;
 
-  /* ── Glass body ── */
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: url(#bubble-refraction) saturate(150%) brightness(110%) contrast(105%);
-  -webkit-backdrop-filter: url(#bubble-refraction) saturate(150%) brightness(110%) contrast(105%);
-  border: 1px solid rgba(255,255,255,0.1); /* Adding a subtle border for depth */
+  /* ── Bubble Refraction Body ── */
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px) saturate(200%) brightness(110%);
+  -webkit-backdrop-filter: blur(8px) saturate(200%) brightness(110%);
+  border: 1px solid rgba(255,255,255,0.15); 
+  box-shadow: 
+    inset 3px 3px 10px rgba(255,255,255,0.25), /* Bubble top-left highlight */
+    inset -3px -3px 10px rgba(0,0,0,0.3),     /* Bubble bottom-right shadow */
+    0 8px 32px rgba(0,0,0,0.2);               /* Soft drop shadow */
   outline: 0;
 
   /* GPU compositing for smooth scroll */

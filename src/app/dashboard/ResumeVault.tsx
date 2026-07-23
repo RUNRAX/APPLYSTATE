@@ -75,7 +75,7 @@ export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVa
     <div style={{
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', padding: '1rem'
+      background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(32px)', padding: '1rem'
     }} onClick={onClose}>
       <div style={{
         width: '100%', maxWidth: '700px', maxHeight: '90vh', overflowY: 'auto',
@@ -128,7 +128,7 @@ export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVa
           <div style={{ 
             background: 'rgba(0,0,0,0.2)', 
             padding: '1.5rem', 
-            borderRadius: '8px', 
+            borderRadius: '24px', 
             fontFamily: 'monospace', 
             fontSize: '0.85rem', 
             color: 'var(--muted-foreground)',
