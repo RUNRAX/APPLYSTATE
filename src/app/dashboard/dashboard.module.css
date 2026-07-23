@@ -207,11 +207,6 @@
     inset -3px -3px 10px rgba(0,0,0,0.3),     /* Bubble bottom-right shadow */
     0 8px 32px rgba(0,0,0,0.2);               /* Soft drop shadow */
   outline: 0;
-
-  /* GPU compositing for smooth scroll */
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
 }
 
 /* 3. The 3D Bevel Edge */

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useTransition, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { uploadResumeAction } from "@/app/actions/upload-resume";
@@ -19,12 +20,14 @@ export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVa
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [file, setFile] = useState<File | null>(null);
+  const [mounted, setMounted] = useState(false);
   
   const [resumeText, setResumeText] = useState(initialResume?.originalContent || "");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -69,13 +72,13 @@ export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVa
     });
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
+  return createPortal(
     <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50,
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(32px)', padding: '1rem'
+      background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', padding: '1rem'
     }} onClick={onClose}>
       <div style={{
         width: '100%', maxWidth: '700px', maxHeight: '90vh', overflowY: 'auto',
@@ -142,6 +145,7 @@ export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVa
         </GlassCard>
       )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
