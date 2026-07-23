@@ -182,7 +182,7 @@
   overflow: hidden;
 }
 
-/* Header — full 3D glass sphere surface */
+/* Header — frosted glass (no backdrop-filter to prevent scroll flicker) */
 .header {
   display: flex;
   flex-wrap: nowrap;
@@ -196,30 +196,26 @@
   top: 0;
   z-index: 30;
   border-radius: var(--radius);
-  transform: translateZ(0);
 
-  /* The glass body — everything behind is heavily blurred and color-saturated */
-  background: transparent;
-  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
-  backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+  /* Solid frosted glass — no backdrop-filter, zero flicker */
+  background: linear-gradient(
+    180deg,
+    rgba(30, 30, 40, 0.92) 0%,
+    rgba(22, 22, 32, 0.95) 100%
+  );
 
-  /* 3D glass depth — layered inset shadows simulate thick curved glass */
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-top-color: rgba(255, 255, 255, 0.25);
-  border-bottom-color: rgba(255, 255, 255, 0.04);
+  /* 3D glass depth */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.2);
+  border-bottom-color: rgba(255, 255, 255, 0.03);
   box-shadow:
-    /* Inner depth — dark ring around inner perimeter like looking into a glass ball */
-    inset 0 0 80px -20px rgba(0, 0, 0, 0.5),
-    /* Inner top highlight — light entering from above */
-    inset 0 2px 4px rgba(255, 255, 255, 0.12),
-    /* Inner bottom shadow — glass is thicker at bottom */
-    inset 0 -2px 6px rgba(0, 0, 0, 0.3),
-    /* External drop shadow */
-    0 8px 32px -4px rgba(0, 0, 0, 0.3),
-    0 2px 8px rgba(0, 0, 0, 0.15);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 8px 24px -4px rgba(0, 0, 0, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* Layer 1: Primary specular highlight — bright crescent at top like overhead light on glass */
+/* Specular highlight crescent across top */
 .header::before {
   content: "";
   position: absolute;
@@ -227,23 +223,15 @@
   border-radius: inherit;
   z-index: -1;
   pointer-events: none;
-  background:
-    /* Main specular crescent across top */
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.18) 0%,
-      rgba(255, 255, 255, 0.06) 25%,
-      transparent 50%
-    ),
-    /* Subtle secondary highlight at bottom-right — internal reflection */
-    radial-gradient(
-      ellipse 50% 80% at 80% 90%,
-      rgba(255, 255, 255, 0.04) 0%,
-      transparent 60%
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.02) 30%,
+    transparent 50%
+  );
 }
 
-/* Layer 2: Fresnel edge darkening — glass edges absorb more light */
+/* Fresnel edge vignette */
 .header::after {
   content: "";
   position: absolute;
@@ -251,31 +239,28 @@
   border-radius: inherit;
   z-index: -2;
   pointer-events: none;
-  /* Radial vignette darkens edges — Fresnel effect */
   background: radial-gradient(
-    ellipse 80% 90% at 50% 45%,
-    transparent 40%,
-    rgba(0, 0, 0, 0.15) 80%,
-    rgba(0, 0, 0, 0.25) 100%
+    ellipse 85% 100% at 50% 45%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.12) 100%
   );
 }
 
-/* Caustic light band — light focused through the glass onto the surface below */
+/* Caustic light band below */
 .headerGlow {
   position: absolute;
   left: 10%;
   right: 10%;
-  bottom: -6px;
-  height: 6px;
+  bottom: -4px;
+  height: 4px;
   border-radius: 0 0 50% 50% / 0 0 100% 100%;
   pointer-events: none;
   z-index: -3;
   background: radial-gradient(
-    ellipse 60% 100% at 50% 0%,
-    rgba(255, 255, 255, 0.08) 0%,
+    ellipse 50% 100% at 50% 0%,
+    rgba(255, 255, 255, 0.05) 0%,
     transparent 70%
   );
-  filter: blur(3px);
 }
 
 .headerLeft {
