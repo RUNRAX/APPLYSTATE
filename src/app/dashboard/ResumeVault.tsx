@@ -1,5 +1,5 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { uploadResumeAction } from "@/app/actions/upload-resume";
@@ -23,6 +23,15 @@ export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVa
   const [resumeText, setResumeText] = useState(initialResume?.originalContent || "");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => { document.body.style.overflow = "auto"; };
+  }, [isOpen]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -70,7 +79,8 @@ export default function ResumeVault({ initialResume, isOpen, onClose }: ResumeVa
     }} onClick={onClose}>
       <div style={{
         width: '100%', maxWidth: '700px', maxHeight: '90vh', overflowY: 'auto',
-        display: 'flex', flexDirection: 'column', gap: '2rem'
+        display: 'flex', flexDirection: 'column', gap: '2rem',
+        borderRadius: '24px' /* Ensure curved corners for the entire modal content area */
       }} onClick={e => e.stopPropagation()}>
         
         {/* Upload Section */}

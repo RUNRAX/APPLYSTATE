@@ -5,7 +5,7 @@
       "value": "GA1.1-2.1051592203.1782335158",
       "domain": ".google.com",
       "path": "/account",
-      "expires": 1816897880.240395,
+      "expires": 1816991133.864912,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -15,17 +15,17 @@
       "value": "deleted",
       "domain": ".www.google.com",
       "path": "/account",
-      "expires": 1816896757.682233,
+      "expires": 1816946741.364132,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "_ga_3BQTD98D97",
-      "value": "GS2.1-2.s1782336757$o1$g1$t1782337880$j59$l0$h0",
+      "value": "GS2.1-2.s1782406068$o2$g1$t1782431138$j55$l0$h0",
       "domain": ".google.com",
       "path": "/account",
-      "expires": 1816897880.655814,
+      "expires": 1816991138.425917,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -433,26 +433,6 @@
       "sameSite": "None"
     },
     {
-      "name": "NID",
-      "value": "532=lyr5FQ5-gAMy2RmgqfN883USs7yfjNeCWXe1lVgtWLsRrfQbi6gIWOESwjmQdSQntg4ji2Iwa_Ixwm3pQtG1UjcD9EPF5QVZcXCdt_mCtZXuSy5JnwIrAY1jOQGgt1CHzXCeMnHu_k4bWe8zl1kdJmOxk676i4W18mHRQelQdl-N3K9Js7sfz1yTTmUvuCnNuBMjzQ",
-      "domain": ".google.com",
-      "path": "/",
-      "expires": 1798146356.290348,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
-      "name": "__Host-GAPS",
-      "value": "1:VFYuMcCo9mhiEmwDhW--F8U2UJZCwQ:Tq5oFONtGFemBfxY",
-      "domain": "accounts.google.com",
-      "path": "/",
-      "expires": 1816895162.240397,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "Lax"
-    },
-    {
       "name": "OTZ",
       "value": "8667186_34_34__34_",
       "domain": "accounts.google.com",
@@ -493,27 +473,36 @@
       "sameSite": "None"
     },
     {
-      "name": "lidc",
-      "value": "\"b=OB38:s=O:r=O:a=O:p=O:g=4916:u=221:x=1:i=1782337544:t=1782418277:v=2:sig=AQGjbMIOv-IQtwt_hH-azmcSk4xQ5Ihd\"",
-      "domain": ".linkedin.com",
+      "name": "__Host-GAPS",
+      "value": "1:Oefy-mnRwuNfJ5MMbdfUk4h4mXpQxQ:NZcIZmMGthBRpx1T",
+      "domain": "accounts.google.com",
       "path": "/",
-      "expires": 1782418277.635767,
-      "httpOnly": false,
+      "expires": 1816981592.812708,
+      "httpOnly": true,
       "secure": true,
-      "sameSite": "None"
+      "sameSite": "Lax"
     },
     {
-      "name": "__cf_bm",
-      "value": "SP3MceQuAmd62TNx95qWr5sxHr.TSpL7ocI4ckTD.JU-1782337544.2358794-1.0.1.1-SXWkgA3wHrXSSEb10aaaUqxcwDkYYevMCO2DT9nOfE6LEYO.iyinVQpPwlD20arKINwTUKyGYBlC3IXZIR8p6f9R1AdWxwAsJA0VrtjPrgKzB1VIzmhkYz1hkTHZp9QP",
-      "domain": ".linkedin.com",
+      "name": "NID",
+      "value": "532=PeyoI3RMLUpmUI6tkIIGizXgoKhY3ob09LzF6Y7_INbiKS5KfPNEBHoWNkh-aJgA4R290YvjUv7YyvoToDs24solg6N3MB4QelFRs9I9QokJ0yB_6L2dY40laDsaTCcSYCgamxYcP3M8YjVm47h7s3mvOcaMtaXYZK06j3AfeaWBzlT0eZXl3mxt-jQ_Vg0nXhFWclMm7ikkG9htTRZ-",
+      "domain": ".google.com",
       "path": "/",
-      "expires": 1782339344.636049,
+      "expires": 1798205717.041612,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     }
   ],
   "origins": [
+    {
+      "origin": "https://www.google.com",
+      "localStorage": [
+        {
+          "name": "rc::a",
+          "value": "MXV1YmQ5eDFlM2pwOWI="
+        }
+      ]
+    },
     {
       "origin": "https://www.linkedin.com",
       "localStorage": [
@@ -549,15 +538,6 @@
         {
           "name": "PXdOjV695v_px_hvd",
           "value": "73cc021c127e8df6b94df8bec4536d72"
-        }
-      ]
-    },
-    {
-      "origin": "https://www.google.com",
-      "localStorage": [
-        {
-          "name": "rc::a",
-          "value": "MXV1YmQ5eDFlM2pwOWI="
         }
       ]
     }

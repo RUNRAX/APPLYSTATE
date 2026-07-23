@@ -44,8 +44,8 @@
 }
 .navLiquidGlass {
   border-radius: 1.5rem;
-  backdrop-filter: url(#glass-dispersion) saturate(150%) brightness(110%) contrast(105%);
-  -webkit-backdrop-filter: url(#glass-dispersion) saturate(150%) brightness(110%) contrast(105%);
+  backdrop-filter: url(#bubble-refraction) saturate(150%) brightness(110%) contrast(105%);
+  -webkit-backdrop-filter: url(#bubble-refraction) saturate(150%) brightness(110%) contrast(105%);
   background: rgba(255, 255, 255, 0.08);
   border: none;
   outline: 0;
