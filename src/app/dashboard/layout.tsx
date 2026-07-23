@@ -104,26 +104,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Main Content */}
       <main className={styles.mainContent}>
         <div className={styles.scrollArea}>
-          {/* SVG filter for glass sphere distortion — zero-size, invisible, just defines the filter */}
-          <svg width="0" height="0" style={{ position: 'absolute' }}>
-            <defs>
-              <filter id="glass-sphere-distort" x="-10%" y="-10%" width="120%" height="120%">
-                {/* Organic noise pattern for the distortion map */}
-                <feTurbulence type="turbulence" baseFrequency="0.012 0.008" numOctaves="3" seed="2" result="noise" />
-                {/* Displace pixels based on noise — creates glass-like warping */}
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" result="distorted" />
-                {/* Slight gaussian to smooth the distortion edges */}
-                <feGaussianBlur in="distorted" stdDeviation="0.5" />
-              </filter>
-            </defs>
-          </svg>
-
-          {/* Header — sticky inside scroll area so content passes under it */}
-          <header 
-            id={`header-id-${filterId}`}
-            className={styles.header}
-          >
-            {/* Shadow beneath header */}
+          {/* Header */}
+          <header className={styles.header}>
             <div className={styles.headerGlow} />
             <div className={styles.headerLeft}>
               <div className={styles.headerLabel}>Dashboard</div>

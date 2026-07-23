@@ -182,7 +182,7 @@
   overflow: hidden;
 }
 
-/* Header — glass sphere with distortion + dissolving edges */
+/* ── Header — spherical glass bar ── */
 .header {
   display: flex;
   flex-wrap: nowrap;
@@ -196,77 +196,78 @@
   top: 0;
   z-index: 30;
   border-radius: var(--radius);
-  background: transparent;
-  border: none;
 
-  /* GPU layer for smooth scroll */
+  /* ── Glass body ── */
+  /* Semi-transparent so background bleeds through */
+  background: rgba(15, 15, 25, 0.4);
+  /* Full blur + saturation across the entire bar */
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(24px) saturate(170%);
+
+  /* ── Clean border ── */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  /* ── 3D spherical glass depth ── */
+  /* Layered inset shadows create the "looking into a curved glass" effect */
+  box-shadow:
+    /* Fresnel: edges darken like a real glass sphere */
+    inset 0 0 40px rgba(0, 0, 0, 0.35),
+    /* Top inner highlight: light entering the glass from above */
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    /* Bottom inner shadow: thicker glass at the bottom */
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+    /* External shadow beneath the glass */
+    0 8px 32px -4px rgba(0, 0, 0, 0.4);
+
+  /* GPU compositing for smooth scroll */
   will-change: transform;
   transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
-/* The glass lens — high blur + SVG distortion + wide dissolving feather */
+/* Specular highlight — bright crescent at top like light on curved glass */
 .header::before {
   content: "";
   position: absolute;
-  /* Wide overshoot so the feather has plenty of room to dissolve */
-  inset: -20px;
-  z-index: -2;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 0;
   pointer-events: none;
-  border-radius: calc(var(--radius) + 20px);
-
-  /* Heavy blur for strong refraction */
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
-  background: rgba(16, 16, 26, 0.5);
-
-  /* SVG displacement filter — adds glass-sphere magnification distortion */
-  filter: url(#glass-sphere-distort);
-
-  /* Wide feathered mask — dissolves smoothly into nothing at all edges */
-  -webkit-mask-image: radial-gradient(
-    ellipse 80% 70% at 50% 50%,
-    black 45%,
-    rgba(0,0,0,0.6) 60%,
-    rgba(0,0,0,0.2) 80%,
-    transparent 100%
-  );
-  mask-image: radial-gradient(
-    ellipse 80% 70% at 50% 50%,
-    black 45%,
-    rgba(0,0,0,0.6) 60%,
-    rgba(0,0,0,0.2) 80%,
-    transparent 100%
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 20%,
+    transparent 45%
   );
 }
 
-/* Subtle top highlight — light glint on the glass surface */
+/* Fresnel vignette — darkens edges like curved glass refracting less light at steep angles */
 .header::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    transparent 35%
+  background: radial-gradient(
+    ellipse 75% 80% at 50% 50%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.2) 100%
   );
 }
 
-/* Soft shadow beneath the header */
+/* Drop shadow glow beneath the glass bar */
 .headerGlow {
   position: absolute;
-  left: 5%;
-  right: 5%;
-  bottom: -10px;
-  height: 14px;
+  left: 8%;
+  right: 8%;
+  bottom: -6px;
+  height: 8px;
   pointer-events: none;
-  z-index: -3;
+  z-index: -1;
   background: radial-gradient(
-    ellipse 70% 100% at 50% 0%,
-    rgba(0, 0, 0, 0.25) 0%,
+    ellipse 60% 100% at 50% 0%,
+    rgba(0, 0, 0, 0.3) 0%,
     transparent 70%
   );
 }
