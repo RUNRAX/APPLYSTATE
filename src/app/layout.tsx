@@ -35,6 +35,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
+        <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
+          <filter id="glass-dispersion" x="-100%" y="-100%" width="300%" height="300%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="0" result="frosted" />
+            {/* NOTE: Paste your massive <feImage href="data:image/bmp;base64, ... "> here */}
+            <feDisplacementMap in="frosted" in2="refractionMap" scale="30" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </svg>
         <NextTopLoader color="#a855f7" showSpinner={false} height={3} shadow="0 0 10px #a855f7,0 0 5px #a855f7" />
         <Suspense fallback={null}>
           <NavigationLoader />
