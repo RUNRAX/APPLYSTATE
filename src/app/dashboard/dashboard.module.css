@@ -182,7 +182,7 @@
   overflow: hidden;
 }
 
-/* Header — glass with dissolving blur edges */
+/* Header — glass sphere with distortion + dissolving edges */
 .header {
   display: flex;
   flex-wrap: nowrap;
@@ -196,49 +196,50 @@
   top: 0;
   z-index: 30;
   border-radius: var(--radius);
-
-  /* NO backdrop-filter here — it lives on ::before so we can mask it */
   background: transparent;
-
-  /* Border on the header itself so it aligns with content */
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top-color: rgba(255, 255, 255, 0.15);
-  border-bottom-color: rgba(255, 255, 255, 0.03);
+  border: none;
 
   /* GPU layer for smooth scroll */
   will-change: transform;
   transform: translateZ(0);
 }
 
-/* The blur layer — feathered mask makes it dissolve at all edges */
+/* The glass lens — high blur + SVG distortion + wide dissolving feather */
 .header::before {
   content: "";
   position: absolute;
-  /* Extend slightly beyond the header so the feather has room */
-  inset: -8px;
+  /* Wide overshoot so the feather has plenty of room to dissolve */
+  inset: -20px;
   z-index: -2;
   pointer-events: none;
+  border-radius: calc(var(--radius) + 20px);
 
-  /* The actual glass blur — no saturate, prevents color flicker */
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  background: rgba(18, 18, 28, 0.6);
+  /* Heavy blur for strong refraction */
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  background: rgba(16, 16, 26, 0.5);
 
-  /* Feathered mask — fully opaque in center, dissolves to transparent at all edges */
+  /* SVG displacement filter — adds glass-sphere magnification distortion */
+  filter: url(#glass-sphere-distort);
+
+  /* Wide feathered mask — dissolves smoothly into nothing at all edges */
   -webkit-mask-image: radial-gradient(
-    ellipse 90% 85% at 50% 50%,
-    black 60%,
+    ellipse 80% 70% at 50% 50%,
+    black 45%,
+    rgba(0,0,0,0.6) 60%,
+    rgba(0,0,0,0.2) 80%,
     transparent 100%
   );
   mask-image: radial-gradient(
-    ellipse 90% 85% at 50% 50%,
-    black 60%,
+    ellipse 80% 70% at 50% 50%,
+    black 45%,
+    rgba(0,0,0,0.6) 60%,
+    rgba(0,0,0,0.2) 80%,
     transparent 100%
   );
-  border-radius: calc(var(--radius) + 8px);
 }
 
-/* Specular highlight */
+/* Subtle top highlight — light glint on the glass surface */
 .header::after {
   content: "";
   position: absolute;
@@ -246,10 +247,11 @@
   border-radius: inherit;
   z-index: -1;
   pointer-events: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    transparent 40%
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 35%
   );
 }
 
@@ -258,13 +260,13 @@
   position: absolute;
   left: 5%;
   right: 5%;
-  bottom: -8px;
-  height: 12px;
+  bottom: -10px;
+  height: 14px;
   pointer-events: none;
   z-index: -3;
   background: radial-gradient(
     ellipse 70% 100% at 50% 0%,
-    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.25) 0%,
     transparent 70%
   );
 }
