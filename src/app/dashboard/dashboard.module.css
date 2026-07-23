@@ -200,6 +200,11 @@
   /* NO backdrop-filter here — it lives on ::before so we can mask it */
   background: transparent;
 
+  /* Border on the header itself so it aligns with content */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top-color: rgba(255, 255, 255, 0.15);
+  border-bottom-color: rgba(255, 255, 255, 0.03);
+
   /* GPU layer for smooth scroll */
   will-change: transform;
   transform: translateZ(0);
@@ -233,7 +238,7 @@
   border-radius: calc(var(--radius) + 8px);
 }
 
-/* Specular highlight + top border glow */
+/* Specular highlight */
 .header::after {
   content: "";
   position: absolute;
@@ -241,9 +246,6 @@
   border-radius: inherit;
   z-index: -1;
   pointer-events: none;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top-color: rgba(255, 255, 255, 0.15);
-  border-bottom-color: transparent;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.06) 0%,
