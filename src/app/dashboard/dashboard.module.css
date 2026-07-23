@@ -353,8 +353,6 @@
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  /* Own compositing layer so sticky backdrop-filter doesn't repaint the whole tree */
-  transform: translateZ(0);
 }
 
 .scrollArea::-webkit-scrollbar {
@@ -392,7 +390,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  backdrop-filter: blur(1px);
 }
 
 .heroContent {
