@@ -182,7 +182,7 @@
   overflow: hidden;
 }
 
-/* Header — glass refraction with GPU-optimized blur */
+/* Header — glass with dissolving blur edges */
 .header {
   display: flex;
   flex-wrap: nowrap;
@@ -197,74 +197,72 @@
   z-index: 30;
   border-radius: var(--radius);
 
-  /* Semi-transparent base so content bleeds through the blur */
-  background: rgba(18, 18, 28, 0.55);
+  /* NO backdrop-filter here — it lives on ::before so we can mask it */
+  background: transparent;
 
-  /* Real backdrop blur + saturation for glass refraction */
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  backdrop-filter: blur(20px) saturate(150%);
-
-  /* GPU compositing — prevents flicker on scroll */
+  /* GPU layer for smooth scroll */
   will-change: transform;
   transform: translateZ(0);
-  backface-visibility: hidden;
-  contain: layout style paint;
-
-  /* 3D glass depth */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-top-color: rgba(255, 255, 255, 0.2);
-  border-bottom-color: rgba(255, 255, 255, 0.03);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15),
-    0 8px 24px -4px rgba(0, 0, 0, 0.3),
-    0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* Specular highlight crescent across top */
+/* The blur layer — feathered mask makes it dissolve at all edges */
 .header::before {
+  content: "";
+  position: absolute;
+  /* Extend slightly beyond the header so the feather has room */
+  inset: -8px;
+  z-index: -2;
+  pointer-events: none;
+
+  /* The actual glass blur — no saturate, prevents color flicker */
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  background: rgba(18, 18, 28, 0.6);
+
+  /* Feathered mask — fully opaque in center, dissolves to transparent at all edges */
+  -webkit-mask-image: radial-gradient(
+    ellipse 90% 85% at 50% 50%,
+    black 60%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 90% 85% at 50% 50%,
+    black 60%,
+    transparent 100%
+  );
+  border-radius: calc(var(--radius) + 8px);
+}
+
+/* Specular highlight + top border glow */
+.header::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   z-index: -1;
   pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top-color: rgba(255, 255, 255, 0.15);
+  border-bottom-color: transparent;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0.02) 30%,
-    transparent 50%
+    rgba(255, 255, 255, 0.06) 0%,
+    transparent 40%
   );
 }
 
-/* Fresnel edge vignette */
-.header::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  z-index: -2;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse 85% 100% at 50% 45%,
-    transparent 50%,
-    rgba(0, 0, 0, 0.15) 100%
-  );
-}
-
-/* Caustic light band below */
+/* Soft shadow beneath the header */
 .headerGlow {
   position: absolute;
-  left: 10%;
-  right: 10%;
-  bottom: -4px;
-  height: 4px;
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  left: 5%;
+  right: 5%;
+  bottom: -8px;
+  height: 12px;
   pointer-events: none;
   z-index: -3;
   background: radial-gradient(
-    ellipse 50% 100% at 50% 0%,
-    rgba(255, 255, 255, 0.06) 0%,
+    ellipse 70% 100% at 50% 0%,
+    rgba(0, 0, 0, 0.2) 0%,
     transparent 70%
   );
 }
